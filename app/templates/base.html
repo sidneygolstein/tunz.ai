@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Tunz.ai{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='static/styles.css') }}">   
+    <img src="{{url_for('static', filename='static/tunz.png')}}">
+</head>
+<body>
+    <section>
+        <h1>Bias-free AI-based interviewer</h1>
+    </section>
+    <header>
+        <h1>TTTTTUNZZZZ.AI41113</h1>
+    </header>
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+    <footer>
+        <p>&copy; 2024 Chat Application</p>
+    </footer>
+</body>
+</html>

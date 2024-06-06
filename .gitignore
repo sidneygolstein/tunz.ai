@@ -1,0 +1,7 @@
+.env
+.venv
+.vscode
+ __pycache__/*
+chat.db
+ *.pyc
+ .DS_store

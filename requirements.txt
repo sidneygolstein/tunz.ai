@@ -1,0 +1,19 @@
+# Python dependencies.
+
+
+Flask==3.0.3
+Werkzeug==3.0.3
+Flask-SQLAlchemy==3.0.3
+openai==1.23.2
+
+
+flask
+flask-smorest           # Flask smorest is a database-agnostic framework library to create REST APIs
+python-dotenv
+sqlalchemy              # For SQL DB
+flask-sqlalchemy        # For SQL DB
+flask-jwt-extended      # For auth
+passlib                 # Library to hash password
+flask-migrate           # For db migration. It's the connection between alembic and flask
+gunicorn                # To run Docker with better performance than the build in flask dev environment (use to deploy the app)
+psycopg2-binary

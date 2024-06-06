@@ -1,0 +1,25 @@
+# DOCKER COMPOSE
+# Allow to start multiple docker containers at the same time specifying configurations for each one and dependencies between them
+
+# yml is an easy language, always key value pairs without {}, and with indentation to outline relations
+version: '3.8'
+services:
+  web:
+    build: . # Build file is in the current directory
+    ports: 
+      - "5005:5000"
+    environment:
+      - FLASK_APP=run.py
+      - FLASK_ENV=development
+      - DATABASE_URL=sqlite:///chat.db
+      - OPENAI_API_KEY = "sk-proj-l7ggu7dVuFtajCLia24PT3BlbkFJl1qoGuXnYAm42Mb1sF3A"
+
+    volumes:
+      - .:/app  # Use a named volume for your application code
+
+#volumes:
+#  app_code:
+
+
+# docker compose up
+# docker compose up --build --force-recreate --no-deps service_name (here 'web')
