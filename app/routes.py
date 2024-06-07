@@ -1,7 +1,3 @@
-# This file defines the routes and logic for handling chat interactions
-# Blueprint: We use a Blueprint to modularize the application. It allows us to organize our routes and related functions into a single module.
-# 'current_app' is used to access the application context and its configuration.
-
 from flask import render_template, request, redirect, url_for, jsonify, session as flask_session, current_app
 from . import db
 from .models import Session, Question, Answer
@@ -18,21 +14,24 @@ def create_or_load_session():
         db.session.commit()
         flask_session['session_id'] = new_session.id
         flask_session['thread_id'] = None
+        flask_session['assistant_id'] = None
 
 @main.route('/', methods=['GET'])
 def chat():
     current_session_id = flask_session['session_id']
     questions = Question.query.filter_by(session_id=current_session_id).all()
     answers = Answer.query.filter_by(session_id=current_session_id).all()
-    return render_template('chat.html', questions=questions, answers=answers)
+    max_questions = current_app.config.get('MAX_QUESTIONS')
+    return render_template('chat.html', questions=questions, answers=answers, max_questions=max_questions)
 
 @main.route('/start', methods=['POST'])
 def start_chat():
     current_session_id = flask_session['session_id']
 
     # Create a new thread and get the first assistant response
-    thread_id, assistant_response = create_openai_thread()
+    thread_id, assistant_id, assistant_response = create_openai_thread()
     flask_session['thread_id'] = thread_id
+    flask_session['assistant_id'] = assistant_id
 
     # Save the assistant's question to the database
     question = Question(content=assistant_response, session_id=current_session_id)
@@ -47,7 +46,7 @@ def continue_chat():
     question_id = request.form['question_id']
     current_session_id = flask_session['session_id']
     thread_id = flask_session.get('thread_id')
-
+    assistant_id = flask_session.get('assistant_id')
     if not thread_id:
         return redirect(url_for('main.chat'))
 
@@ -64,7 +63,7 @@ def continue_chat():
         return redirect(url_for('main.result'))
 
     # Get the assistant's next response
-    assistant_response = get_openai_thread_response(thread_id, user_input)
+    assistant_response = get_openai_thread_response(thread_id, assistant_id, user_input)
 
     # Save the assistant's question to the database
     question = Question(content=assistant_response, session_id=current_session_id)
