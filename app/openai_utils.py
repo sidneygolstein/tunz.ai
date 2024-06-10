@@ -6,7 +6,7 @@ from openai import OpenAI
 openai.api_key = os.environ.get("OPENAI_API_KEY")
 client = OpenAI()
 
-def create_openai_thread():
+def create_openai_thread(language):
     
     openai_api_key = current_app.config.get('OPENAI_API_KEY')
     if not openai_api_key:
@@ -14,25 +14,43 @@ def create_openai_thread():
     
     client.api_key = openai_api_key
 
+
+    instructions = (
+        "You are a HR that wants to interview an applicant. Always finish your answer by a question to the applicant please."
+        if language == 'english'
+        else "Vous êtes un responsable des ressources humaines qui souhaite interviewer un candidat. Terminez toujours votre réponse par une question au candidat s'il vous plaît."
+    )
     
     # ASSISTANT CREATION 
     assistant = client.beta.assistants.create(
         name="Test thread",
-        instructions="You are a HR that wants to interview an applicant. Always finsih your anwer by a question to the applicant please.",
+        instructions=instructions,
         tools=[],
         model="gpt-3.5-turbo",
     )
 
+
+    initial_message = (
+        "You have to ask question first to the user to start the interview for a job as CTO. "
+        "Start with a presentation sentence to welcome the candidate. The name of the candidate is Sidney. "
+        "Be polite and introduce the reason of the interview and remember him that the interview is about a "
+        "CTO position in an AI tech company. Then, ask the first question."
+        "When you ask the last question, please ensure to telle the candidate that the interview is nearly finished and that we arrive at the last question"
+        if language == 'english'
+        else "Vous devez d'abord poser une question à l'utilisateur pour commencer l'entretien pour un poste de CTO. "
+        "Commencez par une phrase de présentation pour accueillir le candidat. Le nom du candidat est Sidney. "
+        "Soyez poli et présentez la raison de l'entretien et rappelez-lui que l'entretien porte sur un poste de CTO "
+        "dans une entreprise de technologie de l'IA. Ensuite, posez la première question."
+        "Quand tu poses la dernière question, assure toi d'en informer le candidat."
+    )
+    
 
     # THREAD CREATION
     thread = client.beta.threads.create(
         messages = [
             {
                 "role": "assistant",
-                "content": "You have to ask question first to the user to start the interview for a job as CTO. \
-                Start with a presentation sentence to welcome the candidate. The name of the candidate is Sidney. \
-                Be polite and introduce the reason of the interview and remember him that the intervoew is about a \
-                CTO position in a AI tech company.Then, ask the first question."
+                "content": initial_message
             }
         ]
     )
