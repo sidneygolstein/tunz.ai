@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Set Parameters</title>
+</head>
+<body>
+    <h1>Set Interview Parameters</h1>
+    <form action="{{ url_for('main.set_parameters', interview_id=interview_id) }}" method="POST">
+        <label for="language">Select Language:</label>
+        <select name="language" id="language">
+            <option value="english">English</option>
+            <option value="french">French</option>
+        </select>
+        <br>
+        <label for="max_questions">Number of Questions:</label>
+        <select name="max_questions" id="max_questions">
+            <option value="2">2</option>
+            <option value="5">5</option>
+            <option value="7">7</option>
+        </select>
+        <br>
+        <button type="submit">Set Parameters</button>
+    </form>
+</body>
+</html>

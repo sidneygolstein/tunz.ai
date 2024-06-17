@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interview App</title>
+</head>
+<body>
+    <h1>Welcone on TUNZ.ai</h1>
+    <form action="{{ url_for('main.create_interview') }}" method="POST">
+        <button type="submit">Create an Interview</button>
+    </form>
+</body>
+</html>
