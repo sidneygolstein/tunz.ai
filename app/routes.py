@@ -43,7 +43,8 @@ def set_parameters(interview_id):
         session['interview_parameter_id'] = interview_parameter.id
         session['interview_id'] = interview_id
         db.session.commit()
-        return redirect(url_for('main.start_chat', interview_parameter_id=interview_parameter.id, interview_id=interview_id))
+        interview_link = url_for('main.start_chat', interview_parameter_id=interview_parameter.id, interview_id=interview_id, _external=True)
+        return render_template('interview_link.html', interview_link=interview_link)
     return render_template('set_parameters.html', interview_id=interview_id)
 
 
@@ -74,6 +75,8 @@ def start_chat(interview_parameter_id, interview_id):
 
 @main.route('/chat', methods=['GET', 'POST'])
 def chat():
+    thank_you_message = "Thank you for the interview Sidney." if session['language'] == 'english' else "Merci pour l'entretien Sidney."
+
     if 'interview_parameter_id' not in session or 'interview_id' not in session:
         return redirect(url_for('main.home'))
 
@@ -100,25 +103,24 @@ def chat():
         # Check if the maximum number of questions has been reached
         num_questions = Question.query.filter_by(session_id=current_session_id).count()
 
-        if num_questions > interview_parameter.max_questions:
-            thank_you_message = "Thank you for the interview." if session['language'] == 'english' else "Merci pour l'entretien."
-            question = Question(content=thank_you_message, session_id=current_session_id)
+        if num_questions >= interview_parameter.max_questions:
+            #question = Question(content=thank_you_message, session_id=current_session_id)
+            #db.session.add(question)
+            #db.session.commit()
+            session['finished'] = True
+            #return render_template('chat.html', questions=questions, answers=answers, max_questions=max_questions)
+        else:
+            # Get the assistant's next response
+            assistant_response = get_openai_thread_response(thread_id, assistant_id, user_input)
+
+            # Save the assistant's question to the database
+            question = Question(content=assistant_response, session_id=current_session_id)
             db.session.add(question)
             db.session.commit()
-            session['finished'] = True
-            return render_template('chat.html', questions=questions, answers=answers, max_questions=max_questions)
-
-        # Get the assistant's next response
-        assistant_response = get_openai_thread_response(thread_id, assistant_id, user_input)
-
-        # Save the assistant's question to the database
-        question = Question(content=assistant_response, session_id=current_session_id)
-        db.session.add(question)
-        db.session.commit()
 
         return redirect(url_for('main.chat'))
 
-    return render_template('chat.html', questions=questions, answers=answers, max_questions=max_questions)
+    return render_template('chat.html', questions=questions, answers=answers, max_questions=max_questions, thank_you_message=thank_you_message)
 
 
 
@@ -135,11 +137,13 @@ def result():
 
 @main.route('/restart', methods=['POST'])
 def restart():
-    session.pop('session_id', None)  # Remove the session ID from the Flask session
-    session.pop('thread_id', None)  # Remove the thread ID from the Flask session
-    session.pop('assistant_id', None)  # Remove the assistant ID from the Flask session
-    session.pop('language', None)  # Remove the language from the Flask session
-    session.pop('finished', None)  # Remove the finished flag from the Flask session
+    session.pop('session_id', None)
+    session.pop('thread_id', None)
+    session.pop('assistant_id', None)
+    session.pop('language', None)
+    session.pop('finished', None)
+    session.pop('interview_parameter_id', None)
+    session.pop('interview_id', None)
     return redirect(url_for('main.home'))
 
 def calculate_score(answers):

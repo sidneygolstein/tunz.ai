@@ -3,11 +3,11 @@
 {% block title %}Result{% endblock %}
 
 {% block content %}
-<div>
-    <h2>Result</h2>
-    <p>Your score: {{ score }}</p>
-    <form method="post" action="{{ url_for('main.restart') }}">
-        <button type="submit">Restart</button>
-    </form>
-</div>
+    <div class="container">
+        <h1>Interview Result</h1>
+        <p>Your score: {{ score }}</p>
+        <form method="post" action="{{ url_for('main.restart') }}">
+            <button type="submit">Restart</button>
+        </form>
+    </div>
 {% endblock %}

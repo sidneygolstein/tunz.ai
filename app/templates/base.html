@@ -1,23 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Tunz.ai{% endblock %}</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='static/styles.css') }}">   
-    <img src="{{url_for('static', filename='static/tunz.png')}}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='static/styles.css') }}">
 </head>
 <body>
-    <section>
-        <h1>Bias-free AI-based interviewer</h1>
-    </section>
     <header>
-        <h1>TUNZ.ai</h1>
+        <h1>Tunz.ai</h1>
+        <h2>Bias-Free AI-Based Interviewer</h2>
     </header>
     <main>
         {% block content %}{% endblock %}
     </main>
     <footer>
-        <p>&copy; 2024 Chat Application</p>
+        <p>&copy; 2024</p>
     </footer>
 </body>
 </html>

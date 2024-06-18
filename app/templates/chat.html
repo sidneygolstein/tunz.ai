@@ -3,34 +3,77 @@
 {% block title %}Chat{% endblock %}
 
 {% block content %}
-    <h1>Chat</h1>
-    <div id="chat-box">
-        {% for question in questions %}
+<div class="chat-container">
+    <div class="sidebar">
+        <div class="search-bar">
+            <input type="text" placeholder="Search chats">
+        </div>
+        <div class="chat-list">
+            <div class="chat-item">
+                <h3>Business Development Associate, Round 1</h3>
+                <p>Salesforce, Paris, France</p>
+            </div>
+        </div>
+    </div>
+    <div class="chat-content">
+        <div class="chat-header">
+            <div class="chat-header-left">
+                <h2>Tunz AI</h2>
+                <p>Active 1 min ago</p>
+            </div>
+            <div class="chat-header-right">
+                <button>Get help</button>
+                <button>Ask for a hint!</button>
+                <button>Send images</button>
+                <button>More options</button>
+            </div>
+        </div>
+        <div id="chat-box">
+            {% for question in questions %}
             <div class="message assistant">
                 <p>{{ question.content }}</p>
             </div>
             {% for answer in answers %}
-                {% if answer.question_id == question.id %}
-                    <div class="message user">
-                        <p>{{ answer.content }}</p>
-                    </div>
-                {% endif %}
+            {% if answer.question_id == question.id %}
+            <div class="message user">
+                <p>{{ answer.content }}</p>
+            </div>
+            {% endif %}
             {% endfor %}
-        {% endfor %}
+            {% endfor %}
+            {% if session.get('finished') %}
+            <div class = "message assistant">
+                <p>{{thank_you_message}}</p>
+            </div>
+            {% endif %}
+        </div>
+        <div class="chat-input">
+            {% if not session.get('finished') %}
+            <form action="{{ url_for('main.chat') }}" method="post" id="chat-form">
+                <input type="hidden" name="question_id" value="{{ questions[-1].id }}">
+                <input type="text" name="answer" required placeholder="Enter your message">
+                <div class="icons">
+                    <i class="fas fa-microphone"></i>
+                    <i class="fas fa-smile"></i>
+                    <i class="fas fa-image"></i>
+                </div>
+                <button type="submit">Send</button>
+            </form>
+            {% else %}
+            <form method="get" action="{{ url_for('main.result') }}">
+                <button type="submit">See Score</button>
+            </form>
+            <form method="post" action="{{ url_for('main.restart') }}">
+                <button type="submit">Restart</button>
+            </form>
+            {% endif %}
+        </div>
     </div>
-    {% if not session.get('finished')and questions|length < max_questions %}
-        <form action="{{ url_for('main.chat') }}" method="post">
-            <input type="hidden" name="question_id" value="{{ questions[-1].id }}">
-            <input type="text" name="answer" required>
-            <button type="submit">Send</button>
-        </form>
-    {% else %}
-        <p>{{ questions[-1].content }}</p>
-        <form method="get" action="{{ url_for('main.result') }}">
-            <button type="submit">See Score</button>
-        </form>
-    {% endif %}
-    <form method="post" action="{{ url_for('main.restart') }}">
-        <button type="submit">Restart</button>
-    </form>
+    <div class="sidebar-right">
+        <div class="sidebar-right-header">
+            <h2>Sidney Golstein</h2>
+            <p>Live Interview</p>
+        </div>
+    </div>
+</div>
 {% endblock %}
