@@ -5,10 +5,13 @@ from flask import Flask, session as flask_session
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from config import Config
+from flask import Flask
+from flask_mail import Mail, Message
 
 
 db = SQLAlchemy()
 migrate = Migrate()
+mail = Mail()
 
 
 def create_app():
@@ -16,7 +19,7 @@ def create_app():
     app.config.from_object(Config)
     db.init_app(app)
     migrate.init_app(app, db)
-
+    mail.init_app(app)
     with app.app_context():
         from app import routes, models
         from app.routes import main as main_blueprint

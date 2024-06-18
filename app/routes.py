@@ -1,9 +1,10 @@
 from flask import render_template, request, redirect, url_for, jsonify, session, current_app
-from . import db
+from . import db, mail
 from .models import Interview, InterviewParameter, Session, Question, Answer, Result, HR, Applicant, Company  
 from .openai_utils import create_openai_thread, get_openai_thread_response
 from flask import Blueprint
 from datetime import datetime
+from flask_mail import Message
 
 main = Blueprint('main', __name__)
 
@@ -40,6 +41,12 @@ def set_parameters(interview_id):
         session['interview_id'] = interview_id
         db.session.commit()
         interview_link = url_for('main.start_chat', interview_parameter_id=interview_parameter.id, interview_id=interview_id, _external=True)
+
+        # Send email with the interview link
+        msg = Message('Your Interview Link', sender='sidney@tunz.ai', recipients=['golstein.sidney@gmail.com'])
+        msg.body = f'Please use the following link to start the interview: {interview_link}'
+        mail.send(msg)
+
         return render_template('interview_link.html', interview_link=interview_link)
     return render_template('set_parameters.html', interview_id=interview_id)
 
