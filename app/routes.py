@@ -10,10 +10,6 @@ main = Blueprint('main', __name__)
 @main.before_request
 def create_or_load_session():
     if 'session_id' not in session:
-        new_session = Session()
-        db.session.add(new_session)
-        db.session.commit()
-        session['session_id'] = new_session.id
         session['thread_id'] = None
         session['assistant_id'] = None
         session['language'] = None
@@ -50,10 +46,10 @@ def set_parameters(interview_id):
 
 @main.route('/start/<int:interview_parameter_id>/<int:interview_id>', methods=['GET','POST'])
 def start_chat(interview_parameter_id, interview_id):
-    # Update the existing session with the interview parameter ID
-    current_session = Session.query.get(session['session_id'])
-    current_session.interview_parameter_id = interview_parameter_id
+    new_session = Session(interview_parameter_id=interview_parameter_id)
+    db.session.add(new_session)
     db.session.commit()
+    session['session_id'] = new_session.id
 
 
     interview_parameter = InterviewParameter.query.get(interview_parameter_id)      # Retrieve interview parameters
@@ -64,13 +60,14 @@ def start_chat(interview_parameter_id, interview_id):
     session['thread_id'] = thread_id
     session['assistant_id'] = assistant_id
     session['interview_parameter_id'] = interview_parameter_id
+    session['interview_id'] = interview_id
 
     # Save the assistant's question to the database
-    question = Question(content=assistant_response, session_id=current_session.id)
+    question = Question(content=assistant_response, session_id=new_session.id)
     db.session.add(question)
     db.session.commit()
 
-    return redirect(url_for('main.chat', session_id=current_session.id, interview_parameter_id=interview_parameter_id, interview_id=interview_id))
+    return redirect(url_for('main.chat', session_id=new_session.id, interview_parameter_id=interview_parameter_id, interview_id=interview_id))
 
 
 @main.route('/chat', methods=['GET', 'POST'])
@@ -104,11 +101,7 @@ def chat():
         num_questions = Question.query.filter_by(session_id=current_session_id).count()
 
         if num_questions >= interview_parameter.max_questions:
-            #question = Question(content=thank_you_message, session_id=current_session_id)
-            #db.session.add(question)
-            #db.session.commit()
             session['finished'] = True
-            #return render_template('chat.html', questions=questions, answers=answers, max_questions=max_questions)
         else:
             # Get the assistant's next response
             assistant_response = get_openai_thread_response(thread_id, assistant_id, user_input)
