@@ -52,7 +52,11 @@ class InterviewParameter(db.Model):
     end_time = db.Column(db.DateTime, nullable=True)
     duration = db.Column(db.Integer, nullable=True)
     max_questions = db.Column(db.Integer, nullable=False)
-    topic = db.Column(db.String, nullable=True)
+    role = db.Column(db.String, nullable=True)
+    role_description = db.Column(db.String, nullable=True)
+    industry = db.Column(db.String, nullable=True)
+    evaluation_criteria = db.Column(db.String, nullable=True)
+    interview_url = db.Column(db.String, nullable=True)
     interview_id = db.Column(db.Integer, db.ForeignKey('interview.id'), nullable=False)
     sessions = db.relationship('Session', backref='interview_parameter', lazy=True)
 

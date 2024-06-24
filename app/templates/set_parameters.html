@@ -9,11 +9,13 @@
     <div class="container">
         <h1>Set Interview Parameters</h1>
         <form action="{{ url_for('main.set_parameters', interview_id=interview_id) }}" method="POST">
-            <label for="language">Select Language:</label>
-            <select name="language" id="language">
-                <option value="english">English</option>
-                <option value="french">French</option>
-            </select>
+            <div class="form-group">
+                <label for="language">Language:</label>
+                <select name="language" class="form-control" required>
+                    <option value="english">English</option>
+                    <option value="french">French</option>
+                </select>
+            </div>
             <br>
             <label for="max_questions">Number of Questions:</label>
             <select name="max_questions" id="max_questions">
@@ -25,7 +27,41 @@
             <label for="applicant_email">Applicant's Email:</label>
             <input type="email" name="applicant_email" id="applicant_email" required>
             <br>
-            <button type="submit">Generate Interview Link</button>
+            <div class="form-group">
+                <label for="role">Role:</label>
+                <select name="role" class="form-control" required>
+                    <option value="sales">Sales</option>
+                    <option value="marketing">Marketing</option>
+                    <option value="operations">Operations</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="industry">Industry:</label>
+                <select name="industry" class="form-control" required>
+                    <option value="Blockchain/Web3">Blockchain/Web3</option>
+                    <option value="FinTech">FinTech</option>
+                    <option value="HR Tech">HR Tech</option>
+                    <option value="Consulting">Consulting</option>
+                    <option value="Banking & Finance">Banking & Finance</option>
+                    <option value="e-Commerce">e-Commerce</option>
+                    <option value="Healthcare">Healthcare</option>
+                    <option value="Retail">Retail</option>
+                    <option value="EdTech">EdTech</option>
+                    <option value="Cybersecurity">Cybersecurity</option>
+                    <option value="Real Estate">Real Estate</option>
+                    <option value="Gaming">Gaming</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="duration">Interview Duration:</label>
+                <select name="duration" class="form-control" required>
+                    <option value="1">1 minute</option>
+                    <option value="5">5 minutes</option>
+                    <option value="30">30 minutes</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Create Interview</button>
         </form>
     </div>
 </body>

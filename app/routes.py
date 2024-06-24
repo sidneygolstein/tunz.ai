@@ -1,7 +1,7 @@
 from flask import render_template, request, redirect, url_for, jsonify, session, current_app
 from . import db, mail
 from .models import Interview, InterviewParameter, Session, Question, Answer, Result, HR, Applicant, Company  
-from .openai_utils import create_openai_thread, get_openai_thread_response
+from .openai_utils import create_openai_thread, get_openai_thread_response, get_thank_you_message
 from flask import Blueprint
 from datetime import datetime
 from flask_mail import Message
@@ -32,12 +32,20 @@ def set_parameters(interview_id):
         session.clear() 
         language = request.form['language']
         max_questions = int(request.form['max_questions'])
-        applicant_email = request.form['applicant_email']  # Get the applicant's email from the form
+        applicant_email = request.form['applicant_email']
+        role = request.form['role']
+        industry = request.form['industry']
+        duration = int(request.form['duration'])
+        
         interview_parameter = InterviewParameter(
             language=language,
             max_questions=max_questions,
+            role=role,
+            industry=industry,
+            duration=duration,
             interview_id=interview_id
         )
+        
         db.session.add(interview_parameter)
         session['interview_parameter_id'] = interview_parameter.id
         session['interview_id'] = interview_id
@@ -67,7 +75,13 @@ def start_chat(interview_parameter_id, interview_id):
     session['language'] = interview_parameter.language
 
     # Create a new thread and get the first assistant response
-    thread_id, assistant_id, assistant_response = create_openai_thread(interview_parameter.language)
+    thread_id, assistant_id, assistant_response = create_openai_thread(
+        interview_parameter.language,
+        interview_parameter.role,
+        interview_parameter.industry,
+        applicant_email
+        )
+    
     session['thread_id'] = thread_id
     session['assistant_id'] = assistant_id
     session['interview_parameter_id'] = interview_parameter_id
@@ -92,7 +106,8 @@ def chat():
     answers = Answer.query.filter_by(session_id=current_session_id).all()
     max_questions = interview_parameter.max_questions
     applicant_email = session.get('applicant_email', 'N/A')
-    thank_you_message = f"Thank you for the interview {applicant_email}." if session['language'] == 'english' else f"Merci pour l'entretien {applicant_email}."
+    thank_you_message = get_thank_you_message(applicant_email)
+#f"Thank you for the interview {applicant_email}." if session['language'] == 'english' else f"Merci pour l'entretien {applicant_email}."
     if request.method == 'POST':
         user_input = request.form['answer']
         question_id = request.form['question_id']
@@ -224,6 +239,9 @@ def get_interview_parameters():
         'id': parameter.id,
         'language': parameter.language,
         'max_questions': parameter.max_questions,
+        'duration': parameter.duration,
+        'role': parameter.role,
+        'industry': parameter.industry,
         'interview_id': parameter.interview_id
     } for parameter in interview_parameters])
 

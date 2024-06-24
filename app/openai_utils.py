@@ -6,7 +6,15 @@ from openai import OpenAI
 openai.api_key = os.environ.get("OPENAI_API_KEY")
 client = OpenAI()
 
-def create_openai_thread(language):
+def get_initial_message(role, industry, applicant_email):
+    return f" You have to ask question first to {applicant_email} to start the interview for the {role} position in the {industry} industry. Start with a presentation sentence of the job to welcome the candidate. The name of the candidate is {applicant_email}. Be polite and introduce the reason of the interview and remember him that the interview is about a {role} position in the {industry} industry. Then, ask the first question."
+
+def get_thank_you_message(applicant_email):
+    return f"Thank you for the interview, {applicant_email}. We will keep you in touch as soon as possible."
+
+
+
+def create_openai_thread(language, role, industry, applicant_email):
     
     openai_api_key = current_app.config.get('OPENAI_API_KEY')
     if not openai_api_key:
@@ -16,9 +24,9 @@ def create_openai_thread(language):
 
 
     instructions = (
-        "You are a HR that wants to interview an applicant. Always finish your answer by a question to the applicant please."
+        f"You are a HR that wants to interview an applicant. Always finish your answer by a question to the applicant please. Ask questions in {language}. The applicant must answer in {language}"
         if language == 'english'
-        else "Vous êtes un responsable des ressources humaines qui souhaite interviewer un candidat. Terminez toujours votre réponse par une question au candidat s'il vous plaît."
+        else f"Vous êtes un responsable des ressources humaines qui souhaite interviewer un candidat. Terminez toujours votre réponse par une question au candidat s'il vous plaît. Posez les questions en {language}. Le candidat doit répondre en {language}"
     )
     
     # ASSISTANT CREATION 
@@ -29,20 +37,7 @@ def create_openai_thread(language):
         model="gpt-3.5-turbo",
     )
 
-
-    initial_message = (
-        "You have to ask question first to the user to start the interview for a job as CTO. "
-        "Start with a presentation sentence to welcome the candidate. The name of the candidate is Sidney. "
-        "Be polite and introduce the reason of the interview and remember him that the interview is about a "
-        "CTO position in an AI tech company. Then, ask the first question."
-        "When you ask the last question, please ensure to telle the candidate that the interview is nearly finished and that we arrive at the last question"
-        if language == 'english'
-        else "Vous devez d'abord poser une question à l'utilisateur pour commencer l'entretien pour un poste de CTO. "
-        "Commencez par une phrase de présentation pour accueillir le candidat. Le nom du candidat est Sidney. "
-        "Soyez poli et présentez la raison de l'entretien et rappelez-lui que l'entretien porte sur un poste de CTO "
-        "dans une entreprise de technologie de l'IA. Ensuite, posez la première question."
-        "Quand tu poses la dernière question, assure toi d'en informer le candidat."
-    )
+    initial_message = get_initial_message(role, industry, applicant_email)
     
 
     # THREAD CREATION
