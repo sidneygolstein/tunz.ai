@@ -29,8 +29,10 @@ def create_interview():
 @main.route('/set_parameters/<int:interview_id>', methods=['GET', 'POST'])
 def set_parameters(interview_id):
     if request.method == 'POST':
+        session.clear() 
         language = request.form['language']
         max_questions = int(request.form['max_questions'])
+        applicant_email = request.form['applicant_email']  # Get the applicant's email from the form
         interview_parameter = InterviewParameter(
             language=language,
             max_questions=max_questions,
@@ -39,20 +41,22 @@ def set_parameters(interview_id):
         db.session.add(interview_parameter)
         session['interview_parameter_id'] = interview_parameter.id
         session['interview_id'] = interview_id
+        session['applicant_email'] = applicant_email
         db.session.commit()
         interview_link = url_for('main.start_chat', interview_parameter_id=interview_parameter.id, interview_id=interview_id, _external=True)
 
         # Send email with the interview link
-        msg = Message('Your Interview Link', sender='sidney@tunz.ai', recipients=['golstein.sidney@gmail.com'])
+        msg = Message('Your Interview Link', sender='noreply@tunz.ai', recipients=[applicant_email])
         msg.body = f'Please use the following link to start the interview: {interview_link}'
         mail.send(msg)
 
-        return render_template('interview_link.html', interview_link=interview_link)
+        return render_template('interview_generated.html')
     return render_template('set_parameters.html', interview_id=interview_id)
 
 
 @main.route('/start/<int:interview_parameter_id>/<int:interview_id>', methods=['GET','POST'])
 def start_chat(interview_parameter_id, interview_id):
+    applicant_email = session.get('applicant_email', 'N/A')
     new_session = Session(interview_parameter_id=interview_parameter_id)
     db.session.add(new_session)
     db.session.commit()
@@ -74,12 +78,10 @@ def start_chat(interview_parameter_id, interview_id):
     db.session.add(question)
     db.session.commit()
 
-    return redirect(url_for('main.chat', session_id=new_session.id, interview_parameter_id=interview_parameter_id, interview_id=interview_id))
-
+    return redirect(url_for('main.chat', session_id=new_session.id, interview_parameter_id=interview_parameter_id, interview_id=interview_id, applicant_email = applicant_email))
 
 @main.route('/chat', methods=['GET', 'POST'])
 def chat():
-    thank_you_message = "Thank you for the interview Sidney." if session['language'] == 'english' else "Merci pour l'entretien Sidney."
 
     if 'interview_parameter_id' not in session or 'interview_id' not in session:
         return redirect(url_for('main.home'))
@@ -89,7 +91,8 @@ def chat():
     questions = Question.query.filter_by(session_id=current_session_id).all()
     answers = Answer.query.filter_by(session_id=current_session_id).all()
     max_questions = interview_parameter.max_questions
-
+    applicant_email = session.get('applicant_email', 'N/A')
+    thank_you_message = f"Thank you for the interview {applicant_email}." if session['language'] == 'english' else f"Merci pour l'entretien {applicant_email}."
     if request.method == 'POST':
         user_input = request.form['answer']
         question_id = request.form['question_id']
@@ -120,12 +123,12 @@ def chat():
 
         return redirect(url_for('main.chat'))
 
-    return render_template('chat.html', questions=questions, answers=answers, max_questions=max_questions, thank_you_message=thank_you_message)
+    return render_template('chat.html', questions=questions, answers=answers, max_questions=max_questions, thank_you_message=thank_you_message, applicant_email=applicant_email)
 
 
 
 
-@main.route('/result', methods=['GET'])
+@main.route('/applicant_result', methods=['GET'])
 def result():
     current_session_id = session.get('session_id')
     if not current_session_id:
@@ -133,7 +136,29 @@ def result():
 
     answers = Answer.query.filter_by(session_id=current_session_id).all()
     score = calculate_score(answers)  # Implement this function based on your grading logic
-    return render_template('result.html', score=score)
+
+    applicant_email = session.get('applicant_email', 'N/A')  # Get the applicant's email from the session
+
+    # Send email to HR
+    hr_email = "sidney@tunz.ai"  # Replace with HR email address from a form
+    hr_link = url_for('main.hr_result', session_id=current_session_id, _external=True)
+    msg = Message('Interview Finished',
+                  sender='noreply@tunz.ai',
+                  recipients=[hr_email])
+    msg.body = f'The interview of {applicant_email} has finished. Click the following link to view the result: {hr_link}'
+    mail.send(msg)
+
+    return render_template('applicant_result.html', score=score, applicant_email=applicant_email)
+
+@main.route('/hr_result/<int:session_id>', methods=['GET'])
+def hr_result(session_id):
+    applicant_email = session.get('applicant_email', 'N/A')
+    session_data = Session.query.get_or_404(session_id)
+    result = Result.query.filter_by(session_id=session_id).first()
+    score = result.score_result if result else "No score available"
+    return render_template('hr_result.html', score=score, session_data=session_data, applicant_email=applicant_email)
+
+
 
 @main.route('/restart', methods=['POST'])
 def restart():

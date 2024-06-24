@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Set Parameters</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='static/styles.css') }}">
 </head>
 <body>
     <div class="container">
@@ -22,7 +22,10 @@
                 <option value="7">7</option>
             </select>
             <br>
-            <button type="submit">Set Parameters</button>
+            <label for="applicant_email">Applicant's Email:</label>
+            <input type="email" name="applicant_email" id="applicant_email" required>
+            <br>
+            <button type="submit">Generate Interview Link</button>
         </form>
     </div>
 </body>

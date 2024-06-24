@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Interview Result for HR</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='static/styles.css') }}">
+</head>
+<body>
+    <div class="result-container">
+        <h2>Interview Result</h2>
+        <p>Applicant email address: {{ applicant_email }}</p>
+        <p>Score: {{ score }}</p>
+        <p>Session Details:</p>
+        <ul>
+            <li>Interview Parameter ID: {{ session_data.interview_parameter_id }}</li>
+            <li>Start Time: {{ session_data.start_time }}</li>
+            <!-- Add more session details as needed -->
+        </ul>
+    </div>
+</body>
+</html>
