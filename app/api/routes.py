@@ -6,7 +6,7 @@ from ..models import Question, Answer, Result, InterviewParameter, Session, Appl
 # API RETRIEVAL
 api = Blueprint('api', __name__)
 
-@api.route('/api/questions', methods=['GET'])
+@api.route('/questions', methods=['GET'])
 def get_questions():
     questions = Question.query.all()
     return jsonify([{
@@ -16,7 +16,7 @@ def get_questions():
         'session_id': question.session_id
     } for question in questions])
 
-@api.route('/api/answers', methods=['GET'])
+@api.route('/answers', methods=['GET'])
 def get_answers():
     answers = Answer.query.all()
     return jsonify([{
@@ -28,7 +28,7 @@ def get_answers():
     } for answer in answers])
 
 
-@api.route('/api/results', methods=['GET'])
+@api.route('/results', methods=['GET'])
 def get_scores():
     results = Result.query.all()
     return jsonify([{
@@ -39,7 +39,7 @@ def get_scores():
     } for result in results])
 
 
-@api.route('/api/interview_parameters', methods=['GET'])
+@api.route('/interview_parameters', methods=['GET'])
 def get_interview_parameters():
     interview_parameters = InterviewParameter.query.all()
     return jsonify([{
@@ -53,7 +53,7 @@ def get_interview_parameters():
     } for parameter in interview_parameters])
 
 
-@api.route('/api/sessions', methods=['GET'])
+@api.route('/sessions', methods=['GET'])
 def get_sessions():
     sessions = Session.query.all()
     return jsonify([{
@@ -83,7 +83,7 @@ def get_sessions():
     } for session in sessions])
 
 
-@api.route('/api/applicants', methods=['GET'])
+@api.route('/applicants', methods=['GET'])
 def get_applicants():
     applicants = Applicant.query.all()
     return jsonify([{
