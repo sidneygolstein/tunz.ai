@@ -12,7 +12,10 @@ WORKDIR /app
 COPY requirements.txt requirements.txt
 RUN python3 -m pip install --no-cache-dir --upgrade -r requirements.txt 
 COPY . .           
+ENV FLASK_ENV=development
+
 # COPY .env .env
+#CMD ["gunicorn", "--bind", "0.0.0.0:80", "run:create_app()"]  
 CMD ["flask", "run", "--host", "0.0.0.0"]     
 
 

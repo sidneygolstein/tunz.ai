@@ -21,8 +21,12 @@ def create_app():
     migrate.init_app(app, db)
     mail.init_app(app)
     with app.app_context():
-        from app import routes, models
-        from app.routes import main as main_blueprint
+        from app import models
+        from .main.routes import main as main_blueprint
+        from .auth.routes import auth as auth_blueprint
+        from .api.routes import api as api_blueprint
         app.register_blueprint(main_blueprint)          # we import the main blueprint and register it with the Flask application.
+        app.register_blueprint(auth_blueprint, url_prefix='/auth')
+        app.register_blueprint(api_blueprint, url_prefix='/api')
 
     return app

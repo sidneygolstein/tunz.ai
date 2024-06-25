@@ -1,7 +1,9 @@
+# Contains the routes related to the main functionality
+
 from flask import render_template, request, redirect, url_for, jsonify, session, current_app
-from . import db, mail
-from .models import Interview, InterviewParameter, Session, Question, Answer, Result, HR, Applicant, Company  
-from .openai_utils import create_openai_thread, get_openai_thread_response, get_thank_you_message
+from .. import db, mail
+from ..models import Interview, InterviewParameter, Session, Question, Answer, Result, HR, Applicant, Company  
+from ..openai_utils import create_openai_thread, get_openai_thread_response, get_thank_you_message
 from flask import Blueprint
 from datetime import datetime
 from flask_mail import Message
@@ -226,95 +228,4 @@ def calculate_score(answers):
     db.session.add(result)
     db.session.commit()
     return score_result
-
-
-
-# API RETRIEVAL
-
-@main.route('/api/questions', methods=['GET'])
-def get_questions():
-    questions = Question.query.all()
-    return jsonify([{
-        'id': question.id,
-        'content': question.content,
-        'timestamp': question.timestamp,
-        'session_id': question.session_id
-    } for question in questions])
-
-@main.route('/api/answers', methods=['GET'])
-def get_answers():
-    answers = Answer.query.all()
-    return jsonify([{
-        'id': answer.id,
-        'content': answer.content,
-        'question_id': answer.question_id,
-        'timestamp': answer.timestamp,
-        'session_id': answer.session_id
-    } for answer in answers])
-
-
-@main.route('/api/results', methods=['GET'])
-def get_scores():
-    results = Result.query.all()
-    return jsonify([{
-        'id': result.id,
-        'score_type': result.score_type,
-        'score_result': result.score_result,
-        'session_id': result.session_id
-    } for result in results])
-
-
-@main.route('/api/interview_parameters', methods=['GET'])
-def get_interview_parameters():
-    interview_parameters = InterviewParameter.query.all()
-    return jsonify([{
-        'id': parameter.id,
-        'language': parameter.language,
-        'max_questions': parameter.max_questions,
-        'duration': parameter.duration,
-        'role': parameter.role,
-        'industry': parameter.industry,
-        'interview_id': parameter.interview_id
-    } for parameter in interview_parameters])
-
-
-@main.route('/api/sessions', methods=['GET'])
-def get_sessions():
-    sessions = Session.query.all()
-    return jsonify([{
-        'id': session.id,
-        'start_time': session.start_time,
-        'interview_parameter_id' : session.interview_parameter_id,
-        'applicant_id' : session.applicant_id,
-        'questions' : [{
-            'id': question.id,
-            'content': question.content,
-            'timestamp': question.timestamp,
-            'session_id': question.session_id
-        } for question in session.questions],
-        'answers' : [{
-            'id': answer.id,
-            'content': answer.content,
-            'question_id': answer.question_id,
-            'timestamp': answer.timestamp,
-            'session_id': answer.session_id
-        } for answer in session.answers],
-        'results' : [{
-            'id': result.id,
-            'score_type': result.score_type,
-            'score_result': result.score_result,
-            'session_id': result.session_id
-        } for result in session.results]
-    } for session in sessions])
-
-
-@main.route('/api/applicants', methods=['GET'])
-def get_applicants():
-    applicants = Applicant.query.all()
-    return jsonify([{
-        'id': applicant.id,
-        'name': applicant.name,
-        'surname': applicant.surname,
-        'email_address': applicant.email_address,
-    } for applicant in applicants])
 
