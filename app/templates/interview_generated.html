@@ -1,14 +1,25 @@
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Confirmation page</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='static/styles.css') }}">
-</head>
-<body>
-    <div class="confirmation-container">
-        <h2>Successfully generated interview</h2>
-        <p>The interview link has been successfully generated and sent to the applicant's email address.</p>
+<!-- templates/interview_generated.html -->
+{% extends 'base.html' %}
+
+{% block title %}Interview Generated{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2>Interview Link Generated</h2>
+    <p>The interview link has been generated. Please copy the link below and send it to the applicant via email:</p>
+    <div class="interview-link">
+        <input type="text" value="{{ interview_link }}" readonly>
+        <button onclick="copyToClipboard()">Copy Link</button>
         <a href="{{ url_for('main.home') }}">Back to Home</a>
     </div>
-</body>
-</html>
+</div>
+
+<script>
+function copyToClipboard() {
+    var copyText = document.querySelector(".interview-link input");
+    copyText.select();
+    document.execCommand("copy");
+    alert("Interview link copied to clipboard");
+}
+</script>
+{% endblock %}

@@ -32,7 +32,6 @@ def set_parameters(interview_id):
         session.clear() 
         language = request.form['language']
         max_questions = int(request.form['max_questions'])
-        applicant_email = request.form['applicant_email']
         role = request.form['role']
         industry = request.form['industry']
         duration = int(request.form['duration'])
@@ -49,27 +48,57 @@ def set_parameters(interview_id):
         db.session.add(interview_parameter)
         session['interview_parameter_id'] = interview_parameter.id
         session['interview_id'] = interview_id
-        session['applicant_email'] = applicant_email
+        session['hr_email'] = 'sidney@tunz.ai'  # Replace with actual HR email when login functionalities
         db.session.commit()
-        interview_link = url_for('main.start_chat', interview_parameter_id=interview_parameter.id, interview_id=interview_id, _external=True)
+        interview_link = url_for('main.applicant_home', interview_parameter_id=interview_parameter.id, _external=True)
 
-        # Send email with the interview link
-        msg = Message('Your Interview Link', sender='noreply@tunz.ai', recipients=[applicant_email])
-        msg.body = f'Please use the following link to start the interview: {interview_link}'
-        mail.send(msg)
-
-        return render_template('interview_generated.html')
+        return render_template('interview_generated.html', interview_link = interview_link)
     return render_template('set_parameters.html', interview_id=interview_id)
+
+
+@main.route('/applicant_home/<int:interview_parameter_id>', methods=['GET', 'POST'])
+def applicant_home(interview_parameter_id):
+    interview_parameter = InterviewParameter.query.get_or_404(interview_parameter_id)
+    interview_id = interview_parameter.interview_id
+    duration = interview_parameter.duration
+
+    if request.method == 'POST':
+        name = request.form['name']
+        surname = request.form['surname']
+        email = request.form['email']
+
+        new_applicant = Applicant(name=name, surname=surname, email_address=email)
+        db.session.add(new_applicant)
+        db.session.commit()
+
+        session['applicant_id'] = new_applicant.id
+        session['applicant_email'] = email
+        session['applicant_name'] = name
+        session['applicant_surname'] = surname
+
+        return redirect(url_for('main.start_chat', interview_parameter_id=interview_parameter_id, interview_id = interview_id))
+
+    return render_template(
+        'applicant_home.html', 
+        interview_parameter_id=interview_parameter_id, 
+        role=interview_parameter.role, 
+        industry=interview_parameter.industry, 
+        hr_email=session.get('hr_email', 'HR'),
+        duration = duration
+        )
+
 
 
 @main.route('/start/<int:interview_parameter_id>/<int:interview_id>', methods=['GET','POST'])
 def start_chat(interview_parameter_id, interview_id):
-    applicant_email = session.get('applicant_email', 'N/A')
-    new_session = Session(interview_parameter_id=interview_parameter_id)
+    applicant_id = session.get('applicant_id')
+    new_session = Session(interview_parameter_id=interview_parameter_id, applicant_id = applicant_id)
     db.session.add(new_session)
     db.session.commit()
     session['session_id'] = new_session.id
 
+    # Retrieve applicant email
+    applicant_name = session.get('applicant_name')
 
     interview_parameter = InterviewParameter.query.get(interview_parameter_id)      # Retrieve interview parameters
     session['language'] = interview_parameter.language
@@ -79,7 +108,7 @@ def start_chat(interview_parameter_id, interview_id):
         interview_parameter.language,
         interview_parameter.role,
         interview_parameter.industry,
-        applicant_email
+        applicant_name
         )
     
     session['thread_id'] = thread_id
@@ -92,7 +121,7 @@ def start_chat(interview_parameter_id, interview_id):
     db.session.add(question)
     db.session.commit()
 
-    return redirect(url_for('main.chat', session_id=new_session.id, interview_parameter_id=interview_parameter_id, interview_id=interview_id, applicant_email = applicant_email))
+    return redirect(url_for('main.chat', session_id=new_session.id, interview_parameter_id=interview_parameter_id, interview_id=interview_id, applicant_name = applicant_name))
 
 @main.route('/chat', methods=['GET', 'POST'])
 def chat():
@@ -105,9 +134,9 @@ def chat():
     questions = Question.query.filter_by(session_id=current_session_id).all()
     answers = Answer.query.filter_by(session_id=current_session_id).all()
     max_questions = interview_parameter.max_questions
-    applicant_email = session.get('applicant_email', 'N/A')
-    thank_you_message = get_thank_you_message(applicant_email)
-#f"Thank you for the interview {applicant_email}." if session['language'] == 'english' else f"Merci pour l'entretien {applicant_email}."
+    applicant_name = session.get('applicant_name', 'N/A')
+    thank_you_message = get_thank_you_message(applicant_name)
+
     if request.method == 'POST':
         user_input = request.form['answer']
         question_id = request.form['question_id']
@@ -138,7 +167,7 @@ def chat():
 
         return redirect(url_for('main.chat'))
 
-    return render_template('chat.html', questions=questions, answers=answers, max_questions=max_questions, thank_you_message=thank_you_message, applicant_email=applicant_email)
+    return render_template('chat.html', questions=questions, answers=answers, max_questions=max_questions, thank_you_message=thank_you_message, applicant_name=applicant_name)
 
 
 
@@ -153,6 +182,9 @@ def result():
     score = calculate_score(answers)  # Implement this function based on your grading logic
 
     applicant_email = session.get('applicant_email', 'N/A')  # Get the applicant's email from the session
+    applicant_name = session.get('applicant_name', 'N/A')  # Get the applicant's name from the session
+    applicant_surname = session.get('applicant_surname', 'N/A')  # Get the applicant's name from the session
+
 
     # Send email to HR
     hr_email = "sidney@tunz.ai"  # Replace with HR email address from a form
@@ -163,7 +195,7 @@ def result():
     msg.body = f'The interview of {applicant_email} has finished. Click the following link to view the result: {hr_link}'
     mail.send(msg)
 
-    return render_template('applicant_result.html', score=score, applicant_email=applicant_email)
+    return render_template('applicant_result.html', score=score, applicant_email=applicant_email, applicant_name = applicant_name, applicant_surname = applicant_surname)
 
 @main.route('/hr_result/<int:session_id>', methods=['GET'])
 def hr_result(session_id):
@@ -253,6 +285,7 @@ def get_sessions():
         'id': session.id,
         'start_time': session.start_time,
         'interview_parameter_id' : session.interview_parameter_id,
+        'applicant_id' : session.applicant_id,
         'questions' : [{
             'id': question.id,
             'content': question.content,
@@ -273,3 +306,15 @@ def get_sessions():
             'session_id': result.session_id
         } for result in session.results]
     } for session in sessions])
+
+
+@main.route('/api/applicants', methods=['GET'])
+def get_applicants():
+    applicants = Applicant.query.all()
+    return jsonify([{
+        'id': applicant.id,
+        'name': applicant.name,
+        'surname': applicant.surname,
+        'email_address': applicant.email_address,
+    } for applicant in applicants])
+

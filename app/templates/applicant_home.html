@@ -1,0 +1,29 @@
+<!-- templates/applicant_home.html -->
+{% extends 'base.html' %}
+
+{% block title %}Applicant Home{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2>Welcome to the Interview</h2>
+    <p>This interview is for a {{ role }} position in the {{ industry }} industry, proposed by {{ hr_email }}.</p>
+    <p>This interview will last around {{ duration }} minute(s).</p>
+    <p>You will be able to receive a feedback at the end of the interview. Please remind that the final decision will be taken by {{ hr_email }}.</p>
+    <p>Before starting the interview, please provide the following informations:</p>
+    <form action="{{ url_for('main.applicant_home', interview_parameter_id=interview_parameter_id) }}" method="POST">
+        <div>
+            <label for="name">Your name:</label>
+            <input type="text" id="name" name="name" required>
+        </div>
+        <div>
+            <label for="surname">Your surname:</label>
+            <input type="text" id="surname" name="surname" required>
+        </div>
+        <div>
+            <label for="email">Your e-mail address:</label>
+            <input type="email" id="email" name="email" required>
+        </div>
+        <button type="submit">Start Interview</button>
+    </form>
+</div>
+{% endblock %}

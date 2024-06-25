@@ -6,27 +6,25 @@ from openai import OpenAI
 openai.api_key = os.environ.get("OPENAI_API_KEY")
 client = OpenAI()
 
-def get_initial_message(role, industry, applicant_email):
-    return f" You have to ask question first to {applicant_email} to start the interview for the {role} position in the {industry} industry. Start with a presentation sentence of the job to welcome the candidate. The name of the candidate is {applicant_email}. Be polite and introduce the reason of the interview and remember him that the interview is about a {role} position in the {industry} industry. Then, ask the first question."
+def get_initial_message(role, industry, applicant_name):
+    return f" You have to ask question first to {applicant_name} to start the interview for the {role} position in the {industry} industry. Start with a small presentation sentence of the job to welcome the candidate. The name of the candidate is {applicant_name}. Be polite and introduce the reason of the interview and remember him that the interview is about a {role} position in the {industry} industry. Then, ask the first question."
 
-def get_thank_you_message(applicant_email):
-    return f"Thank you for the interview, {applicant_email}. We will keep you in touch as soon as possible."
+def get_thank_you_message(applicant_name):
+    return f"Thank you for the interview, {applicant_name}. We will keep you in touch as soon as possible."
 
 
 
-def create_openai_thread(language, role, industry, applicant_email):
+def create_openai_thread(language, role, industry, applicant_name):
     
     openai_api_key = current_app.config.get('OPENAI_API_KEY')
     if not openai_api_key:
         raise ValueError("OPENAI_API_KEY is not set in the environment variables.")
     
     client.api_key = openai_api_key
-
-
     instructions = (
-        f"You are a HR that wants to interview an applicant. Always finish your answer by a question to the applicant please. Ask questions in {language}. The applicant must answer in {language}"
+        f"You are a HR that wants to interview an applicant. Always finish your answer by a question to the applicant please. Ask questions in {language}. The applicant must answer in {language}. Only ask one question per message. Also, the subsequent messages must take into account the conversation thread as a natural conversation. Ask for more details if the answer is not satisfying and the applicant must go more in details."
         if language == 'english'
-        else f"Vous êtes un responsable des ressources humaines qui souhaite interviewer un candidat. Terminez toujours votre réponse par une question au candidat s'il vous plaît. Posez les questions en {language}. Le candidat doit répondre en {language}"
+        else f"Vous êtes un responsable des ressources humaines qui souhaite interviewer un candidat. Terminez toujours votre réponse par une question au candidat s'il vous plaît. Posez les questions en {language}. Le candidat doit répondre en {language}. Ne pose qu'une question par message. Sugères plus de détails si tu considères que la réponse ne l'est pas assez. Les questions que tu poses doivent suivre le fil de la conversation."
     )
     
     # ASSISTANT CREATION 
@@ -37,8 +35,7 @@ def create_openai_thread(language, role, industry, applicant_email):
         model="gpt-3.5-turbo",
     )
 
-    initial_message = get_initial_message(role, industry, applicant_email)
-    
+    initial_message = get_initial_message(role, industry, applicant_name)
 
     # THREAD CREATION
     thread = client.beta.threads.create(

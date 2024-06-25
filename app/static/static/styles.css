@@ -115,3 +115,22 @@ body {
 .chat-input button[type="submit"]:hover {
     background-color: #0056b3;
 }
+
+
+.interview-link {
+    display: flex;
+    align-items: center;
+}
+
+.interview-link input {
+    flex: 1;
+    padding: 10px;
+    font-size: 14px;
+    margin-right: 10px;
+}
+
+.interview-link button {
+    padding: 10px;
+    font-size: 14px;
+    cursor: pointer;
+}
