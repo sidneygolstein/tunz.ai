@@ -10,13 +10,10 @@
     <p>Please fill out the survey below to see your interview feedback.</p>
     <form method="POST" action="{{ url_for('main.applicant_review', session_id=session_id) }}">
         {{ form.hidden_tag() }}
-        {% for question in form.questions %}
+        {% for idx in range(questions|length) %}
             <div>
-                <label>{{ question.text.data }}</label>  <!-- Display question text -->
-                {{ question.text(class_="form-control", type="hidden") }}
-                <div>
-                    {{ question.rating(class_="form-control") }}
-                </div>
+                <label>{{ questions[idx] }}</label><br>
+                {{ form.questions[idx].rating(class_="form-control") }}
             </div>
         {% endfor %}
         <div>

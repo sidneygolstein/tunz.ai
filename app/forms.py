@@ -3,7 +3,6 @@ from wtforms import Form, FieldList, FormField, RadioField, TextAreaField, Submi
 from wtforms.validators import DataRequired
 
 class RatingForm(Form):
-    text = StringField('Question', render_kw={'readonly': True})
     rating = RadioField('Rating', choices=[(str(i), str(i)) for i in range(1, 6)], validators=[DataRequired()])
 
 class ReviewForm(FlaskForm):

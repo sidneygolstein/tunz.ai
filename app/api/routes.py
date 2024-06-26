@@ -2,7 +2,7 @@
 
 from flask import Blueprint, jsonify
 from ..models import Question, Answer, Result, InterviewParameter, Session, Applicant, Review, ReviewQuestion
-
+from .. import db
 # API RETRIEVAL
 api = Blueprint('api', __name__)
 
@@ -106,7 +106,8 @@ def get_applicant_reviews():
             'comment': review.comment,
             'questions': []
         }
-        for question in review.questions:
+        review_questions = ReviewQuestion.query.filter_by(review_id=review.id).all()
+        for question in review_questions:
             question_data = {
                 'question_text': question.text,
                 'rating': question.rating
@@ -114,3 +115,15 @@ def get_applicant_reviews():
             review_data['questions'].append(question_data)
         all_reviews.append(review_data)
     return jsonify(all_reviews)
+
+
+@api.route('/mean_ratings_per_question', methods=['GET'])
+def get_mean_ratings_per_question():
+    from sqlalchemy import func
+    questions = ReviewQuestion.query.with_entities(ReviewQuestion.text).distinct().all()
+    question_ratings = {}
+    for question in questions:
+        avg_rating = db.session.query(func.avg(ReviewQuestion.rating)).filter(ReviewQuestion.text == question.text).scalar()
+        question_ratings[question.text] = avg_rating
+    return jsonify(question_ratings)
+

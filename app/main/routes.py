@@ -20,7 +20,7 @@ def create_or_load_session():
 
 @main.route('/')
 def home():
-    return render_template('hr/home.html')
+    return render_template('hr/hr_homepage.html')
 
 @main.route('/create_interview', methods=['POST'])
 def create_interview():
@@ -176,19 +176,14 @@ def chat():
 def applicant_review(session_id):
     form = ReviewForm()
     questions = [
-        "How was your interview going?",
-        "How was the difficulty level of the questions?",
-        "How would you rate the overall experience?",
-        "How helpful was the assistant?",
-        "How clear were the instructions?",
-        "How appropriate were the questions?",
-        "Would you recommend this interview process?"
+        "How was the user experience with the AI interface?",
+        "How fluid is the conversation?",
+        "How pertinent were the questions?",
     ]
 
     if not form.questions.entries:
         for question_text in questions:
             question_form = RatingForm()
-            question_form.text.data = question_text
             form.questions.append_entry(question_form)
 
     if form.validate_on_submit():
@@ -199,9 +194,9 @@ def applicant_review(session_id):
         db.session.add(review)
         db.session.commit()
 
-        for question_form in form.questions.entries:
+        for idx, question_form in zip(range(len(questions)), form.questions.entries):
             question = ReviewQuestion(
-                text=question_form.text.data,
+                text=questions[idx],
                 rating=int(question_form.rating.data),
                 review_id=review.id
             )
@@ -211,7 +206,9 @@ def applicant_review(session_id):
         flash('Thank you for your feedback!', 'success')
         return redirect(url_for('main.applicant_result'))
 
-    return render_template('applicant/applicant_review.html', form=form, session_id=session_id)
+    return render_template('applicant/applicant_review.html', form=form, session_id=session_id, questions=questions)
+
+
 
 @main.route('/applicant_result', methods=['GET'])
 def applicant_result():
