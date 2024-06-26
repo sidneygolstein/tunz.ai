@@ -9,6 +9,7 @@ class Interview(db.Model):
     description = db.Column(db.String, nullable=False, default = "")
     name = db.Column(db.String, nullable=False, default = "")
     rules = db.Column(db.String, nullable=False, default = "")                                      # E.g., maximum number of applicants = 200
+    status = db.Column(db.String, nullable=True, default = "live")
     hr_id = db.Column(db.Integer, db.ForeignKey('hr.id'), nullable=False, default = 1)
     interview_parameters = db.relationship('InterviewParameter', backref='interview', lazy=True)
 

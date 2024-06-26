@@ -61,8 +61,8 @@
                 <button type="submit">Send</button>
             </form>
             {% else %}
-            <form method="get" action="{{ url_for('main.result') }}">
-                <button type="submit">See Score</button>
+            <form method="get" action="{{ url_for('main.applicant_review', session_id=session['session_id']) }}">
+                <button type="submit">Finish Interview</button>
             </form>
             {% endif %}
         </div>

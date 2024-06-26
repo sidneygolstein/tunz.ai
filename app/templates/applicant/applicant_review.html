@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Applicant Review</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <h1>Review Your Interview</h1>
+    <p>Please fill out the survey below to see your interview feedback.</p>
+    <form method="POST" action="{{ url_for('main.applicant_review', session_id=session_id) }}">
+        {{ form.hidden_tag() }}
+        {% for question in form.questions %}
+            <div>
+                <label>{{ question.text.data }}</label>  <!-- Display question text -->
+                {{ question.text(class_="form-control", type="hidden") }}
+                <div>
+                    {{ question.rating(class_="form-control") }}
+                </div>
+            </div>
+        {% endfor %}
+        <div>
+            <label>{{ form.comment.label }}</label>
+            {{ form.comment(class_="form-control") }}
+        </div>
+        <div>
+            {{ form.submit(class_="btn btn-primary") }}
+        </div>
+    </form>
+</body>
+</html>

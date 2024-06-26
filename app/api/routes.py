@@ -1,7 +1,7 @@
 # Contains the routes related to API functionality.
 
 from flask import Blueprint, jsonify
-from ..models import Question, Answer, Result, InterviewParameter, Session, Applicant
+from ..models import Question, Answer, Result, InterviewParameter, Session, Applicant, Review, ReviewQuestion
 
 # API RETRIEVAL
 api = Blueprint('api', __name__)
@@ -93,3 +93,24 @@ def get_applicants():
         'email_address': applicant.email_address,
     } for applicant in applicants])
 
+
+
+@api.route('/applicant_reviews', methods=['GET'])
+def get_applicant_reviews():
+    reviews = Review.query.all()
+    all_reviews = []
+    for review in reviews:
+        review_data = {
+            'review_id': review.id,
+            'session_id': review.session_id,
+            'comment': review.comment,
+            'questions': []
+        }
+        for question in review.questions:
+            question_data = {
+                'question_text': question.text,
+                'rating': question.rating
+            }
+            review_data['questions'].append(question_data)
+        all_reviews.append(review_data)
+    return jsonify(all_reviews)

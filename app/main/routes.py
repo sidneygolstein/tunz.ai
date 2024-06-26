@@ -1,9 +1,10 @@
 # Contains the routes related to the main functionality
 
-from flask import render_template, request, redirect, url_for, jsonify, session, current_app
+from flask import render_template, request, redirect, url_for, jsonify, session, current_app, flash
 from .. import db, mail
-from ..models import Interview, InterviewParameter, Session, Question, Answer, Result, HR, Applicant, Company  
+from ..models import Interview, InterviewParameter, Session, Question, Answer, Result, HR, Applicant, Company, Review, ReviewQuestion 
 from ..openai_utils import create_openai_thread, get_openai_thread_response, get_thank_you_message
+from ..forms import ReviewForm, RatingForm
 from flask import Blueprint
 from datetime import datetime
 from flask_mail import Message
@@ -19,7 +20,7 @@ def create_or_load_session():
 
 @main.route('/')
 def home():
-    return render_template('home.html')
+    return render_template('hr/home.html')
 
 @main.route('/create_interview', methods=['POST'])
 def create_interview():
@@ -54,8 +55,8 @@ def set_parameters(interview_id):
         db.session.commit()
         interview_link = url_for('main.applicant_home', interview_parameter_id=interview_parameter.id, _external=True)
 
-        return render_template('interview_generated.html', interview_link = interview_link)
-    return render_template('set_parameters.html', interview_id=interview_id)
+        return render_template('hr/interview_generated.html', interview_link = interview_link)
+    return render_template('hr/create_interview.html', interview_id=interview_id)
 
 
 @main.route('/applicant_home/<int:interview_parameter_id>', methods=['GET', 'POST'])
@@ -81,7 +82,7 @@ def applicant_home(interview_parameter_id):
         return redirect(url_for('main.start_chat', interview_parameter_id=interview_parameter_id, interview_id = interview_id))
 
     return render_template(
-        'applicant_home.html', 
+        'applicant/applicant_home.html', 
         interview_parameter_id=interview_parameter_id, 
         role=interview_parameter.role, 
         industry=interview_parameter.industry, 
@@ -169,13 +170,51 @@ def chat():
 
         return redirect(url_for('main.chat'))
 
-    return render_template('chat.html', questions=questions, answers=answers, max_questions=max_questions, thank_you_message=thank_you_message, applicant_name=applicant_name)
+    return render_template('applicant/chat.html', questions=questions, answers=answers, max_questions=max_questions, thank_you_message=thank_you_message, applicant_name=applicant_name)
 
+@main.route('/applicant_review/<int:session_id>', methods=['GET', 'POST'])
+def applicant_review(session_id):
+    form = ReviewForm()
+    questions = [
+        "How was your interview going?",
+        "How was the difficulty level of the questions?",
+        "How would you rate the overall experience?",
+        "How helpful was the assistant?",
+        "How clear were the instructions?",
+        "How appropriate were the questions?",
+        "Would you recommend this interview process?"
+    ]
 
+    if not form.questions.entries:
+        for question_text in questions:
+            question_form = RatingForm()
+            question_form.text.data = question_text
+            form.questions.append_entry(question_form)
 
+    if form.validate_on_submit():
+        review = Review(
+            session_id=session_id,
+            comment=form.comment.data
+        )
+        db.session.add(review)
+        db.session.commit()
+
+        for question_form in form.questions.entries:
+            question = ReviewQuestion(
+                text=question_form.text.data,
+                rating=int(question_form.rating.data),
+                review_id=review.id
+            )
+            db.session.add(question)
+
+        db.session.commit()
+        flash('Thank you for your feedback!', 'success')
+        return redirect(url_for('main.applicant_result'))
+
+    return render_template('applicant/applicant_review.html', form=form, session_id=session_id)
 
 @main.route('/applicant_result', methods=['GET'])
-def result():
+def applicant_result():
     current_session_id = session.get('session_id')
     if not current_session_id:
         return redirect(url_for('main.home'))
@@ -187,7 +226,6 @@ def result():
     applicant_name = session.get('applicant_name', 'N/A')  # Get the applicant's name from the session
     applicant_surname = session.get('applicant_surname', 'N/A')  # Get the applicant's name from the session
 
-
     # Send email to HR
     hr_email = "sidney@tunz.ai"  # Replace with HR email address from a form
     hr_link = url_for('main.hr_result', session_id=current_session_id, _external=True)
@@ -197,7 +235,9 @@ def result():
     msg.body = f'The interview of {applicant_email} has finished. Click the following link to view the result: {hr_link}'
     mail.send(msg)
 
-    return render_template('applicant_result.html', score=score, applicant_email=applicant_email, applicant_name = applicant_name, applicant_surname = applicant_surname)
+    return render_template('applicant/applicant_result.html', score=score, applicant_email=applicant_email, applicant_name=applicant_name, applicant_surname=applicant_surname)
+
+
 
 @main.route('/hr_result/<int:session_id>', methods=['GET'])
 def hr_result(session_id):
@@ -205,7 +245,7 @@ def hr_result(session_id):
     session_data = Session.query.get_or_404(session_id)
     result = Result.query.filter_by(session_id=session_id).first()
     score = result.score_result if result else "No score available"
-    return render_template('hr_result.html', score=score, session_data=session_data, applicant_email=applicant_email)
+    return render_template('hr/hr_result.html', score=score, session_data=session_data, applicant_email=applicant_email)
 
 
 

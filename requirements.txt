@@ -18,3 +18,4 @@ flask-migrate           # For db migration. It's the connection between alembic 
 gunicorn                # To run Docker with better performance than the build in flask dev environment (use to deploy the app)
 psycopg2-binary
 Flask-Mail
+Flask-WTF

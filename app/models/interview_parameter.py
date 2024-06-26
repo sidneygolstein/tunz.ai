@@ -11,10 +11,11 @@ class InterviewParameter(db.Model):
     end_time = db.Column(db.DateTime, nullable=True)
     duration = db.Column(db.Integer, nullable=True)
     max_questions = db.Column(db.Integer, nullable=False)
-    role = db.Column(db.String, nullable=True)
-    role_description = db.Column(db.String, nullable=True)
-    industry = db.Column(db.String, nullable=True)
-    evaluation_criteria = db.Column(db.String, nullable=True)
+    role = db.Column(db.String, nullable=True)                                              # marketing, sales, ops
+    situation = db.Column(db.String, nullable=True)                                         # Allow to prompt/refine the Assistant questions (commercial strategy development, OKR process)
+    industry = db.Column(db.String, nullable=True)                                          # Web3/blockchain, fintech, HRTech, MedTech, EdTech...
+    position = db.Column(db.String, nullable=True)                                          # CTO, Head of Sales...
+    evaluation_criteria = db.Column(db.String, nullable=True)                               # Allow to prompt the scoring 
     interview_url = db.Column(db.String, nullable=True)
     interview_id = db.Column(db.Integer, db.ForeignKey('interview.id'), nullable=False)
     sessions = db.relationship('Session', backref='interview_parameter', lazy=True)

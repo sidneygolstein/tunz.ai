@@ -30,6 +30,6 @@ def create_app():
         app.register_blueprint(api_blueprint, url_prefix='/api')
 
         # Import models
-        from .models import answer, applicant, company, hr, interview_parameter, interview, question, result, session
+        from .models import answer, applicant, company, hr, interview_parameter, interview, question, result, session, review, review_question
 
     return app
