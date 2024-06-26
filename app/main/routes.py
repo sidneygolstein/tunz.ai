@@ -138,6 +138,9 @@ def chat():
     answers = Answer.query.filter_by(session_id=current_session_id).all()
     max_questions = interview_parameter.max_questions
     applicant_name = session.get('applicant_name', 'N/A')
+    applicant_email = session.get('applicant_email', 'N/A')  # Get the applicant's email from the session
+    applicant_surname = session.get('applicant_surname', 'N/A')  # Get the applicant's name from the session
+
     thank_you_message = get_thank_you_message(applicant_name)
 
     if request.method == 'POST':
@@ -159,6 +162,14 @@ def chat():
 
         if num_questions >= interview_parameter.max_questions:
             session['finished'] = True
+            # Send email to HR
+            hr_email = "sidney@tunz.ai"  # Replace with HR email address from a form
+            hr_link = url_for('main.hr_result', session_id=current_session_id, _external=True)
+            msg = Message('Interview Finished',
+                        sender='noreply@tunz.ai',
+                        recipients=[hr_email])
+            msg.body = f'The interview of {applicant_name} {applicant_surname} (email: {applicant_email}) has finished. Click the following link to view the result: {hr_link}'
+            mail.send(msg)
         else:
             # Get the assistant's next response
             assistant_response = get_openai_thread_response(thread_id, assistant_id, user_input)
@@ -223,6 +234,7 @@ def applicant_result():
     applicant_name = session.get('applicant_name', 'N/A')  # Get the applicant's name from the session
     applicant_surname = session.get('applicant_surname', 'N/A')  # Get the applicant's name from the session
 
+    """
     # Send email to HR
     hr_email = "sidney@tunz.ai"  # Replace with HR email address from a form
     hr_link = url_for('main.hr_result', session_id=current_session_id, _external=True)
@@ -230,7 +242,7 @@ def applicant_result():
                   sender='noreply@tunz.ai',
                   recipients=[hr_email])
     msg.body = f'The interview of {applicant_email} has finished. Click the following link to view the result: {hr_link}'
-    mail.send(msg)
+    mail.send(msg)"""
 
     return render_template('applicant/applicant_result.html', score=score, applicant_email=applicant_email, applicant_name=applicant_name, applicant_surname=applicant_surname)
 
