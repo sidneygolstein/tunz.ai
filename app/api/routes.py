@@ -1,7 +1,8 @@
 # Contains the routes related to API functionality.
 
 from flask import Blueprint, jsonify
-from ..models import Question, Answer, Result, InterviewParameter, Session, Applicant, Review, ReviewQuestion
+from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
+from ..models import Question, Answer, Result, InterviewParameter, Session, Applicant, Review, ReviewQuestion, HR
 from .. import db
 # API RETRIEVAL
 api = Blueprint('api', __name__)
@@ -126,4 +127,59 @@ def get_mean_ratings_per_question():
         avg_rating = db.session.query(func.avg(ReviewQuestion.rating)).filter(ReviewQuestion.text == question.text).scalar()
         question_ratings[question.text] = avg_rating
     return jsonify(question_ratings)
+
+
+
+@api.route('/hrs', methods=['GET'])
+#@jwt_required() # Ensure only authenticated user can acces them
+def get_all_hrs():
+    hrs = HR.query.all()
+    all_hr_data = []
+    for hr in hrs:
+        hr_data = {
+            'id': hr.id,
+            'name': hr.name,
+            'surname': hr.surname,
+            'email': hr.email,
+            'company_id': hr.company_id,
+            'confirmed': hr.confirmed,
+            'created_at': hr.created_at.strftime('%Y-%m-%d %H:%M:%S') if hr.created_at else None,
+            'updated_at': hr.updated_at.strftime('%Y-%m-%d %H:%M:%S') if hr.updated_at else None
+        }
+        all_hr_data.append(hr_data)
+    return jsonify(all_hr_data), 200
+
+
+@api.route('/hr/<int:id>', methods=['GET'])
+#@jwt_required() 
+def get_hr(id):
+    hr = HR.query.get_or_404(id)
+    hr_data = {
+        'id': hr.id,
+        'name': hr.name,
+        'surname': hr.surname,
+        'email': hr.email,
+        'company_id': hr.company_id,
+        'confirmed': hr.confirmed,
+        'created_at': hr.created_at.strftime('%Y-%m-%d %H:%M:%S') if hr.created_at else None,
+        'updated_at': hr.updated_at.strftime('%Y-%m-%d %H:%M:%S') if hr.updated_at else None
+    }
+    return jsonify(hr_data), 200
+
+
+@api.route('/hr/<int:id>', methods=['DELETE'])
+#@jwt_required()
+def delete_hr(id):
+    hr = HR.query.get_or_404(id)
+    db.session.delete(hr)
+    db.session.commit()
+    return jsonify({"msg": f"HR with id {id} has been deleted"}), 200
+
+
+@api.route('/hrs', methods=['DELETE'])
+#@jwt_required()
+def delete_all_hrs():
+    num_rows_deleted = db.session.query(HR).delete()
+    db.session.commit()
+    return jsonify({"msg": f"All HRs have been deleted, {num_rows_deleted} records deleted"}), 200
 

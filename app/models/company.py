@@ -7,8 +7,8 @@ from .. import db
 class Company(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, nullable=False)
-    contact_name = db.Column(db.String, nullable=False)
-    phone_number = db.Column(db.String, nullable=False)
+    contact_name = db.Column(db.String, nullable=True)
+    phone_number = db.Column(db.String, nullable=True)
     hr_managers = db.relationship('HR', backref='company', lazy=True)
 
     def __repr__(self):

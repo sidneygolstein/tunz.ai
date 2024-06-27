@@ -4,6 +4,7 @@ from flask import render_template, request, redirect, url_for, jsonify, session,
 from .. import db, mail
 from ..models import Interview, InterviewParameter, Session, Question, Answer, Result, HR, Applicant, Company, Review, ReviewQuestion 
 from ..openai_utils import create_openai_thread, get_openai_thread_response, get_thank_you_message
+from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
 from ..forms import ReviewForm, RatingForm
 from flask import Blueprint
 from datetime import datetime
@@ -18,9 +19,16 @@ def create_or_load_session():
         session['assistant_id'] = None
         session['language'] = None
 
-@main.route('/')
-def home():
-    return render_template('hr/hr_homepage.html')
+@main.route('/home')
+#@jwt_required()
+# routes/main.py
+@main.route('/home/<int:user_id>')
+def home(user_id):
+    user = HR.query.get(user_id)
+    if not user:
+        return redirect(url_for('auth.login'))
+
+    return render_template('hr/hr_homepage.html', hr_name=user.name, hr_surname=user.surname, company_name=user.company.name)
 
 @main.route('/create_interview', methods=['POST'])
 def create_interview():

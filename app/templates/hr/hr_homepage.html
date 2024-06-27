@@ -1,16 +1,21 @@
 <!DOCTYPE html>
+<!-- templates/hr/home.html -->
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Home</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='static/styles.css') }}">
+    <title>Tunz.ai</title>
 </head>
 <body>
-    <div class="container">
-        <h1>Home2</h1>
-        <form action="{{ url_for('main.create_interview') }}" method="POST">
-            <button type="submit">Create a new Interview</button>
-        </form>
-    </div>
+    <h1>Welcome back, {{ hr_name }} {{ hr_surname }}</h1>
+    <p>Company: {{ company_name }}</p>
+    <p>Welcome to your dashboard!</p>
+    <form action="{{ url_for('main.create_interview') }}" method="POST">
+        <button type="submit">Create a new Interview</button>
+    </form>
+    <form action="{{ url_for('auth.logout') }}" method="POST">
+        <button type="submit">Logout</button>
+    </form>
 </body>
 </html>
+

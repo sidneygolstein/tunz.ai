@@ -6,20 +6,27 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from config import Config
 from flask import Flask
+from flask_bcrypt import Bcrypt
+from flask_jwt_extended import JWTManager
 from flask_mail import Mail, Message
 
 
 db = SQLAlchemy()
+jwt = JWTManager()
 migrate = Migrate()
 mail = Mail()
-
+bcrypt = Bcrypt()
 
 def create_app():
     app = Flask(__name__)
     app.config.from_object(Config)
+
     db.init_app(app)
     migrate.init_app(app, db)
+    jwt.init_app(app)
+    bcrypt.init_app(app)
     mail.init_app(app)
+    
     with app.app_context():
         from app import models
         from .main.routes import main as main_blueprint
@@ -33,3 +40,4 @@ def create_app():
         from .models import answer, applicant, company, hr, interview_parameter, interview, question, result, session, review, review_question
 
     return app
+

@@ -1,0 +1,49 @@
+<!-- templates/auth/register.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Register</title>
+</head>
+<body>
+    <h1>Register</h1>
+    <form id="register-form">
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required>
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required>
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" required>
+        <label for="surname">Surname:</label>
+        <input type="text" id="surname" name="surname" required>
+        <label for="company_name">Company Name:</label>
+        <input type="text" id="company_name" name="company_name" required>
+        <button type="submit">Register</button>
+    </form>
+    <p>Already have an account? <a href="{{ url_for('auth.login') }}">Login</a></p>
+</body>
+<script>
+    document.getElementById('register-form').addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        const name = document.getElementById('name').value;
+        const surname = document.getElementById('surname').value;
+        const company_name = document.getElementById('company_name').value;
+        const response = await fetch('{{ url_for('auth.register') }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ email, password, name, surname, company_name })
+        });
+        const data = await response.json();
+        if (response.ok) {
+            alert('Registration successful');
+            window.location.href = '{{ url_for('auth.login') }}';
+        } else {
+            alert(data.msg);
+        }
+    });
+</script>
+</html>

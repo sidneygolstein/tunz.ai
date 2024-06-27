@@ -19,3 +19,6 @@ gunicorn                # To run Docker with better performance than the build i
 psycopg2-binary
 Flask-Mail
 Flask-WTF
+flask_bcrypt
+flask_login
+itsdangerous
