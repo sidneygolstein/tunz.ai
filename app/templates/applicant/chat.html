@@ -1,9 +1,14 @@
-
 {% extends 'base.html' %}
 
 {% block title %}Chat{% endblock %}
-
 {% block content %}
+
+<!-- Include the CSS file -->
+<link rel="stylesheet" href="{{ url_for('static', filename='static/styles.css') }}">
+
+<!-- Include the JavaScript file -->
+<script src="{{ url_for('static', filename='static/chat.js') }}"></script>
+
 <div class="chat-container">
     <div class="sidebar">
         <div class="search-bar">
@@ -72,6 +77,9 @@
             <h2>{{applicant_email}}</h2>
             <p>Live Interview</p>
         </div>
+        <div id="timer" data-duration="{{ duration }}" data-finish-url="{{ url_for('main.finish_chat', session_id=session_id) }}" data-finished="{{ 'true' if session.get('finished') else 'false' }}"></div>
     </div>
 </div>
+
+
 {% endblock %}

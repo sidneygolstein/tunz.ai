@@ -134,6 +134,10 @@ def chat():
 
     interview_parameter = InterviewParameter.query.get(session['interview_parameter_id'])
     current_session_id = session['session_id']
+
+    duration = interview_parameter.duration # Retrieve duration in minutes
+    remaining_time = session.get('remaining_time', duration * 60)  # Get remaining time from session, default to full duration
+
     questions = Question.query.filter_by(session_id=current_session_id).all()
     answers = Answer.query.filter_by(session_id=current_session_id).all()
     max_questions = interview_parameter.max_questions
@@ -157,10 +161,14 @@ def chat():
         db.session.add(answer)
         db.session.commit()
 
+        # Update remaining time in session
+        remaining_time = int(request.form['remaining_time'])
+        session['remaining_time'] = remaining_time
+
         # Check if the maximum number of questions has been reached
         num_questions = Question.query.filter_by(session_id=current_session_id).count()
 
-        if num_questions >= interview_parameter.max_questions:
+        if num_questions >= interview_parameter.max_questions or remaining_time <= 0:
             session['finished'] = True
             # Send email to HR
             hr_email = "sidney@tunz.ai"  # Replace with HR email address from a form
@@ -181,7 +189,34 @@ def chat():
 
         return redirect(url_for('main.chat'))
 
-    return render_template('applicant/chat.html', questions=questions, answers=answers, max_questions=max_questions, thank_you_message=thank_you_message, applicant_name=applicant_name)
+    return render_template('applicant/chat.html', questions=questions, answers=answers, max_questions=max_questions, thank_you_message=thank_you_message, applicant_name=applicant_name, duration=remaining_time, session_id=current_session_id)
+
+
+
+
+@main.route('/finish_interview/<int:session_id>', methods=['GET'])
+def finish_chat(session_id):
+    current_session = Session.query.get_or_404(session_id)
+    current_session.finished = True
+    db.session.commit()
+
+    # Send email to HR
+    hr_email = "sidney@tunz.ai"  # Replace with HR email address from a form
+    applicant_name = session.get('applicant_name', 'N/A')
+    applicant_email = session.get('applicant_email', 'N/A')  # Get the applicant's email from the session
+    applicant_surname = session.get('applicant_surname', 'N/A')  # Get the applicant's name from the session
+
+    hr_link = url_for('main.hr_result', session_id=session_id, _external=True)
+    msg = Message('Interview Finished',
+                  sender='noreply@tunz.ai',
+                  recipients=[hr_email])
+    msg.body = f'The interview of {applicant_name} {applicant_surname} (email: {applicant_email}) has finished. Click the following link to view the result: {hr_link}'
+    mail.send(msg)
+
+    return redirect(url_for('main.applicant_review', session_id=session_id))
+
+
+
 
 @main.route('/applicant_review/<int:session_id>', methods=['GET', 'POST'])
 def applicant_review(session_id):
@@ -234,16 +269,6 @@ def applicant_result():
     applicant_name = session.get('applicant_name', 'N/A')  # Get the applicant's name from the session
     applicant_surname = session.get('applicant_surname', 'N/A')  # Get the applicant's name from the session
 
-    """
-    # Send email to HR
-    hr_email = "sidney@tunz.ai"  # Replace with HR email address from a form
-    hr_link = url_for('main.hr_result', session_id=current_session_id, _external=True)
-    msg = Message('Interview Finished',
-                  sender='noreply@tunz.ai',
-                  recipients=[hr_email])
-    msg.body = f'The interview of {applicant_email} has finished. Click the following link to view the result: {hr_link}'
-    mail.send(msg)"""
-
     return render_template('applicant/applicant_result.html', score=score, applicant_email=applicant_email, applicant_name=applicant_name, applicant_surname=applicant_surname)
 
 
@@ -278,3 +303,10 @@ def calculate_score(answers):
     db.session.commit()
     return score_result
 
+
+def send_email(email_sender, email_receiver, message):
+    msg = Message('Interview Finished',
+                  sender=email_sender,
+                  recipients=[email_receiver])
+    msg.body = message
+    return mail.send(msg)
