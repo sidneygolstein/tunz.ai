@@ -2,6 +2,7 @@ from flask import Blueprint, request, jsonify, render_template, redirect, url_fo
 from app import db, bcrypt, mail
 from app.models.hr import HR
 from app.models.company import Company
+from app.models.admin import Admin
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
 from flask_mail import Message
 from itsdangerous import URLSafeTimedSerializer
@@ -89,38 +90,44 @@ def register():
         return jsonify({"msg": "Registration request sent to admin for confirmation. You will receive an email when your account will be confirmed"}), 200
     return render_template('auth/register.html')
 
-"""
-@auth.route('/confirm/<int:user_id>', methods=['GET'])
-def confirm_account(user_id):
-    hr_confirmed = HR.query.get_or_404(user_id)
-    hr_confirmed.confirmed = True
-    db.session.commit()
 
-    # Send email to HR confirming account activation
-    msg = Message('Account Confirmed',
-                  sender='noreply@tunz.ai',
-                  recipients=[hr_confirmed.email])
-    msg.body = f'Your account has been confirmed by the admin. You can now login using your credentials.'
-    mail.send(msg)
-    return redirect(url_for('auth.login'))  # Redirect to login page after confirmation
 
-@auth.route('/deny/<int:user_id>', methods=['GET'])
-def deny_account(user_id):
-    hr_denied = HR.query.get_or_404(user_id)
-    hr_denied.confirmed = False
-    user_id = hr_denied.id
-    if not user_id:
-        flash('The confirmation link is invalid or has expired.', 'danger')
-        return redirect(url_for('main.home'))
+## ADMIN AUTH ##
 
-    db.session.delete(hr_denied)
-    db.session.commit()
-    # Send email to HR denying account activation
-    msg = Message('Account Denied',
-                  sender='noreply@tunz.ai',
-                  recipients=[hr_denied.email])
-    msg.body = f'Your account has been denied by the admin. You cannot login. If you have any question, please contact: sidney@tunz.ai or sebastien@tunz.ai .'
-    mail.send(msg)
-    return redirect(url_for('auth.login'))  # Redirect to login page after confirmation
+@auth.route('/admin_register', methods=['GET', 'POST'])
+def admin_register():
+    if request.method == 'POST':
+        data = request.get_json()
+        email = data.get('email')
+        password = data.get('password')
+        name = data.get('name')
+        surname = data.get('surname')
 
-"""
+        if email != 'sidney@tunz.ai':
+            return jsonify({"msg": "Only the designated admin can register"}), 400
+
+        existing_admin = Admin.query.filter_by(email=email).first()
+        if existing_admin:
+            return jsonify({"msg": "Admin already exists"}), 400
+
+        admin = Admin(email=email, name=name, surname=surname)
+        admin.set_password(password)
+        db.session.add(admin)
+        db.session.commit()
+
+        return jsonify({"msg": "Admin registration successful"}), 200
+    return render_template('auth/admin_register.html')
+
+
+@auth.route('/admin_login', methods=['GET', 'POST'])
+def admin_login():
+    if request.method == 'POST':
+        data = request.get_json()
+        email = data.get('email')
+        password = data.get('password')
+        admin = Admin.query.filter_by(email=email).first()
+
+        if admin and admin.check_password(password):
+            return jsonify({"msg": "Admin login successful", "admin_id": admin.id}), 200
+        return jsonify({"msg": "Invalid credentials"}), 401
+    return render_template('auth/admin_login.html')

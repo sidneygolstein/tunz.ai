@@ -4,10 +4,14 @@ from app.models.hr import HR
 from app.models.company import Company
 from app.models.interview import Interview
 from flask_mail import Message
+from app.decorators import admin_required
+
 
 admin = Blueprint('admin', __name__)
 
+
 @admin.route('/confirm/<int:user_id>', methods=['GET', 'POST'])
+@admin_required
 def confirm_account(user_id):
     user = HR.query.get(user_id)
     if not user_id:
@@ -21,6 +25,7 @@ def confirm_account(user_id):
     return render_template('admin/admin_account_confirmation.html', email=user.email, name=user.name, surname=user.surname, company_name=user.company.name, user_id=user.id)
 
 @admin.route('/accept/<int:user_id>', methods=['POST'])
+@admin_required
 def accept_account(user_id):
     user = HR.query.get_or_404(user_id)
     user.confirmed = True
@@ -35,6 +40,7 @@ def accept_account(user_id):
     return redirect(url_for('admin.home'))
 
 @admin.route('/deny/<int:user_id>', methods=['POST'])
+@admin_required
 def deny_account(user_id):
     user = HR.query.get_or_404(user_id)
     # Send email to HR denying account activation
@@ -51,5 +57,6 @@ def deny_account(user_id):
     return redirect(url_for('admin.home'))
 
 @admin.route('/home', methods=['GET'])
+@admin_required
 def home():
     return render_template('admin/admin_homepage.html')
