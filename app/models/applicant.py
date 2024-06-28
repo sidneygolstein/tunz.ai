@@ -8,7 +8,7 @@ class Applicant(db.Model):
     name = db.Column(db.String, nullable=False)
     surname = db.Column(db.String, nullable=False)
     email_address = db.Column(db.String, nullable=False)
-    sessions = db.relationship('Session', backref='applicant', lazy=True)
+    sessions = db.relationship('Session', backref='applicant',  cascade="all, delete-orphan")
 
     def __repr__(self):
         return f'<Applicant {self.id}>'

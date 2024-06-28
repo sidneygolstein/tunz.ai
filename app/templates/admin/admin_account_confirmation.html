@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Account Confirmation</title>
+</head>
+<body>
+    <h1>Account Confirmation</h1>
+    <p>Email: {{ email }}</p>
+    <p>Name: {{ name }} {{ surname }}</p>
+    <p>Company: {{ company_name }}</p>
+    <form action="{{ url_for('admin.accept_account', user_id=user_id) }}" method="POST">
+        <button type="submit">Accept Account</button>
+    </form>
+    <form action="{{ url_for('admin.deny_account', user_id=user_id) }}" method="POST">
+        <button type="submit">Deny Account</button>
+    </form>
+</body>
+</html>

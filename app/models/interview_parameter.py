@@ -18,7 +18,7 @@ class InterviewParameter(db.Model):
     evaluation_criteria = db.Column(db.String, nullable=True)                               # Allow to prompt the scoring 
     interview_url = db.Column(db.String, nullable=True)
     interview_id = db.Column(db.Integer, db.ForeignKey('interview.id'), nullable=False)
-    sessions = db.relationship('Session', backref='interview_parameter', lazy=True)
+    sessions = db.relationship('Session', backref='interview_parameter',  cascade="all, delete-orphan")
 
     def __repr__(self):
         return f'<Interview Parameter {self.id}>'

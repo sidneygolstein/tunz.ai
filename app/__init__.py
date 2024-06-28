@@ -26,15 +26,18 @@ def create_app():
     jwt.init_app(app)
     bcrypt.init_app(app)
     mail.init_app(app)
-    
+
     with app.app_context():
         from app import models
         from .main.routes import main as main_blueprint
         from .auth.routes import auth as auth_blueprint
         from .api.routes import api as api_blueprint
+        from app.admin.routes import admin
         app.register_blueprint(main_blueprint)          # we import the main blueprint and register it with the Flask application.
         app.register_blueprint(auth_blueprint, url_prefix='/auth')
         app.register_blueprint(api_blueprint, url_prefix='/api')
+        app.register_blueprint(admin, url_prefix='/admin')
+
 
         # Import models
         from .models import answer, applicant, company, hr, interview_parameter, interview, question, result, session, review, review_question

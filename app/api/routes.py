@@ -2,10 +2,64 @@
 
 from flask import Blueprint, jsonify
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
-from ..models import Question, Answer, Result, InterviewParameter, Session, Applicant, Review, ReviewQuestion, HR
+from ..models import Question, Answer, Result, InterviewParameter, Session, Applicant, Review, ReviewQuestion, HR, Interview, Company
 from .. import db
 # API RETRIEVAL
 api = Blueprint('api', __name__)
+
+
+@api.route('/delete_interviews', methods=['DELETE'])
+def delete_all_interviews():
+    try:
+        # Query all interviews
+        interviews = Interview.query.all()
+        
+        # Delete each interview and cascade delete associated data
+        for interview in interviews:
+            db.session.delete(interview)
+        
+        db.session.commit()
+        return jsonify({"msg": "All interviews and associated data have been deleted successfully"}), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"msg": "An error occurred while deleting interviews", "error": str(e)}), 500
+
+
+@api.route('/interviews', methods=['GET'])
+def get_all_interviews():
+    try:
+        # Query all interviews
+        interviews = Interview.query.all()
+        
+        all_interviews = []
+        for interview in interviews:
+            interview_data = {
+                'id': interview.id,
+                'hr_id': interview.hr_id,
+                'status': interview.status,
+                'rules' : interview.rules,
+                'interview_parameters': [],
+            }
+
+            # Get interview parameters
+            for param in interview.interview_parameters:
+                param_data = {
+                    'id': param.id,
+                    'language': param.language,
+                    'max_questions': param.max_questions,
+                    'duration': param.duration,
+                    'role': param.role,
+                    'industry': param.industry,
+                    # Add other fields from interview parameters if needed
+                }
+                interview_data['interview_parameters'].append(param_data)
+            all_interviews.append(interview_data)
+        
+        return jsonify(all_interviews), 200
+    except Exception as e:
+        return jsonify({"msg": "An error occurred while fetching interviews", "error": str(e)}), 500
+    
+
 
 @api.route('/questions', methods=['GET'])
 def get_questions():
@@ -16,6 +70,20 @@ def get_questions():
         'timestamp': question.timestamp,
         'session_id': question.session_id
     } for question in questions])
+
+
+@api.route('/delete_questions', methods=['DELETE'])
+def delete_questions():
+    try:
+        questions = Question.query.all()
+        for question in questions:
+            db.session.delete(question)
+        db.session.commit()
+        return jsonify({"msg": "All questions have been deleted successfully"}), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"msg": "An error occurred while deleting questions", "error": str(e)}), 500
+
 
 @api.route('/answers', methods=['GET'])
 def get_answers():
@@ -29,6 +97,21 @@ def get_answers():
     } for answer in answers])
 
 
+@api.route('/delete_answers', methods=['DELETE'])
+def delete_all_answers():
+    try:
+        answers = Answer.query.all()
+        for answer in answers:
+            db.session.delete(answer)
+        db.session.commit()
+        return jsonify({"msg": "All answers have been deleted successfully"}), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"msg": "An error occurred while deleting answers", "error": str(e)}), 500
+
+
+
+
 @api.route('/results', methods=['GET'])
 def get_scores():
     results = Result.query.all()
@@ -38,6 +121,20 @@ def get_scores():
         'score_result': result.score_result,
         'session_id': result.session_id
     } for result in results])
+
+
+@api.route('/delete_results', methods=['DELETE'])
+def delete_scores():
+    try:
+        scores = Result.query.all()
+        for score in scores:
+            db.session.delete(score)
+        db.session.commit()
+        return jsonify({"msg": "All scores have been deleted successfully"}), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"msg": "An error occurred while deleting scores", "error": str(e)}), 500
+
 
 
 @api.route('/interview_parameters', methods=['GET'])
@@ -84,6 +181,20 @@ def get_sessions():
     } for session in sessions])
 
 
+@api.route('/delete_sessions', methods=['DELETE'])
+def delete_sessions():
+    try:
+        sessions = Session.query.all()
+        for session in sessions:
+            db.session.delete(session)
+        db.session.commit()
+        return jsonify({"msg": "All sessions have been deleted successfully"}), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"msg": "An error occurred while deleting sessions", "error": str(e)}), 500
+
+
+
 @api.route('/applicants', methods=['GET'])
 def get_applicants():
     applicants = Applicant.query.all()
@@ -93,6 +204,19 @@ def get_applicants():
         'surname': applicant.surname,
         'email_address': applicant.email_address,
     } for applicant in applicants])
+
+
+@api.route('/delete_applicants', methods=['DELETE'])
+def delete_all_applicants():
+    try:
+        applicants = Applicant.query.all()
+        for applicant in applicants:
+            db.session.delete(applicant)
+        db.session.commit()
+        return jsonify({"msg": "All applicants have been deleted successfully"}), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"msg": "An error occurred while deleting applicants", "error": str(e)}), 500
 
 
 
@@ -116,6 +240,19 @@ def get_applicant_reviews():
             review_data['questions'].append(question_data)
         all_reviews.append(review_data)
     return jsonify(all_reviews)
+
+
+@api.route('/delete_applicant_reviews', methods=['DELETE'])
+def delete_applicant_reviews():
+    try:
+        reviews = Review.query.all()
+        for review in reviews:
+            db.session.delete(review)
+        db.session.commit()
+        return jsonify({"msg": "All reviews have been deleted successfully"}), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"msg": "An error occurred while deleting reviews", "error": str(e)}), 500
 
 
 @api.route('/mean_ratings_per_question', methods=['GET'])
@@ -183,3 +320,43 @@ def delete_all_hrs():
     db.session.commit()
     return jsonify({"msg": f"All HRs have been deleted, {num_rows_deleted} records deleted"}), 200
 
+
+
+@api.route('/companies', methods=['GET'])
+def get_companies():
+    try:
+        companies = Company.query.all()
+        all_companies = []
+        for company in companies:
+            company_data = {
+                'id': company.id,
+                'name': company.name,
+                'hrs': []
+            }
+            for hr in company.hr_managers:
+                hr_data = {
+                    'id': hr.id,
+                    'email': hr.email,
+                    'name': hr.name,
+                    'surname': hr.surname,
+                }
+                company_data['hrs'].append(hr_data)
+            all_companies.append(company_data)
+        return jsonify(all_companies), 200
+    except Exception as e:
+        return jsonify({"msg": "An error occurred while fetching companies", "error": str(e)}), 500
+
+
+
+
+@api.route('/delete_companies', methods=['DELETE'])
+def delete_companies():
+    try:
+        companies = Company.query.all()
+        for company in companies:
+            db.session.delete(company)
+        db.session.commit()
+        return jsonify({"msg": "All companies have been deleted successfully"}), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"msg": "An error occurred while deleting companies", "error": str(e)}), 500

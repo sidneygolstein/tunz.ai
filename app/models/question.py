@@ -8,7 +8,7 @@ class Question(db.Model):
     content = db.Column(db.String, nullable=True)
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
     session_id = db.Column(db.Integer, db.ForeignKey('session.id'), nullable=False)
-    answer = db.relationship('Answer', uselist=False, backref='question')
+    answer = db.relationship('Answer', uselist=False, backref='question',  cascade="all, delete-orphan")
 
     def __repr__(self):
         return f'<Question {self.id}>'

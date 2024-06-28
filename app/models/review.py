@@ -9,4 +9,4 @@ class Review(db.Model):
     session_id = db.Column(db.Integer, db.ForeignKey('session.id'), nullable=False)
     comment = db.Column(db.Text, nullable=True)
     
-    questions = db.relationship('ReviewQuestion', backref='review', lazy=True)
+    questions = db.relationship('ReviewQuestion', backref='review', cascade="all, delete-orphan")

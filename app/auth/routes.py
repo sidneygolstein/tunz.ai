@@ -75,20 +75,21 @@ def register():
 
         # Generate confirmation link
         token = generate_confirmation_token(hr.id)
-        confirm_url = url_for('auth.confirm_account', user_id=hr.id, _external=True)
-        deny_url = url_for('auth.deny_account', user_id=hr.id, _external=True)
+        confirm_url = url_for('admin.confirm_account', user_id=hr.id, _external=True)
+        #deny_url = url_for('auth.deny_account', user_id=hr.id, _external=True)
         
         # Send confirmation email to admin
         admin_email = 'sidney@tunz.ai'  # Admin email
         msg = Message('New Account Registration',
                       sender='noreply@tunz.ai',
                       recipients=[admin_email])
-        msg.body = f'New account registration request:\n\nEmail: {email}\nName: {name}\nSurname: {surname}\nCompany: {company_name}\n\nPlease confirm the account by visiting the following link: {confirm_url}, or deny the account by visiting the following link: {deny_url}'
+        msg.body = f'New account registration request:\n\nEmail: {email}\nName: {name}\nSurname: {surname}\nCompany: {company_name}\n\nPlease confirm the account by visiting the following link: {confirm_url}'
         mail.send(msg)
 
         return jsonify({"msg": "Registration request sent to admin for confirmation. You will receive an email when your account will be confirmed"}), 200
     return render_template('auth/register.html')
 
+"""
 @auth.route('/confirm/<int:user_id>', methods=['GET'])
 def confirm_account(user_id):
     hr_confirmed = HR.query.get_or_404(user_id)
@@ -122,3 +123,4 @@ def deny_account(user_id):
     mail.send(msg)
     return redirect(url_for('auth.login'))  # Redirect to login page after confirmation
 
+"""

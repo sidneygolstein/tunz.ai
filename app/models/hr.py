@@ -18,7 +18,7 @@ class HR(db.Model):
     email = db.Column(db.String, nullable=False)
     password_hash = db.Column(db.String(128), nullable=False)
     confirmed = db.Column(db.Boolean, default=False)
-    interviews = db.relationship('Interview', backref='hr_manager', lazy=True)
+    interviews = db.relationship('Interview', backref='hr_manager', cascade="all, delete-orphan")
     admin = db.Column(db.Boolean, default=False)
 
     def __repr__(self):
