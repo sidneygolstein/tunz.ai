@@ -1,13 +1,29 @@
-from flask import Blueprint, request, render_template, redirect, url_for, flash, current_app
+from flask import Blueprint, request, render_template, redirect, url_for, flash, current_app, session
 from app import db, mail
 from app.models.hr import HR
 from app.models.company import Company
 from app.models.interview import Interview
+from app.models.admin import Admin
 from flask_mail import Message
 from app.decorators import admin_required
 
-
 admin = Blueprint('admin', __name__)
+
+@admin.route('/home', methods=['GET'])
+#@admin_required
+def home():
+    admin_id = session.get('admin_id')
+    if not admin_id:
+        flash('Please log in to access the admin dashboard.', 'danger')
+        return redirect(url_for('auth.admin_login'))
+
+    admin = Admin.query.get(admin_id)
+    if not admin:
+        flash('Admin not found.', 'danger')
+        return redirect(url_for('auth.admin_login'))
+    hrs = HR.query.all()
+    return render_template('admin/admin_homepage.html', admin=admin, hrs=hrs)
+
 
 
 @admin.route('/confirm/<int:user_id>', methods=['GET', 'POST'])
@@ -56,7 +72,18 @@ def deny_account(user_id):
     
     return redirect(url_for('admin.home'))
 
-@admin.route('/home', methods=['GET'])
-@admin_required
-def home():
-    return render_template('admin/admin_homepage.html')
+@admin.route('/logout', methods=['POST'])
+def logout():
+    session.pop('admin_id', None)
+    flash('You have been logged out.', 'success')
+    return redirect(url_for('auth.admin_login'))
+
+
+
+@admin.route('/delete_hr/<int:hr_id>', methods=['POST'])
+def delete_hr(hr_id):
+    hr = HR.query.get_or_404(hr_id)
+    db.session.delete(hr)
+    db.session.commit()
+    flash('HR deleted successfully.', 'success')
+    return redirect(url_for('admin.home'))

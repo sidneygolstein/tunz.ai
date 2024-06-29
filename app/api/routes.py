@@ -2,7 +2,7 @@
 
 from flask import Blueprint, jsonify
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
-from ..models import Question, Answer, Result, InterviewParameter, Session, Applicant, Review, ReviewQuestion, HR, Interview, Company
+from ..models import Question, Answer, Result, InterviewParameter, Session, Applicant, Review, ReviewQuestion, HR, Interview, Company, Admin
 from .. import db
 # API RETRIEVAL
 api = Blueprint('api', __name__)
@@ -360,3 +360,19 @@ def delete_companies():
     except Exception as e:
         db.session.rollback()
         return jsonify({"msg": "An error occurred while deleting companies", "error": str(e)}), 500
+    
+
+    #### ADMIN ####
+@api.route('/admin/<int:admin_id>', methods=['GET'])
+def get_admin(admin_id):
+    admin = Admin.query.get(admin_id)
+    if not admin:
+        return jsonify({"msg": "Admin not found"}), 404
+    
+    admin_data = {
+        "id": admin.id,
+        "email": admin.email,
+        "name": admin.name,
+        "surname": admin.surname,
+    }
+    return jsonify(admin_data), 200

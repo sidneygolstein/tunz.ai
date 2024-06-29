@@ -13,26 +13,7 @@
         <input type="password" id="password" name="password" required>
         <button type="submit">Login</button>
     </form>
+    <p>Don't have an account? <a href="{{ url_for('auth.admin_register') }}">Register</a></p>
+    <script src="{{ url_for('static', filename='static/js/admin_login.js') }}"></script>
 </body>
-<script>
-    document.getElementById('admin-login-form').addEventListener('submit', async (event) => {
-        event.preventDefault();
-        const email = document.getElementById('email').value;
-        const password = document.getElementById('password').value;
-        const response = await fetch('{{ url_for('auth.admin_login') }}', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ email, password })
-        });
-        const data = await response.json();
-        if (response.ok) {
-            alert('Admin login successful');
-            window.location.href = '{{ url_for('admin.home') }}?admin_id=' + data.admin_id;
-        } else {
-            alert(data.msg);
-        }
-    });
-</script>
 </html>

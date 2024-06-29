@@ -2,10 +2,45 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Admin Homepage</title>
+    <title>Admin Dashboard</title>
 </head>
 <body>
-    <h1>Welcome Admin</h1>
-    <p>This is your dashboard.</p>
+    <h1>Welcome, {{ admin.name }} {{ admin.surname }}</h1>
+    <h2>Admin Dashboard</h2>
+    <button id="logout">Logout</button>
+    <h3>All Registered HRs</h3>
+    <table border="1">
+        <tr>
+            <th>Name</th>
+            <th>Surname</th>
+            <th>Email</th>
+            <th>Company</th>
+            <th>Confirmed</th>
+            <th>Action</th>
+        </tr>
+        {% for hr in hrs %}
+        <tr>
+            <td>{{ hr.name }}</td>
+            <td>{{ hr.surname }}</td>
+            <td>{{ hr.email }}</td>
+            <td>{{ hr.company.name }}</td>
+            <td>{{ hr.confirmed }}</td>
+            <td>
+                <form action="{{ url_for('admin.delete_hr', hr_id=hr.id) }}" method="post">
+                    <button type="submit">Delete</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
 </body>
+<script>
+    document.getElementById('logout').addEventListener('click', function() {
+        fetch('/auth/logout', {
+            method: 'POST'
+        }).then(() => {
+            window.location.href = '/auth/admin_login';
+        });
+    });
+</script>
 </html>

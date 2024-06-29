@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify, render_template, redirect, url_for, flash, current_app
+from flask import Blueprint, request, jsonify, render_template, redirect, url_for, flash, current_app, session
 from app import db, bcrypt, mail
 from app.models.hr import HR
 from app.models.company import Company
@@ -128,6 +128,7 @@ def admin_login():
         admin = Admin.query.filter_by(email=email).first()
 
         if admin and admin.check_password(password):
-            return jsonify({"msg": "Admin login successful", "admin_id": admin.id}), 200
+            session['admin_id'] = admin.id  # Store admin_id in session
+            return jsonify({"msg": "Login successful", "admin_id": admin.id}), 200
         return jsonify({"msg": "Invalid credentials"}), 401
     return render_template('auth/admin_login.html')
