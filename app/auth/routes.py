@@ -27,18 +27,19 @@ def confirm_token(token, expiration=3600):
 @auth.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        data = request.get_json()
-        email = data.get('email')
-        password = data.get('password')
-        user = HR.query.filter_by(email=email).first()
+        email = request.form['email']
+        password = request.form['password']
+        hr = HR.query.filter_by(email=email).first()
 
-        if user and user.check_password(password):
-            if user.confirmed:
-                return jsonify({"msg": "Login successful", "user_id": user.id}), 200
+        if hr and hr.check_password(password):
+            if hr.confirmed:
+                return redirect(url_for('main.home', hr_id=hr.id))
             else:
-                return jsonify({"msg": "Account not confirmed by admin"}), 400
-        return jsonify({"msg": "Invalid credentials"}), 401
+                return render_template('auth/login.html', error="Account not confirmed by admin")
+        return render_template('auth/login.html', error="Invalid credentials")
     return render_template('auth/login.html')
+
+
 
 # To be enhanced with jwt
 @auth.route('/logout', methods=['POST'])
@@ -82,13 +83,14 @@ def register():
         if not admin_id:
             return jsonify({"msg": "Admin must be logged in to register a new HR"}), 403
         confirm_url = url_for('admin.confirm_account', user_id=hr.id, admin_id=admin_id, _external=True)
+        dashboard_url = url_for('admin.home', admin_id=admin_id, _external=True)
         
         
         # Send confirmation email to admin        
         msg = Message('New Account Registration',
                       sender='noreply@tunz.ai',
                       recipients=[admin_email])
-        msg.body = f'New account registration request:\n\nEmail: {email}\nName: {name}\nSurname: {surname}\nCompany: {company_name}\n\nPlease confirm the account by visiting the following link: {confirm_url}'
+        msg.body = f'New account registration request:\n\nEmail: {email}\nName: {name}\nSurname: {surname}\nCompany: {company_name}\n\nPlease review the account by visiting the following link: {dashboard_url}'
         mail.send(msg)
 
         return jsonify({"msg": "Registration request sent to admin for confirmation. You will receive an email when your account will be confirmed"}), 200

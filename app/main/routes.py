@@ -19,26 +19,46 @@ def create_or_load_session():
         session['assistant_id'] = None
         session['language'] = None
 
-@main.route('/home')
 #@jwt_required()
 # routes/main.py
-@main.route('/home/<int:user_id>')
-def home(user_id):
-    user = HR.query.get(user_id)
-    if not user:
+@main.route('/home/<int:hr_id>')
+def home(hr_id):
+    hr = HR.query.get(hr_id)
+    if not hr:
         return redirect(url_for('auth.login'))
+    
+    interviews = Interview.query.filter_by(hr_id=hr_id).all()
+    interview_data = []
+    for interview in interviews:
+        interview_parameters = InterviewParameter.query.filter_by(interview_id=interview.id).first()
+        sessions_count = Session.query.filter_by(interview_parameter_id=interview_parameters.id).count()
+        interview_link = url_for('main.applicant_home', interview_parameter_id=interview_parameters.id, _external=True)
+        interview_data.append({
+            'created_at': interview.created_at.strftime("%d.%m.%Y"),  # Format the date
+            'industry': interview_parameters.industry,
+            'role': interview_parameters.role,
+            'language': interview_parameters.language,
+            'duration': interview_parameters.duration,
+            'max_questions': interview_parameters.max_questions,
+            'sessions_count': sessions_count,
+            'interview_link': interview_link
+        })
 
-    return render_template('hr/hr_homepage.html', hr_name=user.name, hr_surname=user.surname, company_name=user.company.name)
+    return render_template('hr/hr_homepage.html', hr_name=hr.name, hr_surname=hr.surname, company_name=hr.company.name, hr_id=hr.id, interview_data=interview_data)
 
-@main.route('/create_interview', methods=['POST'])
-def create_interview():
-    new_interview = Interview()
+
+
+@main.route('/create_interview/<int:hr_id>', methods=['POST'])
+def create_interview(hr_id):
+    hr = HR.query.get_or_404(hr_id)
+    new_interview = Interview(hr_id=hr.id)
     db.session.add(new_interview)
     db.session.commit()
-    return redirect(url_for('main.set_parameters', interview_id=new_interview.id))
+    return redirect(url_for('main.set_parameters', interview_id=new_interview.id, hr_id=hr.id))
 
-@main.route('/set_parameters/<int:interview_id>', methods=['GET', 'POST'])
-def set_parameters(interview_id):
+@main.route('/set_parameters/<int:interview_id>/<int:hr_id>', methods=['GET', 'POST'])
+def set_parameters(interview_id, hr_id):
+    hr = HR.query.get_or_404(hr_id)
     if request.method == 'POST':
         session.clear() 
         language = request.form['language']
@@ -59,12 +79,12 @@ def set_parameters(interview_id):
         db.session.add(interview_parameter)
         session['interview_parameter_id'] = interview_parameter.id
         session['interview_id'] = interview_id
-        session['hr_email'] = 'sidney@tunz.ai'  # Replace with actual HR email when login functionalities
+        session['hr_email'] = hr.email  # Replace with actual HR email when login functionalities
         db.session.commit()
         interview_link = url_for('main.applicant_home', interview_parameter_id=interview_parameter.id, _external=True)
 
-        return render_template('hr/interview_generated.html', interview_link = interview_link)
-    return render_template('hr/create_interview.html', interview_id=interview_id)
+        return render_template('hr/interview_generated.html', interview_link = interview_link, hr_id = hr_id)
+    return render_template('hr/create_interview.html', interview_id=interview_id, hr_id = hr_id)
 
 
 @main.route('/applicant_home/<int:interview_parameter_id>', methods=['GET', 'POST'])

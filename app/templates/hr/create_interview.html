@@ -8,7 +8,7 @@
 <body>
     <div class="container">
         <h1>Set Interview Parameters</h1>
-        <form action="{{ url_for('main.set_parameters', interview_id=interview_id) }}" method="POST">
+        <form action="{{ url_for('main.set_parameters', interview_id=interview_id, hr_id=hr_id) }}" method="POST">
             <div class="form-group">
                 <label for="language">Language:</label>
                 <select name="language" class="form-control" required>

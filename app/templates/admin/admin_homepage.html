@@ -1,5 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
+<!-- Include the CSS file -->
+<link rel="stylesheet" href="{{ url_for('static', filename='static/styles.css') }}">
 <head>
     <meta charset="UTF-8">
     <title>Admin Dashboard</title>
@@ -7,8 +9,7 @@
 <body>
     <h1>Welcome, {{ admin.name }} {{ admin.surname }}</h1>
     <h2>Admin Dashboard</h2>
-    <button id="logout">Logout</button>
-    <h3>All Registered HRs</h3>
+    <h3>HR Dashboard</h3>
     <table border="1">
         <tr>
             <th>Name</th>
@@ -16,31 +17,33 @@
             <th>Email</th>
             <th>Company</th>
             <th>Confirmed</th>
+            <th>Date of Subscription</th>
+            <th>View Infos</th>
             <th>Action</th>
         </tr>
         {% for hr in hrs %}
-        <tr>
+        <tr class="{% if not hr.confirmed %}pending{% endif %}">
             <td>{{ hr.name }}</td>
             <td>{{ hr.surname }}</td>
             <td>{{ hr.email }}</td>
             <td>{{ hr.company.name }}</td>
             <td>{{ hr.confirmed }}</td>
+            <td>{{ hr.created_at.strftime('%d.%m.%Y') }}</td>
+            <td><a href="{{ url_for('admin.view_hr_info', hr_id=hr.id, admin_id=admin.id) }}">View Infos</a></td>
             <td>
+                {% if not hr.confirmed %}
+                <a href="{{ url_for('admin.confirm_account', hr_id=hr.id, admin_id=admin.id) }}}" class="review-button">Review</a>
+                {% else %}
                 <form action="{{ url_for('admin.delete_hr', hr_id=hr.id) }}" method="post">
                     <button type="submit">Delete</button>
                 </form>
+                {% endif %}
             </td>
         </tr>
         {% endfor %}
     </table>
+    <button id="logout">Logout</button>
 </body>
-<script>
-    document.getElementById('logout').addEventListener('click', function() {
-        fetch('/auth/logout', {
-            method: 'POST'
-        }).then(() => {
-            window.location.href = '/auth/admin_login';
-        });
-    });
-</script>
+<script src="{{ url_for('static', filename='static/js/admin_logout.js') }}"></script>
+<script src="{{ url_for('static', filename='static/js/manage_windows.js') }}"></script>
 </html>

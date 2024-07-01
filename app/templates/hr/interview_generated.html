@@ -10,7 +10,7 @@
     <div class="interview-link">
         <input type="text" value="{{ interview_link }}" readonly>
         <button onclick="copyToClipboard()">Copy Link</button>
-        <a href="{{ url_for('main.home') }}">Back to Home</a>
+        <a href="{{ url_for('main.home', hr_id = hr_id) }}">Back to Home</a>
     </div>
 </div>
 

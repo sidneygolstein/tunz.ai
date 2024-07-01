@@ -10,7 +10,32 @@
     <h1>Welcome back, {{ hr_name }} {{ hr_surname }}</h1>
     <p>Company: {{ company_name }}</p>
     <p>Welcome to your dashboard!</p>
-    <form action="{{ url_for('main.create_interview') }}" method="POST">
+    <h3>Generated Interviews</h3>
+    <table border="1">
+        <tr>
+            <th>Created At</th>
+            <th>Industry</th>
+            <th>Role</th>
+            <th>Language</th>
+            <th>Duration</th>
+            <th>Max Questions</th>
+            <th>Number of Interview passed</th>
+            <th>Interview Link</th>
+        </tr>
+        {% for interview in interview_data %}
+        <tr>
+            <td>{{ interview.created_at }}</td>
+            <td>{{ interview.industry }}</td>
+            <td>{{ interview.role }}</td>
+            <td>{{ interview.language }}</td>
+            <td>{{ interview.duration }} minutes</td>
+            <td>{{ interview.max_questions }}</td>
+            <td>{{ interview.sessions_count }}</td>
+            <td><a href="{{ interview.interview_link }}" target="_blank">Interview Link</a></td>
+        </tr>
+        {% endfor %}
+    </table>
+    <form action="{{ url_for('main.create_interview', hr_id=hr_id) }}" method="POST">
         <button type="submit">Create a new Interview</button>
     </form>
     <form action="{{ url_for('auth.logout') }}" method="POST">
@@ -18,4 +43,3 @@
     </form>
 </body>
 </html>
-

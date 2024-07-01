@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>HR Information</title>
+</head>
+<body>
+    <h1>HR Information</h1>
+    <p>Email: {{ hr.email }}</p>
+    <p>Name: {{ hr.name }}</p>
+    <p>Surname: {{ hr.surname }}</p>
+    <p>Company: {{ hr.company.name }}</p>
+    <p>Confirmed: {{ hr.confirmed }}</p>
+    <p>Date of Subscription: {{ hr.created_at.strftime('%d.%m.%Y') }}</p>
+    <button onclick="window.location.href='{{ url_for('admin.home', admin_id=admin_id) }}'">Home</button>
+</body>
+</html>
