@@ -1,5 +1,7 @@
 # app/models/admin.py
 from app import db, bcrypt
+from datetime import datetime
+
 
 class Admin(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -7,6 +9,8 @@ class Admin(db.Model):
     password_hash = db.Column(db.String(128), nullable=False)
     name = db.Column(db.String(120), nullable=False)
     surname = db.Column(db.String(120), nullable=False)
+    created_at = db.Column(db.DateTime, nullable=True, default=datetime.utcnow)
+
 
     def set_password(self, password):
         self.password_hash = bcrypt.generate_password_hash(password).decode('utf-8')

@@ -11,9 +11,9 @@ auth = Blueprint('auth', __name__)
 
 
 
-def generate_confirmation_token(user_id):
+def generate_confirmation_token(user_id, admin_id):
     serializer = URLSafeTimedSerializer(current_app.config['SECRET_KEY'])
-    return serializer.dumps(user_id, salt=current_app.config['SECURITY_PASSWORD_SALT'])
+    return serializer.dumps({'user_id': user_id, 'admin_id': admin_id}, salt=current_app.config['SECURITY_PASSWORD_SALT'])
 
 def confirm_token(token, expiration=3600):
     serializer = URLSafeTimedSerializer(current_app.config['SECRET_KEY'])
@@ -75,12 +75,16 @@ def register():
         db.session.commit()
 
         # Generate confirmation link
-        token = generate_confirmation_token(hr.id)
-        confirm_url = url_for('admin.confirm_account', user_id=hr.id, _external=True)
-        #deny_url = url_for('auth.deny_account', user_id=hr.id, _external=True)
+        admin = Admin.query.filter_by(email='sidney@tunz.ai').first()
+        admin_id = admin.id  # Ensure the admin is logged in when registering a new HR
+        admin_email = admin.email #'sidney@tunz.ai'  # Admin email
+
+        if not admin_id:
+            return jsonify({"msg": "Admin must be logged in to register a new HR"}), 403
+        confirm_url = url_for('admin.confirm_account', user_id=hr.id, admin_id=admin_id, _external=True)
         
-        # Send confirmation email to admin
-        admin_email = 'sidney@tunz.ai'  # Admin email
+        
+        # Send confirmation email to admin        
         msg = Message('New Account Registration',
                       sender='noreply@tunz.ai',
                       recipients=[admin_email])
@@ -129,6 +133,7 @@ def admin_login():
 
         if admin and admin.check_password(password):
             session['admin_id'] = admin.id  # Store admin_id in session
+            session['admin_email'] = admin.email
             return jsonify({"msg": "Login successful", "admin_id": admin.id}), 200
         return jsonify({"msg": "Invalid credentials"}), 401
     return render_template('auth/admin_login.html')
