@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Session Details</title>
+</head>
+<body>
+    <h1>Session Details</h1>
+    <table border="1">
+        <tr>
+            <th>Session ID</th>
+            <th>Applicant Name</th>
+            <th>Applicant Surname</th>
+            <th>Score</th>
+            <th>See Chat</th>
+        </tr>
+        {% for session in session_data %}
+        <tr>
+            <td>{{ session.session_id }}</td>
+            <td>{{ session.applicant_name }}</td>
+            <td>{{ session.applicant_surname }}</td>
+            <td>{{ session.score }}</td>
+            <td><a href="{{ url_for('main.see_chat', session_id=session.session_id) }}">See Chat</a></td>
+        </tr>
+        {% endfor %}
+    </table>
+    <a href="{{ url_for('main.home', hr_id=session['hr_id']) }}">Back to Home</a>
+</body>
+</html>

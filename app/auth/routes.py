@@ -82,7 +82,7 @@ def register():
 
         if not admin_id:
             return jsonify({"msg": "Admin must be logged in to register a new HR"}), 403
-        confirm_url = url_for('admin.confirm_account', user_id=hr.id, admin_id=admin_id, _external=True)
+        #confirm_url = url_for('admin.confirm_account', hr_id=hr.id, admin_id=admin_id, _external=True)
         dashboard_url = url_for('admin.home', admin_id=admin_id, _external=True)
         
         

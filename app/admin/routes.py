@@ -45,7 +45,7 @@ def confirm_account(hr_id):
         return redirect(url_for('admin.home', admin_id=admin_id))
     
 
-    return render_template('admin/admin_account_confirmation.html', email=hrs.email, name=hrs.name, surname=hrs.surname, company_name=hrs.company.name, user_id=hrs.id, admin_id=admin_id)
+    return render_template('admin/admin_account_confirmation.html', email=hrs.email, name=hrs.name, surname=hrs.surname, company_name=hrs.company.name, hr_id=hrs.id, admin_id=admin_id)
 
 
 @admin.route('/accept/<int:hr_id>', methods=['POST'])

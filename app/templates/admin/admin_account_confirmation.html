@@ -9,11 +9,11 @@
     <p>Email: {{ email }}</p>
     <p>Name: {{ name }} {{ surname }}</p>
     <p>Company: {{ company_name }}</p>
-    <form action="{{ url_for('admin.accept_account', user_id=user_id, admin_id=admin_id) }}" method="POST">
+    <form action="{{ url_for('admin.accept_account', hr_id=hr_id, admin_id=admin_id) }}" method="POST">
         <button type="submit">Accept Account</button>
         <input type="hidden" name="admin_id" value="{{ admin_id }}">
     </form>
-    <form action="{{ url_for('admin.deny_account', user_id=user_id, admin_id=admin_id) }}" method="POST">
+    <form action="{{ url_for('admin.deny_account', hr_id=hr_id, admin_id=admin_id) }}" method="POST">
         <button type="submit">Deny Account</button>
         <input type="hidden" name="admin_id" value="{{ admin_id }}">
     </form>

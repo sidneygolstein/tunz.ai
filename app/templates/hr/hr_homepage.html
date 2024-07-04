@@ -1,6 +1,4 @@
 <!DOCTYPE html>
-<!-- templates/hr/home.html -->
-<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -19,7 +17,7 @@
             <th>Language</th>
             <th>Duration</th>
             <th>Max Questions</th>
-            <th>Number of Interview passed</th>
+            <th>Sessions Count</th>
             <th>Interview Link</th>
         </tr>
         {% for interview in interview_data %}
@@ -31,7 +29,7 @@
             <td>{{ interview.duration }} minutes</td>
             <td>{{ interview.max_questions }}</td>
             <td>{{ interview.sessions_count }}</td>
-            <td><a href="{{ interview.interview_link }}" target="_blank">Interview Link</a></td>
+            <td><a href="{{ url_for('main.applicant_home', interview_parameter_id=interview.interview_parameter_id) }}" target="_blank">Interview Link</a></td>
         </tr>
         {% endfor %}
     </table>

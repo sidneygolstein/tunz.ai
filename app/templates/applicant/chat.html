@@ -47,15 +47,15 @@
             {% endif %}
             {% endfor %}
             {% endfor %}
-            {% if session.get('finished') %}
-            <div class = "message assistant">
-                <p>{{thank_you_message}}</p>
+            {% if is_finished %}
+            <div class="message assistant">
+                <p>{{ thank_you_message }}</p>
             </div>
             {% endif %}
         </div>
         <div class="chat-input">
-            {% if not session.get('finished') %}
-            <form action="{{ url_for('main.chat') }}" method="post" id="chat-form">
+            {% if not is_finished %}
+            <form action="{{ url_for('main.chat', interview_id=interview_id, interview_parameter_id=interview_parameter_id, session_id=session_id) }}" method="post" id="chat-form">
                 <input type="hidden" name="question_id" value="{{ questions[-1].id }}">
                 <input type="text" name="answer" required placeholder="Enter your message">
                 <div class="icons">
@@ -66,7 +66,7 @@
                 <button type="submit">Send</button>
             </form>
             {% else %}
-            <form method="get" action="{{ url_for('main.applicant_review', session_id=session['session_id']) }}">
+            <form method="get" action="{{ url_for('main.finish_chat', session_id=session_id) }}">
                 <button type="submit">Finish Interview</button>
             </form>
             {% endif %}
@@ -74,12 +74,10 @@
     </div>
     <div class="sidebar-right">
         <div class="sidebar-right-header">
-            <h2>{{applicant_email}}</h2>
+            <h2>{{ applicant_email }}</h2>
             <p>Live Interview</p>
         </div>
-        <div id="timer" data-duration="{{ duration }}" data-finish-url="{{ url_for('main.finish_chat', session_id=session_id) }}" data-finished="{{ 'true' if session.get('finished') else 'false' }}"></div>
+        <div id="timer" data-duration="{{ duration }}" data-finish-url="{{ url_for('main.finish_chat', session_id=session_id) }}" data-finished="{{ 'true' if is_finished else 'false' }}"></div>
     </div>
 </div>
-
-
 {% endblock %}
