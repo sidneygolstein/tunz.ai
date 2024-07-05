@@ -9,7 +9,7 @@
     <p>Role: {{ role }}</p>
     <p>Industry: {{ industry }}</p>
     <p>HR Contact: {{ hr_email }}</p>
-    <form action="{{ url_for('main.applicant_home', interview_parameter_id=interview_parameter_id) }}" method="POST">
+    <form action="{{ url_for('main.applicant_home', hr_id = hr_id, interview_parameter_id=interview_parameter_id) }}" method="POST">
         <label for="name">Name:</label>
         <input type="text" id="name" name="name" required><br><br>
         <label for="surname">Surname:</label>
