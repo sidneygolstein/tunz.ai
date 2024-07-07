@@ -31,17 +31,32 @@ def home(hr_id):
     interview_data = []
     for interview in interviews:
         interview_parameters = InterviewParameter.query.filter_by(interview_id=interview.id).first()
-        sessions_count = Session.query.filter_by(interview_parameter_id=interview_parameters.id).count()
-        #interview_link = url_for('main.applicant_home', interview_parameter_id=interview_parameters.id, _external=True)
+        sessions = Session.query.filter_by(interview_parameter_id=interview.id).all()
+        session_data = []
+        for session in sessions:
+            applicant = Applicant.query.get(session.applicant_id)
+            session_id = session.id
+            result = Result.query.filter_by(session_id=session.id).first()
+            score = result.score_result if result else "No score"
+            session_data.append({
+                'applicant_name': applicant.name,
+                'applicant_surname': applicant.surname,
+                'applicant_email': applicant.email_address,
+                'start_time': session.start_time,
+                'score': score,
+                'session_id' : session_id
+            })
         interview_data.append({
-            'interview_parameter_id': interview_parameters.id,
-            'created_at': interview.created_at.strftime("%d.%m.%Y"),  # Format the date
+            'created_at': interview_parameters.start_time,
             'industry': interview_parameters.industry,
             'role': interview_parameters.role,
             'language': interview_parameters.language,
             'duration': interview_parameters.duration,
             'max_questions': interview_parameters.max_questions,
-            'sessions_count': sessions_count,
+            'sessions_count': len(sessions),
+            'interview_parameter_id': interview_parameters.id,
+            'interview_id': interview_parameters.id,
+            'sessions': session_data
         })
 
     return render_template('hr/hr_homepage.html', hr_name=hr.name, hr_surname=hr.surname, company_name=hr.company.name, hr_id=hr.id, interview_data=interview_data)
@@ -85,6 +100,20 @@ def set_parameters(interview_id, hr_id):
 
         return render_template('hr/interview_generated.html', interview_link=interview_link, hr_id=hr_id)
     return render_template('hr/create_interview.html', interview_id=interview_id, hr_id=hr_id)
+
+
+@main.route('/session_details/<int:hr_id>.<int:session_id>', methods=['GET'])
+def session_details(session_id, hr_id):
+    session = Session.query.get_or_404(session_id)
+    conversation = [
+        {
+            'question': question.content,
+            'answer': next((answer.content for answer in session.answers if answer.question_id == question.id), 'No answer')
+        }
+        for question in session.questions
+    ]
+    return render_template('hr/session_details.html', session=session, conversation=conversation, hr_id = hr_id)
+
 
 
 ####################################################################################################################################################################################
@@ -271,6 +300,13 @@ def finish_chat(hr_id, interview_id, interview_parameter_id, session_id, applica
     applicant_email = applicant.email_address
     applicant_surname = applicant.surname
 
+    answers = Answer.query.filter_by(session_id=session_id).all()
+    score = calculate_score(answers,session_id)  # Implement this function based on your grading logic
+    
+    result = Result(score_type = 'applicant_score', score_result= score, session_id = session_id)
+    db.session.add(result)
+    db.session.commit()
+
     hr_link = url_for('main.hr_result',
                       hr_id = hr_id, 
                       interview_id=interview_id, 
@@ -342,10 +378,7 @@ def applicant_result(hr_id, interview_id, interview_parameter_id, session_id, ap
     current_session_id = session_id
     if not current_session_id:
         return redirect(url_for('main.home'))
-
-    answers = Answer.query.filter_by(session_id=current_session_id).all()
-    score = calculate_score(answers,session_id)  # Implement this function based on your grading logic
-
+    score = Result.query.filter_by(session_id=session_id).first()  # Implement this function based on your grading logic
     applicant = Applicant.query.get_or_404(applicant_id)
     applicant_name = applicant.name
     applicant_email = applicant.email_address

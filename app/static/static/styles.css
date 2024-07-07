@@ -171,3 +171,45 @@ body {
 .review-button {
     color: red;
 }
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+th, td {
+    border: 1px solid black;
+    text-align: left;
+    padding: 8px;
+}
+
+th.sortable:hover {
+    cursor: pointer;
+}
+
+.scrollable-table {
+    display: block;
+    max-height: 400px; /* Adjust the height as needed */
+    overflow-y: auto;
+}
+
+th.sortable {
+    position: relative;
+    padding-right: 20px; /* Adjust spacing for the icon */
+}
+
+th.sortable::after {
+    content: '⬍';
+    position: absolute;
+    right: 8px;
+    font-size: 0.8em;
+    color: #888;
+}
+
+th.sortable.asc::after {
+    content: '⬆';
+}
+
+th.sortable.desc::after {
+    content: '⬇';
+}

@@ -3,6 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <title>Tunz.ai</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='static/styles.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <script src="{{ url_for('static', filename='static/js/sort_table.js') }}" defer></script>
+    <script src="{{ url_for('static', filename='static/js/details.js') }}"></script>
+
 </head>
 <body>
     <h1>Welcome back, {{ hr_name }} {{ hr_surname }}</h1>
@@ -22,7 +27,7 @@
         </tr>
         {% for interview in interview_data %}
         <tr>
-            <td>{{ interview.created_at }}</td>
+            <td>{{ interview.created_at.strftime('%d-%m-%Y at %H:%M:%S') }}</td>
             <td>{{ interview.industry }}</td>
             <td>{{ interview.role }}</td>
             <td>{{ interview.language }}</td>
@@ -39,5 +44,36 @@
     <form action="{{ url_for('auth.logout') }}" method="POST">
         <button type="submit">Logout</button>
     </form>
+    <h3>Sessions Dashboard for Interview</h3>
+    {% for interview in interview_data %}
+        <h4>Interview: {{ interview.role }} in {{ interview.industry }}</h4>
+        <div class="scrollable-table">
+            <table border="1">
+                <thead>
+                    <tr>
+                        <th class="sortable">Applicant Name</th>
+                        <th class="sortable">Applicant Surname</th>
+                        <th class="sortable">Applicant Email</th>
+                        <th class="sortable">Start Time</th>
+                        <th class="sortable">Score</th>
+                        <th>See Details</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for session in interview.sessions %}
+                    <tr>
+                        <td>{{ session.applicant_name }}</td>
+                        <td>{{ session.applicant_surname }}</td>
+                        <td>{{ session.applicant_email }}</td>
+                        <td>{{ session.start_time.strftime('%d-%m-%Y at %H:%M:%S') }}</td>
+                        <td>{{ session.score }}</td>
+                        <td><a href="{{ url_for('main.session_details', session_id=session.session_id, hr_id = hr_id) }}">See Details</a></td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% endfor %}
+    <script src="{{ url_for('static', filename='js/sortable.js') }}"></script>
 </body>
 </html>
