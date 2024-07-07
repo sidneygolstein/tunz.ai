@@ -1,9 +1,19 @@
 document.addEventListener("DOMContentLoaded", function() {
-    let timerDuration = parseInt(document.getElementById('timer').getAttribute('data-duration'), 10); // Time left in seconds
     const timerElement = document.getElementById('timer');
-    let warningShown = localStorage.getItem('warningShown') === 'true'; // Retrieve from localStorage
-    let warningClosed = localStorage.getItem('warningClosed') === 'true'; // Retrieve from localStorage
+    const finishUrl = timerElement.getAttribute('data-finish-url');
+    const sessionId = timerElement.getAttribute('data-session-id'); // Get session ID
     let sessionFinished = timerElement.getAttribute('data-finished') === 'true'; // Check if the session is finished
+
+    // Retrieve the remaining time from localStorage
+    let timerDuration = localStorage.getItem('remainingTime_' + sessionId);
+    if (!timerDuration) {
+        timerDuration = parseInt(timerElement.getAttribute('data-duration'), 10); // Time left in seconds
+    } else {
+        timerDuration = parseInt(timerDuration, 10);
+    }
+
+    let warningShown = sessionStorage.getItem('warningShown') === 'true'; // Retrieve from sessionStorage
+    let warningClosed = sessionStorage.getItem('warningClosed') === 'true'; // Retrieve from sessionStorage
 
     function updateTimer() {
         if (sessionFinished) {
@@ -17,19 +27,25 @@ document.addEventListener("DOMContentLoaded", function() {
         if (timerDuration <= 30 && !warningShown && !warningClosed) {
             showWarningPopup();
             warningShown = true; // Set the warning as shown
-            localStorage.setItem('warningShown', 'true'); // Store in localStorage
+            sessionStorage.setItem('warningShown', 'true'); // Store in sessionStorage
         }
 
         if (timerDuration <= 0) {
             clearInterval(timerInterval);
             // Redirect to finish chat screen
-            window.location.href = timerElement.getAttribute('data-finish-url');
+            window.location.href = finishUrl;
         } else {
-            timerDuration -= 5; // Decrease by 1 second
+            timerDuration -= 1; // Decrease by 1 second
+            // Save remaining time to localStorage
+            localStorage.setItem('remainingTime_' + sessionId, timerDuration);
         }
     }
 
     function showWarningPopup() {
+        if (document.getElementById('warning-popup')) {
+            return; // If the popup already exists, do nothing
+        }
+
         const popup = document.createElement('div');
         popup.id = 'warning-popup';
         popup.classList.add('popup');
@@ -44,14 +60,12 @@ document.addEventListener("DOMContentLoaded", function() {
         const closeButton = document.getElementById('close-popup');
         closeButton.addEventListener('click', function() {
             warningClosed = true; // Set the warning as closed
-            localStorage.setItem('warningClosed', 'true'); // Store in localStorage
+            sessionStorage.setItem('warningClosed', 'true'); // Store in sessionStorage
             document.body.removeChild(popup);
-            
-
         });
     }
 
-    const timerInterval = setInterval(updateTimer, 5000); // Update every second
+    const timerInterval = setInterval(updateTimer, 1000); // Update every second
     updateTimer();
 
     // Attach the remaining time to the form submission

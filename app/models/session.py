@@ -12,6 +12,7 @@ class Session(db.Model):
     questions = db.relationship('Question', backref='session',  cascade="all, delete-orphan")
     answers = db.relationship('Answer', backref='session',  cascade="all, delete-orphan")
     results = db.relationship('Result', backref='session',  cascade="all, delete-orphan")
+    remaining_time = db.Column(db.Integer, default=3600)  # default to 1 hour
 
     def __repr__(self):
         return f'<Session {self.id}>'

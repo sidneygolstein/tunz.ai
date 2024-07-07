@@ -6,9 +6,11 @@ load_dotenv()
 class Config:
     load_dotenv()  
     PROPAGATE_EXCEPTIONS = True
+    SESSION_TYPE = 'filesystem'
+    SESSION_PERMANENT = False
     API_TITLE = "STORE CHATBOT MVP"
     API_VERSION = "v1"
-    OPENAPI_VERSION = "3.0.3"
+    OPENAPI_VERSION = "3.1.0"
     OPENAI_API_KEY = "sk-proj-l7ggu7dVuFtajCLia24PT3BlbkFJl1qoGuXnYAm42Mb1sF3A"
     OPEN_API_URL_PREFIX = "/" 
     SQLALCHEMY_DATABASE_URI = os.environ.get('SQLALCHEMY_DATABASE_URL') or  os.getenv("DATABASE_URL","sqlite:///chat.db") 

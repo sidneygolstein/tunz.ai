@@ -1,7 +1,7 @@
 # This file initializes the Flask application and SQLAlchemy.
 
 
-from flask import Flask, session as flask_session
+from flask import Flask, session 
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from config import Config
@@ -10,17 +10,17 @@ from flask_bcrypt import Bcrypt
 from flask_jwt_extended import JWTManager
 from flask_mail import Mail, Message
 
-
 db = SQLAlchemy()
 jwt = JWTManager()
 migrate = Migrate()
 mail = Mail()
 bcrypt = Bcrypt()
 
+
 def create_app():
     app = Flask(__name__)
     app.config.from_object(Config)
-
+    # Initialize Flask-Session
     db.init_app(app)
     migrate.init_app(app, db)
     jwt.init_app(app)

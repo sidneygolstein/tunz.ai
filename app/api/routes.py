@@ -1,11 +1,20 @@
 # Contains the routes related to API functionality.
 
-from flask import Blueprint, jsonify
+from flask import Blueprint, jsonify, session
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
 from ..models import Question, Answer, Result, InterviewParameter, Session, Applicant, Review, ReviewQuestion, HR, Interview, Company, Admin
 from .. import db
 # API RETRIEVAL
 api = Blueprint('api', __name__)
+
+
+@api.route('/get_thread_id', methods=['GET'])
+def get_thread_id():
+    thread_id = session.get('thread_id')
+    if not thread_id:
+        return jsonify({'error': 'No thread_id found in session'}), 404
+
+    return jsonify({'thread_id': thread_id}), 200
 
 
 @api.route('/delete_interviews', methods=['DELETE'])
