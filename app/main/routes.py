@@ -44,7 +44,7 @@ def home(hr_id):
                 'applicant_email': applicant.email_address,
                 'start_time': session.start_time,
                 'score': score,
-                'session_id' : session_id
+                'id' : session_id
             })
         interview_data.append({
             'created_at': interview_parameters.start_time,
@@ -59,7 +59,7 @@ def home(hr_id):
             'sessions': session_data
         })
 
-    return render_template('hr/hr_homepage.html', hr_name=hr.name, hr_surname=hr.surname, company_name=hr.company.name, hr_id=hr.id, interview_data=interview_data)
+    return render_template('hr/hr_homepage.html', hr_name=hr.name, hr_surname=hr.surname, company_name=hr.company.name, hr_id=hr.id, interview_data=interview_data, session_data = session_data)
 
 
 
@@ -101,10 +101,12 @@ def set_parameters(interview_id, hr_id):
         return render_template('hr/interview_generated.html', interview_link=interview_link, hr_id=hr_id)
     return render_template('hr/create_interview.html', interview_id=interview_id, hr_id=hr_id)
 
-
-@main.route('/session_details/<int:hr_id>.<int:session_id>', methods=['GET'])
-def session_details(session_id, hr_id):
+""""
+@main.route('/session_details/<int:hr_id>/<int:session_id>', methods=['GET'])
+def session_details(hr_id, session_id):
     session = Session.query.get_or_404(session_id)
+    applicant= Applicant.query.get_or_404(session.applicant_id)
+    result = Result.query.get_or_404(session_id)
     conversation = [
         {
             'question': question.content,
@@ -112,9 +114,42 @@ def session_details(session_id, hr_id):
         }
         for question in session.questions
     ]
-    return render_template('hr/session_details.html', session=session, conversation=conversation, hr_id = hr_id)
+    return render_template('hr/session_details.html',
+                            hr_id = hr_id,
+                            session_id = session_id, 
+                            session=session, 
+                            conversation=conversation, 
+                            applicant = applicant, 
+                            result = result) 
+"""
 
 
+@main.route('/session_details/<int:hr_id>/<int:session_id>', methods=['GET'])
+def session_details(hr_id, session_id):
+    session = Session.query.get(session_id)
+    if not session:
+        flash("Failed to retrieve interview thread. Please try again.", "danger")
+        return redirect(url_for('main.home', hr_id=hr_id))
+
+    applicant = Applicant.query.get_or_404(session.applicant_id)
+    questions = Question.query.filter_by(session_id=session_id).all()
+    #answers = Answer.query.filter_by(session_id=session_id).all()
+    result = Result.query.filter_by(session_id=session_id).first()
+
+    conversation = []
+    for question in questions:
+        conversation.append({'role': 'Q', 'content': question.content})
+        answer = Answer.query.filter_by(question_id=question.id).first()
+        if answer:
+            conversation.append({'role': 'A', 'content': answer.content})
+
+
+    return render_template('hr/session_details.html',
+                           hr_id=hr_id,
+                           session=session,
+                           applicant=applicant,
+                           conversation=conversation,
+                           result=result)
 
 ####################################################################################################################################################################################
 ############################################################ APPLICANT #############################################################################################################

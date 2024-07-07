@@ -67,7 +67,7 @@
                         <td>{{ session.applicant_email }}</td>
                         <td>{{ session.start_time.strftime('%d-%m-%Y at %H:%M:%S') }}</td>
                         <td>{{ session.score }}</td>
-                        <td><a href="{{ url_for('main.session_details', session_id=session.session_id, hr_id = hr_id) }}">See Details</a></td>
+                        <td><a href="{{ url_for('main.session_details', hr_id=hr_id, session_id=session.id) }}">See Details</a></td>
                     </tr>
                 {% endfor %}
                 </tbody>
