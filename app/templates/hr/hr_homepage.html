@@ -14,6 +14,7 @@
     <p>Company: {{ company_name }}</p>
     <p>Welcome to your dashboard!</p>
     <h3>Generated Interviews</h3>
+    {% if interview_data %}
     <table border="1">
         <tr>
             <th>Created At</th>
@@ -38,12 +39,17 @@
         </tr>
         {% endfor %}
     </table>
+    {% else %}
+    <p>You still have not created any interview.</p>
+    {% endif %}
     <form action="{{ url_for('main.create_interview', hr_id=hr_id) }}" method="POST">
         <button type="submit">Create a new Interview</button>
     </form>
     <form action="{{ url_for('auth.logout') }}" method="POST">
         <button type="submit">Logout</button>
     </form>
+
+    {% if interview_data %}
     <h3>Sessions Dashboard for Interview</h3>
     {% for interview in interview_data %}
         <h4>Interview: {{ interview.role }} in {{ interview.industry }}</h4>
@@ -74,6 +80,8 @@
             </table>
         </div>
     {% endfor %}
+    {% endif %}
+    
     <script src="{{ url_for('static', filename='js/sortable.js') }}"></script>
 </body>
 </html>

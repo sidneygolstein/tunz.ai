@@ -17,6 +17,10 @@ services:
     volumes:
       - .:/app  # Use a named volume for your application code
 
+
+# SETUP POSTGRESQL
+
+
 #volumes:
 #  app_code:
 

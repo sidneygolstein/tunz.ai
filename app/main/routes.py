@@ -44,7 +44,7 @@ def home(hr_id):
                 'applicant_email': applicant.email_address,
                 'start_time': session.start_time,
                 'score': score,
-                'id' : session_id
+                'id': session_id
             })
         interview_data.append({
             'created_at': interview_parameters.start_time,
@@ -59,7 +59,7 @@ def home(hr_id):
             'sessions': session_data
         })
 
-    return render_template('hr/hr_homepage.html', hr_name=hr.name, hr_surname=hr.surname, company_name=hr.company.name, hr_id=hr.id, interview_data=interview_data, session_data = session_data)
+    return render_template('hr/hr_homepage.html', hr_name=hr.name, hr_surname=hr.surname, company_name=hr.company.name, hr_id=hr.id, interview_data=interview_data)
 
 
 
@@ -100,28 +100,6 @@ def set_parameters(interview_id, hr_id):
 
         return render_template('hr/interview_generated.html', interview_link=interview_link, hr_id=hr_id)
     return render_template('hr/create_interview.html', interview_id=interview_id, hr_id=hr_id)
-
-""""
-@main.route('/session_details/<int:hr_id>/<int:session_id>', methods=['GET'])
-def session_details(hr_id, session_id):
-    session = Session.query.get_or_404(session_id)
-    applicant= Applicant.query.get_or_404(session.applicant_id)
-    result = Result.query.get_or_404(session_id)
-    conversation = [
-        {
-            'question': question.content,
-            'answer': next((answer.content for answer in session.answers if answer.question_id == question.id), 'No answer')
-        }
-        for question in session.questions
-    ]
-    return render_template('hr/session_details.html',
-                            hr_id = hr_id,
-                            session_id = session_id, 
-                            session=session, 
-                            conversation=conversation, 
-                            applicant = applicant, 
-                            result = result) 
-"""
 
 
 @main.route('/session_details/<int:hr_id>/<int:session_id>', methods=['GET'])
@@ -199,8 +177,6 @@ def start_chat(hr_id, interview_parameter_id, interview_id, applicant_id):
     session_id = new_session.id
     applicant_name = applicant.name
     interview_parameter = InterviewParameter.query.get_or_404(interview_parameter_id)
-    session['language'] = interview_parameter.language
-
 
     thread_id, assistant_id, assistant_response = create_openai_thread(
         interview_parameter.language,
@@ -213,19 +189,10 @@ def start_chat(hr_id, interview_parameter_id, interview_id, applicant_id):
     thread = Thread(thread_id=thread_id, assistant_id=assistant_id, session_id=session_id)
     db.session.add(thread)
     db.session.commit()
-
-
-    session['thread_id'] = thread_id
-    session['assistant_id'] = assistant_id
-    session['interview_parameter_id'] = interview_parameter_id
-    session['interview_id'] = interview_id
     
-
     question = Question(content=assistant_response, session_id=session_id)
     db.session.add(question)
     db.session.commit()
-
-    print(f"Thread ID created: {thread_id}, Assistant ID: {assistant_id}")
 
     return redirect(url_for('main.chat', 
                             hr_id=hr_id, 
@@ -250,18 +217,20 @@ def chat(hr_id, interview_id, interview_parameter_id, session_id, applicant_id):
 
     if 'interview_parameter_id' not in session or 'interview_id' not in session:
         return redirect(url_for('main.home'))
+    
     hr = HR.query.get_or_404(hr_id)
     interview_parameter = InterviewParameter.query.get_or_404(interview_parameter_id)
     current_session = Session.query.get_or_404(session_id)
-
     questions = Question.query.filter_by(session_id=session_id).all()
     answers = Answer.query.filter_by(session_id=session_id).all()
-    max_questions = interview_parameter.max_questions
     applicant = Applicant.query.get_or_404(applicant_id)
+
+    
     applicant_name = applicant.name
     applicant_email = applicant.email_address
     applicant_surname = applicant.surname
 
+    max_questions = interview_parameter.max_questions
     thank_you_message = get_thank_you_message(applicant_name)
 
     if request.method == 'POST':
@@ -276,9 +245,10 @@ def chat(hr_id, interview_id, interview_parameter_id, session_id, applicant_id):
                                     interview_parameter_id=interview_parameter_id, 
                                     session_id=session_id,
                                     applicant_id=applicant_id))
-        answer = Answer(content=user_input, question_id=question_id, session_id=session_id)
-        db.session.add(answer)
-        db.session.commit()
+        else:
+            answer = Answer(content=user_input, question_id=question_id, session_id=session_id)
+            db.session.add(answer)
+            db.session.commit()
 
         num_questions = Question.query.filter_by(session_id=session_id).count()
 
@@ -326,7 +296,7 @@ def chat(hr_id, interview_id, interview_parameter_id, session_id, applicant_id):
 
 @main.route('/finish_interview/<int:hr_id>/<int:interview_id>/<int:interview_parameter_id>/<int:session_id>/<int:applicant_id>', methods=['GET'])
 def finish_chat(hr_id, interview_id, interview_parameter_id, session_id, applicant_id):
-    db.session.commit()
+    #db.session.commit()
     interview_parameter = InterviewParameter.query.get_or_404(interview_parameter_id)
     hr = HR.query.get_or_404(hr_id)
     hr_email =  hr.email
