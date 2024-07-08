@@ -6,7 +6,7 @@ load_dotenv()
 class Config:
     load_dotenv()  
     PROPAGATE_EXCEPTIONS = True
-    PORT = int(os.getenv("PORT", 5000))
+    PORT = int(os.getenv('PORT', 5000))
     SESSION_TYPE = 'filesystem'
     SESSION_PERMANENT = False
     API_TITLE = "STORE CHATBOT MVP"
