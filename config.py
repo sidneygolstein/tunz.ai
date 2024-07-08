@@ -14,7 +14,7 @@ class Config:
     OPENAPI_VERSION = "3.1.0"
     OPENAI_API_KEY = "sk-proj-l7ggu7dVuFtajCLia24PT3BlbkFJl1qoGuXnYAm42Mb1sF3A"
     OPEN_API_URL_PREFIX = "/" 
-    SQLALCHEMY_DATABASE_URI = os.environ.get('SQLALCHEMY_DATABASE_URL') or  os.getenv("DATABASE_URL","sqlite:///chat.db") 
+    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL').replace("postgres://", "postgresql://", 1) or  os.getenv("DATABASE_URL","sqlite:///chat.db") 
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'x0Ryz6gpuNgtRc4qkcEBpHovvPNcoGwu'
     SECURITY_PASSWORD_SALT = os.environ.get('SECURITY_PASSWORD_SALT') or 'TkqPOkJdppNrTd85mtezX4IEy4tspilR'
