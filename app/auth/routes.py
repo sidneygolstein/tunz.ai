@@ -1,15 +1,17 @@
 from flask import Blueprint, request, jsonify, render_template, redirect, url_for, flash, current_app, session
 from app import db, bcrypt, mail
+from datetime import timedelta
 from app.models.hr import HR
 from app.models.company import Company
 from app.models.admin import Admin
-from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
+from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity, decode_token, JWTManager
 from flask_mail import Message
-from itsdangerous import URLSafeTimedSerializer
+from itsdangerous import URLSafeTimedSerializer, SignatureExpired
+jwt = JWTManager()
 
 auth = Blueprint('auth', __name__)
 
-
+# USEFUL METHODS
 
 def generate_confirmation_token(user_id, admin_id):
     serializer = URLSafeTimedSerializer(current_app.config['SECRET_KEY'])
@@ -23,6 +25,27 @@ def confirm_token(token, expiration=3600):
         return False
     return user_id
 
+# Generate Reset Token
+def generate_reset_token(hr_id):
+    serializer = URLSafeTimedSerializer(current_app.config['SECRET_KEY'])
+    return serializer.dumps(hr_id, salt=current_app.config['SECURITY_PASSWORD_SALT'])
+
+
+
+# Send Reset Email
+def send_reset_email(email, reset_url):
+    msg = Message('Password Reset Request',
+                  sender='noreply@tunz.ai',
+                  recipients=[email])
+    msg.body = f'To reset your password, visit the following link: {reset_url}\n\nIf you did not make this request, simply ignore this email.'
+    mail.send(msg)
+
+
+################################################################################################
+
+# ROUTES
+
+
 # To be enhanced with jwt
 @auth.route('/login', methods=['GET', 'POST'])
 def login():
@@ -33,6 +56,7 @@ def login():
 
         if hr and hr.check_password(password):
             if hr.confirmed:
+                flash("Login succeeded", "success")
                 return redirect(url_for('main.home', hr_id=hr.id))
             else:
                 return render_template('auth/login.html', error="Account not confirmed by admin")
@@ -96,6 +120,54 @@ def register():
         return jsonify({"msg": "Registration request sent to admin for confirmation. You will receive an email when your account will be confirmed"}), 200
     return render_template('auth/register.html')
 
+
+
+
+
+
+# Request password reset
+@auth.route('/request_reset_password', methods=['GET', 'POST'])
+def request_reset_password():
+    if request.method == 'POST':
+        email = request.form['email']
+        user = HR.query.filter_by(email=email).first()
+        if user:
+            reset_token = create_access_token(identity=user.id, expires_delta=timedelta(hours=1))
+            reset_url = url_for('auth.reset_password', token=reset_token, _external=True)
+            msg = Message('Password Reset Request', sender='noreply@tunz.ai', recipients=[email])
+            msg.body = f'You asked for password reset. Please click the link to reset your password: {reset_url}'
+            mail.send(msg)
+            flash('A password reset link has been sent to your email.', 'info')
+        else:
+            flash('Email not found.', 'danger')
+        return redirect(url_for('auth.request_reset_password'))
+    return render_template('auth/request_reset_password.html')
+
+
+# Reset password
+@auth.route('/reset_password/<token>', methods=['GET', 'POST'])
+def reset_password(token):
+    try:
+        user_id = decode_token(token)['sub']
+    except:
+        flash('The reset link is invalid or has expired.', 'danger')
+        return redirect(url_for('auth.request_reset_password'))
+    
+    if request.method == 'POST':
+        password = request.form['password']
+        confirm_password = request.form['confirm_password']
+        if password == confirm_password:
+            user = HR.query.get(user_id)
+            if user:
+                user.set_password(password)
+                db.session.commit()
+                flash('Your password has been updated!', 'success')
+                return redirect(url_for('auth.login'))
+            else:
+                flash('User not found.', 'danger')
+        else:
+            flash('Passwords do not match.', 'danger')
+    return render_template('auth/reset_password.html', token=token)
 
 
 ## ADMIN AUTH ##

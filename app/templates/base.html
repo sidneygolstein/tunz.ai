@@ -5,18 +5,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Tunz.ai{% endblock %}</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='static/styles.css') }}">
+    <!-- Include the CSS file -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <!-- Include the JavaScript file -->
+    <script src="{{ url_for('static', filename='js/base.js') }}" defer></script>
 </head>
 <body>
-    <header>
-        <h1>Tunz.ai</h1>
-        <h2>Bias-Free AI-Based Interviewer</h2>
-    </header>
-    <main>
-        {% block content %}{% endblock %}
-    </main>
-    <footer>
-        <p>&copy; 2024</p>
-    </footer>
+    {% with messages = get_flashed_messages(with_categories=True) %}
+        {% if messages %}
+            <div id="notification" class="notification">
+                {% for category, message in messages %}
+                    <p class="{{ category }}">{{ message }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+    {% block content %}
+    {% endblock %}
 </body>
 </html>
