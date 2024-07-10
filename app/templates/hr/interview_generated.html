@@ -1,23 +1,39 @@
-<!-- templates/interview_generated.html -->
 {% extends 'base.html' %}
 
 {% block title %}Interview Generated{% endblock %}
 
 {% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='static/styles.css') }}">
 <div class="container">
     <h2>Interview Link Generated</h2>
     <p>The interview link has been generated. Please copy the link below and send it to the applicant via email:</p>
+    
+    <div class="interview-details">
+        <h3>Interview Parameters</h3>
+        <ul>
+            <li><strong>Language:</strong> {{ interview_parameter.language }}</li>
+            <li><strong>Max Questions:</strong> {{ interview_parameter.max_questions }}</li>
+            <li><strong>Role:</strong> {{ interview_parameter.role }}</li>
+            <li><strong>Industry:</strong> {{ interview_parameter.industry }}</li>
+            <li><strong>Duration:</strong> {{ interview_parameter.duration }} minutes</li>
+        </ul>
+    </div>
+    
     <div class="interview-link">
-        <input type="text" value="{{ interview_link }}" readonly>
+        <input type="text" value="{{ interview_link }}" id="interviewLink" readonly>
         <button onclick="copyToClipboard()">Copy Link</button>
-        <a href="{{ url_for('main.home', hr_id = hr_id) }}">Back to Home</a>
+    </div>
+
+    <div class="back-home">
+        <a href="{{ url_for('main.home', hr_id=hr_id) }}" class="btn btn-primary">Back to Home</a>
     </div>
 </div>
 
 <script>
 function copyToClipboard() {
-    var copyText = document.querySelector(".interview-link input");
+    var copyText = document.getElementById("interviewLink");
     copyText.select();
+    copyText.setSelectionRange(0, 99999); // For mobile devices
     document.execCommand("copy");
     alert("Interview link copied to clipboard");
 }

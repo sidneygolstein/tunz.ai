@@ -6,17 +6,21 @@ from openai import OpenAI
 openai.api_key = os.environ.get("OPENAI_API_KEY")
 client = OpenAI()
 
-def get_initial_message(role, industry, applicant_name, language):
-    return f""" You have to ask question first to {applicant_name} to start the interview for the {role} position in the {industry} industry. The questiion must be asked in {language}. 
-    "Start with a small presentation sentence of the job to welcome the candidate. The name of the candidate is {applicant_name}. Be polite and introduce the reason of the interview 
-    "and remember him that the interview is about a {role} position in the {industry} industry. Then, ask the first question."""
+def get_initial_message(role, industry, applicant_name, applicant_surname, language):
+    return f""" 
+    - You have to ask question first to {applicant_name} {applicant_surname} to start the interview for the {role} position in the {industry} industry.
+    - The question must be asked in {language}. 
+    - Start with a small presentation sentence of the job to welcome the candidate. 
+    - The name of the candidate is {applicant_name} {applicant_surname}. 
+    - Be polite, introduce the reason of the interview, i.e., remember him that the interview is about a {role} position in the {industry} industry. 
+    - Then, ask the first question."""
 
 def get_thank_you_message(applicant_name):
     return f"Thank you for the interview, {applicant_name}. We will keep you in touch as soon as possible."
 
 
 
-def create_openai_thread(language, role, industry, applicant_name):
+def create_openai_thread(language, role, industry, applicant_name, applicant_surname):
     
     openai_api_key = current_app.config.get('OPENAI_API_KEY')
     if not openai_api_key:
@@ -24,12 +28,18 @@ def create_openai_thread(language, role, industry, applicant_name):
     
     client.api_key = openai_api_key
     instructions = (
-        f"""You are a HR that wants to interview an applicant whose name is {applicant_name}. Always finish your answer by a question to the applicant please. 
-        Only discuss with him by calling him with his name. \\
-        Ask questions in {language}. The applicant must answer in {language}. If not, you have to tell him that the intevriew 
-        is in {language} and that any other language answer will not be considered. Only ask one question per message. Also, 
-        the subsequent messages must take into account the conversation thread as a natural conversation. Ask for more details 
-        if the answer is not satisfying and the applicant must go more in details."""
+        f"""
+        - You are a HR that wants to interview an applicant whose name is {applicant_name} {applicant_surname}. 
+        - Always finish your answer by a question to the applicant regarding the {role} and {industry}.
+        - Be concise in your questions (not too much text per question).
+        - Only discuss with him by calling him with his name ({applicant_name}). 
+        - If the user's answer is not related to your question, please tell him to focus on the interview which is about the {role} and {industry}.
+        - Ask questions in {language}. The whole conversation must be in  in {language}. 
+        - If the applicant answer in another language, you have to tell him that the intevriew  is in {language} and that any other language's answer will not be considered. 
+        - Only ask one question per message. Also, the subsequent messages must take into account the conversation thread as a natural conversation. 
+        - Feel free to ask for examples or previous experiences of the applicant.
+        - Feel also free to ask question that are more and more precise based on the applicant previous answers.
+        - Ask for more details if the answer is not satisfying or if you think that the applicant can go more in details."""
     )
     
     # ASSISTANT CREATION 
@@ -40,7 +50,7 @@ def create_openai_thread(language, role, industry, applicant_name):
         model="gpt-3.5-turbo",
     )
 
-    initial_message = get_initial_message(role, industry, applicant_name, language)
+    initial_message = get_initial_message(role, industry, applicant_name, applicant_surname,language)
 
     # THREAD CREATION
     thread = client.beta.threads.create(

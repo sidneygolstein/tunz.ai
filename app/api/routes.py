@@ -164,6 +164,10 @@ def get_interview_parameters():
 def get_sessions():
     sessions = Session.query.all()
     return jsonify([{
+        'remaining_time': session.remaining_time,
+        'finished' : session.finished,
+        'thread_id': session.thread_id,
+        'assistant_id':session.assistant_id,
         'id': session.id,
         'start_time': session.start_time,
         'interview_parameter_id' : session.interview_parameter_id,

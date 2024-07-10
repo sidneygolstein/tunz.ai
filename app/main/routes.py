@@ -73,9 +73,7 @@ def create_interview(hr_id):
 
 @main.route('/set_parameters/<int:hr_id>/<int:interview_id>', methods=['GET', 'POST'])
 def set_parameters(interview_id, hr_id):
-    hr = HR.query.get_or_404(hr_id)
     if request.method == 'POST':
-        session.clear()
         language = request.form['language']
         max_questions = int(request.form['max_questions'])
         role = request.form['role']
@@ -92,13 +90,10 @@ def set_parameters(interview_id, hr_id):
         )
         
         db.session.add(interview_parameter)
-        session['interview_parameter_id'] = interview_parameter.id
-        session['interview_id'] = interview_id
-        session['hr_email'] = hr.email
         db.session.commit()
         interview_link = url_for('main.applicant_home', hr_id = hr_id, interview_parameter_id=interview_parameter.id, _external=True)
 
-        return render_template('hr/interview_generated.html', interview_link=interview_link, hr_id=hr_id)
+        return render_template('hr/interview_generated.html', interview_link=interview_link, hr_id=hr_id, interview_parameter=interview_parameter)
     return render_template('hr/create_interview.html', interview_id=interview_id, hr_id=hr_id)
 
 
@@ -169,28 +164,31 @@ def applicant_home(hr_id, interview_parameter_id):
 
 @main.route('/start/<int:hr_id>/<int:interview_parameter_id>/<int:interview_id>/<int:applicant_id>', methods=['GET', 'POST'])
 def start_chat(hr_id, interview_parameter_id, interview_id, applicant_id):
+    # Retrieve data
     interview_parameter = InterviewParameter.query.get_or_404(interview_parameter_id)
-    new_session = Session(interview_parameter_id=interview_parameter_id, applicant_id=applicant_id, remaining_time = interview_parameter.duration*60)
-    db.session.add(new_session)
-    db.session.commit()
     applicant = Applicant.query.get_or_404(applicant_id)
-    session_id = new_session.id
-    applicant_name = applicant.name
-    interview_parameter = InterviewParameter.query.get_or_404(interview_parameter_id)
 
+    # Create thread
     thread_id, assistant_id, assistant_response = create_openai_thread(
         interview_parameter.language,
         interview_parameter.role,
         interview_parameter.industry,
-        applicant_name
+        applicant.name,
+        applicant.surname
     )
-
-    # Save the thread information
-    thread = Thread(thread_id=thread_id, assistant_id=assistant_id, session_id=session_id)
-    db.session.add(thread)
+    
+    # Create and save a new session
+    new_session = Session(interview_parameter_id=interview_parameter_id,
+                        applicant_id=applicant_id,
+                        remaining_time = int(interview_parameter.duration*60), 
+                        thread_id = thread_id, 
+                        assistant_id = assistant_id,
+                        finished=False)
+    db.session.add(new_session)
     db.session.commit()
     
-    question = Question(content=assistant_response, session_id=session_id)
+    # Create and save the question
+    question = Question(content=assistant_response, session_id=new_session.id)
     db.session.add(question)
     db.session.commit()
 
@@ -198,53 +196,50 @@ def start_chat(hr_id, interview_parameter_id, interview_id, applicant_id):
                             hr_id=hr_id, 
                             interview_id=interview_id, 
                             interview_parameter_id=interview_parameter_id, 
-                            session_id=session_id, 
-                            applicant_name=applicant_name, 
+                            session_id=new_session.id, 
+                            applicant_name=applicant.name, 
                             applicant_id=applicant.id))
 
 
 
 @main.route('/chat/<int:hr_id>/<int:interview_id>/<int:interview_parameter_id>/<int:session_id>/<int:applicant_id>', methods=['GET', 'POST'])
 def chat(hr_id, interview_id, interview_parameter_id, session_id, applicant_id):
-    # Retrieve thread information
-    thread = Thread.query.filter_by(session_id=session_id).first()
-    if not thread:
-        flash("Failed to retrieve interview thread. Please try again.", "danger")
-        return redirect(url_for('main.applicant_home', hr_id=hr_id, interview_parameter_id=interview_parameter_id))
-
-    thread_id = thread.thread_id
-    assistant_id = thread.assistant_id
-
-    if 'interview_parameter_id' not in session or 'interview_id' not in session:
-        return redirect(url_for('main.home'))
     
+    # Retrieve data
     hr = HR.query.get_or_404(hr_id)
     interview_parameter = InterviewParameter.query.get_or_404(interview_parameter_id)
     current_session = Session.query.get_or_404(session_id)
+    applicant = Applicant.query.get_or_404(applicant_id)
     questions = Question.query.filter_by(session_id=session_id).all()
     answers = Answer.query.filter_by(session_id=session_id).all()
-    applicant = Applicant.query.get_or_404(applicant_id)
+    
 
+    thread_id = current_session.thread_id
+    assistant_id = current_session.assistant_id
     
     applicant_name = applicant.name
     applicant_email = applicant.email_address
     applicant_surname = applicant.surname
 
     max_questions = interview_parameter.max_questions
-    thank_you_message = get_thank_you_message(applicant_name)
+    thank_you_message = get_thank_you_message(applicant.name)
 
+    # If POST
     if request.method == 'POST':
         user_input = request.form['answer']
         question_id = request.form['question_id']
         remaining_time = int(request.form['remaining_time'])
         current_session.remaining_time = remaining_time
+        db.session.commit()
+
         if not thread_id or not assistant_id:
             return redirect(url_for('main.chat', 
                                     hr_id=hr_id, 
                                     interview_id=interview_id, 
                                     interview_parameter_id=interview_parameter_id, 
                                     session_id=session_id,
-                                    applicant_id=applicant_id))
+                                    applicant_id=applicant_id,
+                                    thread_id = thread_id))
         else:
             answer = Answer(content=user_input, question_id=question_id, session_id=session_id)
             db.session.add(answer)
@@ -276,7 +271,9 @@ def chat(hr_id, interview_id, interview_parameter_id, session_id, applicant_id):
                             session_id=session_id, 
                             applicant_name=applicant_name, 
                             applicant_id=applicant.id,))
+    
     remaining_time = current_session.remaining_time
+
     return render_template('applicant/chat.html',
                            questions=questions,
                            hr_id=hr_id,
@@ -289,7 +286,8 @@ def chat(hr_id, interview_id, interview_parameter_id, session_id, applicant_id):
                            is_finished=current_session.finished,
                            interview_id=interview_id,
                            interview_parameter_id=interview_parameter_id,
-                           applicant_id=applicant_id,)
+                           applicant_id=applicant_id,
+                           thread_id = thread_id)
 
 
 
@@ -297,6 +295,9 @@ def chat(hr_id, interview_id, interview_parameter_id, session_id, applicant_id):
 @main.route('/finish_interview/<int:hr_id>/<int:interview_id>/<int:interview_parameter_id>/<int:session_id>/<int:applicant_id>', methods=['GET'])
 def finish_chat(hr_id, interview_id, interview_parameter_id, session_id, applicant_id):
     #db.session.commit()
+    current_session = Session.query.get_or_404(session_id)
+    current_session.finished = True
+    db.session.commit()
     interview_parameter = InterviewParameter.query.get_or_404(interview_parameter_id)
     hr = HR.query.get_or_404(hr_id)
     hr_email =  hr.email

@@ -117,6 +117,10 @@ body {
 }
 
 
+
+
+
+
 .interview-link {
     display: flex;
     align-items: center;
@@ -215,3 +219,31 @@ th.sortable.desc::after {
 }
 
 
+.interview-details ul {
+    list-style: none;
+    padding: 0;
+}
+.interview-details li {
+    margin: 5px 0;
+}
+.interview-link {
+    margin: 20px 0;
+}
+.interview-link input {
+    width: 80%;
+    padding: 10px;
+    margin-right: 10px;
+}
+.interview-link button {
+    padding: 10px 20px;
+}
+.back-home .btn {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+}
+.back-home .btn:hover {
+    background-color: #0056b3;
+}

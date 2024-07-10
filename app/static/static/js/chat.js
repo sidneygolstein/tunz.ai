@@ -4,20 +4,24 @@ document.addEventListener("DOMContentLoaded", function() {
     const sessionId = timerElement.getAttribute('data-session-id'); // Get session ID
     let sessionFinished = timerElement.getAttribute('data-finished') === 'true'; // Check if the session is finished
 
-    // Retrieve the remaining time from localStorage
+    // Retrieve the initial duration and remaining time
+    let initialDuration = parseInt(timerElement.getAttribute('data-duration'), 10); // Initial duration in seconds
     let timerDuration = localStorage.getItem('remainingTime_' + sessionId);
+    
     if (!timerDuration) {
-        timerDuration = parseInt(timerElement.getAttribute('data-duration'), 10); // Time left in seconds
+        timerDuration = initialDuration; // Set to initial duration if no stored time
     } else {
         timerDuration = parseInt(timerDuration, 10);
     }
 
+    // Set warning flags
     let warningShown = sessionStorage.getItem('warningShown') === 'true'; // Retrieve from sessionStorage
     let warningClosed = sessionStorage.getItem('warningClosed') === 'true'; // Retrieve from sessionStorage
 
     function updateTimer() {
         if (sessionFinished) {
             clearInterval(timerInterval);
+            localStorage.removeItem('remainingTime_' + sessionId); // Clear storage on finish
             return;
         }
         let minutes = Math.floor(timerDuration / 60);
@@ -68,10 +72,12 @@ document.addEventListener("DOMContentLoaded", function() {
     const timerInterval = setInterval(updateTimer, 1000); // Update every second
     updateTimer();
 
-    // Attach the remaining time to the form submission
+    // Attach the remaining time to the form submission and disable the submit button
     const chatForm = document.getElementById('chat-form');
+    const sendButton = document.getElementById('send-button');
     if (chatForm) {
         chatForm.addEventListener('submit', function() {
+            sendButton.disabled = true; // Disable send button on form submission
             const remainingTimeInput = document.createElement('input');
             remainingTimeInput.type = 'hidden';
             remainingTimeInput.name = 'remaining_time';
