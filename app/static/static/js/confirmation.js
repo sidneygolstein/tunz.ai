@@ -1,29 +1,36 @@
-document.addEventListener("DOMContentLoaded", function() {
-    const confirmationModal = document.getElementById("confirmation-modal");
-    const confirmationMessage = document.getElementById("confirmation-message");
-    const confirmYesButton = document.getElementById("confirm-yes");
-    const confirmNoButton = document.getElementById("confirm-no");
+document.addEventListener('DOMContentLoaded', () => {
+    const modal = document.getElementById('confirmation-modal');
+    const confirmYes = document.getElementById('confirm-yes');
+    const confirmNo = document.getElementById('confirm-no');
+    const confirmationMessage = document.getElementById('confirmation-message');
+    let formToSubmit = null;
 
-    document.querySelectorAll('[data-action-url]').forEach(button => {
-        button.addEventListener('click', function(event) {
+    document.querySelectorAll('button[data-action]').forEach(button => {
+        button.addEventListener('click', event => {
             event.preventDefault();
-            const actionUrl = button.getAttribute('data-action-url');
-            confirmationMessage.textContent = "Are you sure you want to perform this action?";
-            confirmationModal.style.display = "block";
-
-            confirmYesButton.onclick = function() {
-                const form = button.closest('form');
-                if (form) {
-                    form.action = actionUrl;
-                    form.submit();
-                } else {
-                    window.location.href = actionUrl;
-                }
-            };
-
-            confirmNoButton.onclick = function() {
-                confirmationModal.style.display = "none";
-            };
+            formToSubmit = button.closest('form');
+            const actionType = button.getAttribute('data-action');
+            
+            if (actionType === 'delete') {
+                confirmationMessage.textContent = 'Are you sure you want to delete this HR?';
+            } else if (actionType === 'create-itw') {
+                confirmationMessage.textContent = 'Are you sure you want to create this interview?';
+            } else {
+                confirmationMessage.textContent = 'Are you sure you want to perform this action?';
+            }
+            
+            modal.style.display = 'block';
         });
+    });
+
+    confirmYes.addEventListener('click', () => {
+        if (formToSubmit) {
+            formToSubmit.submit();
+        }
+        modal.style.display = 'none';
+    });
+
+    confirmNo.addEventListener('click', () => {
+        modal.style.display = 'none';
     });
 });

@@ -34,7 +34,9 @@
                 {% if not hr.confirmed %}
                 <a href="{{ url_for('admin.confirm_account', hr_id=hr.id, admin_id=admin.id) }}}" class="review-button">Review</a>
                 {% else %}
-                <button type="button" class="btn btn-danger" data-action-url="{{ url_for('admin.delete_hr', hr_id=hr.id) }}" data-action="delete">Delete</button>
+                <form class="delete-hr-form" action="{{ url_for('admin.delete_hr', hr_id=hr.id) }}" method="POST">
+                    <button type="button" class="btn btn-danger" data-action="delete">Delete</button>
+                </form>
                 {% endif %}
             </td>
         </tr>
