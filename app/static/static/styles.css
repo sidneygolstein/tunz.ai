@@ -276,3 +276,30 @@ th.sortable.desc::after {
 .notification .error {
     background-color: red;
 }
+
+
+.flashes {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    width: auto;
+    z-index: 1000;
+}
+
+.flash-success {
+    background-color: #d4edda;
+    color: #155724;
+    padding: 10px;
+    margin: 10px;
+    border: 1px solid #c3e6cb;
+    border-radius: 5px;
+}
+
+.flash-danger {
+    background-color: #f8d7da;
+    color: #721c24;
+    padding: 10px;
+    margin: 10px;
+    border: 1px solid #f5c6cb;
+    border-radius: 5px;
+}

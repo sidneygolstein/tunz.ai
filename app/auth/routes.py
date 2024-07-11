@@ -25,20 +25,47 @@ def confirm_token(token, expiration=3600):
         return False
     return user_id
 
-# Generate Reset Token
-def generate_reset_token(hr_id):
+def generate_reset_token(user, user_type, expiration=3600):
     serializer = URLSafeTimedSerializer(current_app.config['SECRET_KEY'])
-    return serializer.dumps(hr_id, salt=current_app.config['SECURITY_PASSWORD_SALT'])
+    return serializer.dumps({'user_id': user.id, 'user_type': user_type}, salt=current_app.config['SECURITY_PASSWORD_SALT'])
+
+def verify_reset_token(token, expiration=3600):
+    serializer = URLSafeTimedSerializer(current_app.config['SECRET_KEY'])
+    try:
+        data = serializer.loads(token, salt=current_app.config['SECURITY_PASSWORD_SALT'], max_age=expiration)
+    except:
+        return None, None
+    if data['user_type'] == 'hr':
+        return HR.query.get(data['user_id']), 'hr'
+    elif data['user_type'] == 'admin':
+        return Admin.query.get(data['user_id']), 'admin'
+    return None, None
 
 
+# Send reset email
+def send_reset_email(user, user_type):
+    token = generate_reset_token(user, user_type)
+    reset_url = url_for('auth.reset_password', token=token, _external=True)
+    
+    if user_type == 'admin':
+        msg_body = f'''Hello admin, you requested to reset your password. Here is the link to reset the password:
+{reset_url}
 
-# Send Reset Email
-def send_reset_email(email, reset_url):
+If you did not make this request then simply ignore this email and no changes will be made.
+'''
+    else:
+        msg_body = f'''You requested to reset your password. Here is the link to reset the password:
+{reset_url}
+
+If you did not make this request then simply ignore this email and no changes will be made.
+'''
+
     msg = Message('Password Reset Request',
                   sender='noreply@tunz.ai',
-                  recipients=[email])
-    msg.body = f'To reset your password, visit the following link: {reset_url}\n\nIf you did not make this request, simply ignore this email.'
+                  recipients=[user.email])
+    msg.body = msg_body
     mail.send(msg)
+
 
 
 ################################################################################################
@@ -125,48 +152,56 @@ def register():
 
 
 
-# Request password reset
 @auth.route('/request_reset_password', methods=['GET', 'POST'])
 def request_reset_password():
     if request.method == 'POST':
         email = request.form['email']
-        user = HR.query.filter_by(email=email).first()
+        user = None
+        user_type = None
+
+        # Check if the email belongs to an admin
+        if email == 'sidney@tunz.ai':
+            user = Admin.query.filter_by(email=email).first()
+            user_type = 'admin'
+        
+        # If not an admin, check if it's an HR
+        if not user:
+            user = HR.query.filter_by(email=email).first()
+            user_type = 'hr'
+        
         if user:
-            reset_token = create_access_token(identity=user.id, expires_delta=timedelta(hours=1))
-            reset_url = url_for('auth.reset_password', token=reset_token, _external=True)
-            msg = Message('Password Reset Request', sender='noreply@tunz.ai', recipients=[email])
-            msg.body = f'You asked for password reset. Please click the link to reset your password: {reset_url}'
-            mail.send(msg)
-            flash('A password reset link has been sent to your email.', 'info')
+            send_reset_email(user, user_type)
+            flash("Password reset request confirmed. A link was sent to your email. Please check your emails.", "success")
+            return redirect(url_for('auth.login'))
         else:
-            flash('Email not found.', 'danger')
-        return redirect(url_for('auth.request_reset_password'))
+            flash("Email not found. Please try again.", "error")
+            return redirect(url_for('auth.request_reset_password')) 
     return render_template('auth/request_reset_password.html')
 
 
 # Reset password
 @auth.route('/reset_password/<token>', methods=['GET', 'POST'])
 def reset_password(token):
-    try:
-        user_id = decode_token(token)['sub']
-    except:
-        flash('The reset link is invalid or has expired.', 'danger')
+    user, user_type = verify_reset_token(token)
+    if not user:
+        flash("Invalid or expired token", "error")
         return redirect(url_for('auth.request_reset_password'))
     
     if request.method == 'POST':
         password = request.form['password']
-        confirm_password = request.form['confirm_password']
-        if password == confirm_password:
-            user = HR.query.get(user_id)
-            if user:
-                user.set_password(password)
-                db.session.commit()
-                flash('Your password has been updated!', 'success')
-                return redirect(url_for('auth.login'))
+        password_confirm = request.form['password_confirm']
+        if password == password_confirm:
+            user.set_password(password)
+            db.session.commit()
+            if user_type == 'admin':
+                flash("Admin password reset confirmed. You can now log in.", "success")
+                return redirect(url_for('auth.admin_login'))
             else:
-                flash('User not found.', 'danger')
+                flash("HR password reset confirmed. You can now log in.", "success")
+                return redirect(url_for('auth.login'))
         else:
-            flash('Passwords do not match.', 'danger')
+            flash("Passwords do not match. Please try again.", "error")
+            return redirect(url_for('auth.reset_password', token=token))
     return render_template('auth/reset_password.html', token=token)
 
 

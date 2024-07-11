@@ -1,5 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends 'base.html' %}
+
+{% block title %}Login{% endblock %}
+{% block content %}
+
 <head>
     <meta charset="UTF-8">
     <title>Login</title>
@@ -16,4 +19,4 @@
     <p>Don't have an account? <a href="{{ url_for('auth.register') }}">Register</a></p>
     <p>Forgot your password?<a href="{{ url_for('auth.request_reset_password') }}">Forgot Password?</a></p>
 </body>
-</html>
+{% endblock %}
