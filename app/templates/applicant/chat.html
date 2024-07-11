@@ -2,11 +2,7 @@
 
 {% block title %}Chat{% endblock %}
 {% block content %}
-
-<!-- Include the CSS file -->
 <link rel="stylesheet" href="{{ url_for('static', filename='static/styles.css') }}">
-
-<!-- Include the JavaScript file -->
 <script src="{{ url_for('static', filename='static/js/chat.js') }}"></script>
 
 <div class="chat-container">
@@ -53,7 +49,6 @@
             </div>
             {% endif %}
         </div>
-
         <div class="chat-input">
             {% if not is_finished %}
             <form action="{{ url_for('main.chat', hr_id=hr_id, interview_id=interview_id, interview_parameter_id=interview_parameter_id, session_id=session_id, applicant_id=applicant_id, thread_id=thread_id) }}" method="post" id="chat-form">

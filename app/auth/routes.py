@@ -93,7 +93,7 @@ def login():
 
 
 # To be enhanced with jwt
-@auth.route('/logout', methods=['POST'])
+@auth.route('/logout', methods=['GET','POST'])
 def logout():
     return redirect(url_for('auth.login'))
 

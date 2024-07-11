@@ -1,91 +1,88 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Session Details</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='static/styles.css') }}">
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f9;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
-        .container {
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            width: 80%;
-            max-width: 800px;
-        }
-        h1 {
-            color: #333;
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        p {
-            color: #555;
-            margin: 8px 0;
-        }
-        h2 {
-            color: #333;
-            margin-top: 20px;
-            border-bottom: 2px solid #e6e6e6;
-            padding-bottom: 10px;
-        }
-        ul {
-            list-style-type: none;
-            padding: 0;
-        }
-        ul li {
-            background-color: #f9f9f9;
-            margin: 10px 0;
-            padding: 10px;
-            border-radius: 5px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-        ul li strong {
-            color: #333;
-        }
-        a {
-            display: inline-block;
-            margin-top: 20px;
-            background-color: #007bff;
-            color: #fff;
-            padding: 10px 20px;
-            text-decoration: none;
-            border-radius: 5px;
-            text-align: center;
-        }
-        a:hover {
-            background-color: #0056b3;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h2>Details of the Interview</h2>
-        <p><strong>Applicant Name:</strong> {{ applicant.name }}</p>
-        <p><strong>Applicant Surname:</strong> {{ applicant.surname }}</p>
-        <p><strong>Applicant Email:</strong> {{ applicant.email_address }}</p>
-        <p><strong>Start Time:</strong> {{ session.start_time.strftime('%d-%m-%Y at %H:%M:%S') }}</p>
-        <p><strong>Score:</strong> {{ result.score_result }}</p>
-        <h3>Conversation</h3>
-        <ul>
-            {% for item in conversation %}
-                {% if item.role == 'Q' %}
-                    <li><strong>Q:</strong> {{ item.content }}</li>
-                {% else %}
-                    <li><strong>A:</strong> {{ item.content }}</li>
-                {% endif %}
-            {% endfor %}
-        </ul>
-        <a href="{{ url_for('main.home', hr_id=hr_id) }}">Back to Dashboard</a>
-    </div>
-</body>
-</html>
+{% extends 'base_hr_authenticated.html' %}
+{% block title %}HR Homepage{% endblock %}
+{% block content %}
+
+<link rel="stylesheet" href="{{ url_for('static', filename='static/styles.css') }}">
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f9;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+    }
+    .container {
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        width: 80%;
+        max-width: 800px;
+    }
+    h1 {
+        color: #333;
+        text-align: center;
+        margin-bottom: 20px;
+    }
+    p {
+        color: #555;
+        margin: 8px 0;
+    }
+    h2 {
+        color: #333;
+        margin-top: 20px;
+        border-bottom: 2px solid #e6e6e6;
+        padding-bottom: 10px;
+    }
+    ul {
+        list-style-type: none;
+        padding: 0;
+    }
+    ul li {
+        background-color: #f9f9f9;
+        margin: 10px 0;
+        padding: 10px;
+        border-radius: 5px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    ul li strong {
+        color: #333;
+    }
+    a {
+        display: inline-block;
+        margin-top: 20px;
+        background-color: #007bff;
+        color: #fff;
+        padding: 10px 20px;
+        text-decoration: none;
+        border-radius: 5px;
+        text-align: center;
+    }
+    a:hover {
+        background-color: #0056b3;
+    }
+</style>
+
+<div class="container">
+    <h2>Details of the Interview</h2>
+    <p><strong>Applicant Name:</strong> {{ applicant.name }}</p>
+    <p><strong>Applicant Surname:</strong> {{ applicant.surname }}</p>
+    <p><strong>Applicant Email:</strong> {{ applicant.email_address }}</p>
+    <p><strong>Start Time:</strong> {{ session.start_time.strftime('%d-%m-%Y at %H:%M:%S') }}</p>
+    <p><strong>Score:</strong> {{ result.score_result }}</p>
+    <h3>Conversation</h3>
+    <ul>
+        {% for item in conversation %}
+            {% if item.role == 'Q' %}
+                <li><strong>Q:</strong> {{ item.content }}</li>
+            {% else %}
+                <li><strong>A:</strong> {{ item.content }}</li>
+            {% endif %}
+        {% endfor %}
+    </ul>
+    <a href="{{ url_for('main.home', hr_id=hr_id) }}">Back to Dashboard</a>
+</div>
+{% endblock %}

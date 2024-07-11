@@ -7,6 +7,14 @@
     <script src="{{ url_for('static', filename='static/js/base.js') }}"></script>
 </head>
 <body>
+    <div class="sidebar">
+        <h2>Menu</h2>
+        <ul>
+            <li><a href="{{ url_for('main.home', hr_id=hr_id) }}">Homepage</a></li>
+            <li><a href="{{ url_for('main.create_interview', hr_id=hr_id) }}">Create a New Interview</a></li>
+            <li><a href="{{ url_for('auth.logout') }}">Logout</a></li>
+        </ul>
+    </div>
     <div class="main-content">
         {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}

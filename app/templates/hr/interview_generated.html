@@ -1,8 +1,7 @@
-{% extends 'base.html' %}
-
-{% block title %}Interview Generated{% endblock %}
-
+{% extends 'base_hr_authenticated.html' %}
+{% block title %}HR Homepage{% endblock %}
 {% block content %}
+
 <link rel="stylesheet" href="{{ url_for('static', filename='static/styles.css') }}">
 <div class="container">
     <h2>Interview Link Generated</h2>
@@ -22,10 +21,6 @@
     <div class="interview-link">
         <input type="text" value="{{ interview_link }}" id="interviewLink" readonly>
         <button onclick="copyToClipboard()">Copy Link</button>
-    </div>
-
-    <div class="back-home">
-        <a href="{{ url_for('main.home', hr_id=hr_id) }}" class="btn btn-primary">Back to Home</a>
     </div>
 </div>
 

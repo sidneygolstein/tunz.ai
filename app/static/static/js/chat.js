@@ -1,18 +1,16 @@
 document.addEventListener("DOMContentLoaded", function() {
     const timerElement = document.getElementById('timer');
     const finishUrl = timerElement.getAttribute('data-finish-url');
-    const sessionId = timerElement.getAttribute('data-session-id'); // Get session ID
-    let sessionFinished = timerElement.getAttribute('data-finished') === 'true'; // Check if the session is finished
+    const sessionId = timerElement.getAttribute('data-session-id');
+    const initialDuration = parseInt(timerElement.getAttribute('data-duration'), 10);
+    let sessionFinished = timerElement.getAttribute('data-finished') === 'true';
 
-    // Retrieve the initial duration and remaining time
-    let initialDuration = parseInt(timerElement.getAttribute('data-duration'), 10); // Initial duration in seconds
-    let timerDuration = localStorage.getItem('remainingTime_' + sessionId);
+
+     // Retrieve the remaining time from localStorage or set to initial duration
+     let timerDuration = parseInt(localStorage.getItem('remainingTime_' + sessionId)) || initialDuration;
+
     
-    if (!timerDuration) {
-        timerDuration = initialDuration; // Set to initial duration if no stored time
-    } else {
-        timerDuration = parseInt(timerDuration, 10);
-    }
+
 
     // Set warning flags
     let warningShown = sessionStorage.getItem('warningShown') === 'true'; // Retrieve from sessionStorage
@@ -36,7 +34,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
         if (timerDuration <= 0) {
             clearInterval(timerInterval);
-            // Redirect to finish chat screen
+            localStorage.removeItem('remainingTime_' + sessionId);
             window.location.href = finishUrl;
         } else {
             timerDuration -= 1; // Decrease by 1 second
