@@ -94,7 +94,7 @@ def deny_account(hr_id):
     
     return redirect(url_for('admin.home', admin_id=admin_id))
 
-@admin.route('/logout', methods=['POST'])
+@admin.route('/logout', methods=['GET','POST'])
 def logout():
     session.pop('admin_id', None)
     flash('You have been logged out.', 'success')

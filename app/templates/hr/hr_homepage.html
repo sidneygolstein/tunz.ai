@@ -11,7 +11,7 @@
     <h2>Welcome back, {{ hr_name }} {{ hr_surname }}</h2>
     <p>Company: {{ company_name }}</p>
     <p>Welcome to your dashboard!</p>
-    <h3>Your Interview Dashboard</h3>
+    <h3>General Dashboard</h3>
     {% if interview_data %}
     <table border="1">
         <tr>
@@ -42,7 +42,7 @@
     {% endif %}
 
     {% if interview_data %}
-    <h3>Detailed Dashboards for each Interview</h3>
+    <h3>Detailed Dashboards</h3>
     {% for interview in interview_data %}
         <h4>Interview title: {{ interview.role }} in {{ interview.industry }}</h4>
         <div class="scrollable-table">

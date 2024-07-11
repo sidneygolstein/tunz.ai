@@ -1,11 +1,11 @@
-<!DOCTYPE html>
-<html lang="en">
-<!-- Include the CSS file -->
+{% extends 'base_admin_authenticated.html' %}
+
+{% block title %}Admin Homepage{% endblock %}
+{% block content %}
 <link rel="stylesheet" href="{{ url_for('static', filename='static/styles.css') }}">
-<head>
-    <meta charset="UTF-8">
-    <title>Admin Dashboard</title>
-</head>
+<script src="{{ url_for('static', filename='static/js/admin_logout.js') }}"></script>
+<script src="{{ url_for('static', filename='static/js/manage_windows.js') }}"></script>
+<script src="{{ url_for('static', filename='static/js/confirmation.js') }}"></script>
 <body>
     <h1>Welcome, {{ admin.name }} {{ admin.surname }}</h1>
     <h2>Admin Dashboard</h2>
@@ -34,16 +34,23 @@
                 {% if not hr.confirmed %}
                 <a href="{{ url_for('admin.confirm_account', hr_id=hr.id, admin_id=admin.id) }}}" class="review-button">Review</a>
                 {% else %}
-                <form action="{{ url_for('admin.delete_hr', hr_id=hr.id) }}" method="post">
-                    <button type="submit">Delete</button>
-                </form>
+                <button type="button" class="btn btn-danger" data-action-url="{{ url_for('admin.delete_hr', hr_id=hr.id) }}" data-action="delete">Delete</button>
                 {% endif %}
             </td>
         </tr>
         {% endfor %}
     </table>
-    <button id="logout">Logout</button>
+
+    <!-- Confirmation Modal -->
+<div id="confirmation-modal" class="modal">
+    <div class="modal-content">
+        <p id="confirmation-message">Are you sure you want to perform this action?</p>
+        <button id="confirm-yes">Yes</button>
+        <button id="confirm-no">No</button>
+    </div>
+</div>
 </body>
-<script src="{{ url_for('static', filename='static/js/admin_logout.js') }}"></script>
-<script src="{{ url_for('static', filename='static/js/manage_windows.js') }}"></script>
-</html>
+{% endblock %}
+
+
+

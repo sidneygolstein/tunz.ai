@@ -1,12 +1,13 @@
 {% extends 'base_hr_authenticated.html' %}
-{% block title %}HR Homepage{% endblock %}
+{% block title %}Create Interview{% endblock %}
 {% block content %}
 
 <link rel="stylesheet" href="{{ url_for('static', filename='static/styles.css') }}">
+<script src="{{ url_for('static', filename='static/js/confirmation.js') }}"></script>
 
 <div class="container">
     <h1>Set Interview Parameters</h1>
-    <form action="{{ url_for('main.create_interview', hr_id=hr_id) }}" method="POST">
+    <form id="create-interview-form" action="{{ url_for('main.create_interview', hr_id=hr_id) }}" method="POST">
         <div class="form-group">
             <label for="language">Language:</label>
             <select name="language" class="form-control" required>
@@ -56,7 +57,17 @@
                 <option value="30">30 minutes</option>
             </select>
         </div>
-        <button type="submit" class="btn btn-primary">Create Interview</button>
+        <button type="button" class="btn btn-danger" data-action-url="{{ url_for('main.create_interview', hr_id=hr_id) }}" data-action="create-itw" id="create-interview-btn">Create Interview</button>
     </form>
 </div>
+
+<!-- Confirmation Modal -->
+<div id="confirmation-modal" class="modal">
+    <div class="modal-content">
+        <p id="confirmation-message">Are you sure you want to create this interview?</p>
+        <button id="confirm-yes">Yes</button>
+        <button id="confirm-no">No</button>
+    </div>
+</div>
+
 {% endblock %}

@@ -1,9 +1,7 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>HR Information</title>
-</head>
+{% extends 'base_admin_authenticated.html' %}
+
+{% block title %}HR informations{% endblock %}
+{% block content %}
 <body>
     <h1>HR Information</h1>
     <p>Email: {{ hr.email }}</p>
@@ -14,4 +12,4 @@
     <p>Date of Subscription: {{ hr.created_at.strftime('%d.%m.%Y') }}</p>
     <button onclick="window.location.href='{{ url_for('admin.home', admin_id=admin_id) }}'">Home</button>
 </body>
-</html>
+{% endblock %}

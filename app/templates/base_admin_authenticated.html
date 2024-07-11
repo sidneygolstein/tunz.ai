@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Tunz AI{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='static/styles.css') }}">
+    <script src="{{ url_for('static', filename='static/js/base.js') }}"></script>
+</head>
+<body>
+    <div class="sidebar">
+        <h2>Menu</h2>
+        <ul>
+            <li><a href="{{ url_for('admin.home') }}">Homepage</a></li>
+            <li><a href="{{ url_for('admin.logout') }}">Logout</a></li>
+        </ul>
+    </div>
+    <div class="main-content">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flashes">
+            {% for category, message in messages %}
+                <div class="flash-{{ category }}">{{ message }}</div>
+            {% endfor %}
+            </div>
+        {% endif %}
+        {% endwith %}
+        {% block content %}{% endblock %}
+    </div>
+</body>
+</html>
