@@ -1,21 +1,38 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Account Confirmation</title>
-</head>
+{% extends 'base_admin_authenticated.html' %}
+
+{% block title %}Account Confirmation{% endblock %}
+{% block content %}
+
+<link rel="stylesheet" href="{{ url_for('static', filename='static/styles.css') }}">
+<script src="{{ url_for('static', filename='static/js/confirmation.js') }}"></script>
+
+
 <body>
     <h1>Account Confirmation</h1>
     <p>Email: {{ email }}</p>
     <p>Name: {{ name }} {{ surname }}</p>
     <p>Company: {{ company_name }}</p>
-    <form action="{{ url_for('admin.accept_account', hr_id=hr_id, admin_id=admin_id) }}" method="POST">
-        <button type="submit">Accept Account</button>
+
+    <form class="accept-hr-form" action="{{ url_for('admin.accept_account', hr_id=hr_id, admin_id=admin_id) }}" method="POST">
         <input type="hidden" name="admin_id" value="{{ admin_id }}">
+        <button type="button" class="btn btn-danger" data-action="accept-HR">Accept</button>
     </form>
-    <form action="{{ url_for('admin.deny_account', hr_id=hr_id, admin_id=admin_id) }}" method="POST">
-        <button type="submit">Deny Account</button>
+
+    <form class="deny-hr-form" action="{{url_for('admin.deny_account', hr_id=hr_id, admin_id=admin_id)  }}" method="POST">
         <input type="hidden" name="admin_id" value="{{ admin_id }}">
+        <button type="button" class="btn btn-danger" data-action="deny-HR">Deny</button>
     </form>
+
+
+        <!-- Confirmation Modal -->
+<div id="confirmation-modal" class="modal">
+    <div class="modal-content">
+        <p id="confirmation-message">Are you sure you want to perform this action?</p>
+        <button id="confirm-yes">Yes</button>
+        <button id="confirm-no">No</button>
+    </div>
+</div>
+
+
 </body>
-</html>
+{% endblock %}

@@ -13,6 +13,11 @@ document.addEventListener('DOMContentLoaded', () => {
             
             if (actionType === 'delete') {
                 confirmationMessage.textContent = 'Are you sure you want to delete this HR?';
+            } 
+            else if (actionType === 'accept-HR') {
+                confirmationMessage.textContent = 'Are you sure you want to accept this HR?';
+            } else if (actionType === 'deny-HR') {
+                confirmationMessage.textContent = 'Are you sure you want to deny this HR?';
             } else if (actionType === 'create-itw') {
                 confirmationMessage.textContent = 'Are you sure you want to create this interview?';
             } else {

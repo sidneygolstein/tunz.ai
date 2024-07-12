@@ -4,9 +4,12 @@ from app.models.hr import HR
 from app.models.company import Company
 from app.models.interview import Interview
 from app.models.admin import Admin
+from app.models.session import Session
+from app.models.review_question import ReviewQuestion
 from flask_mail import Message
 from datetime import datetime
 from app.decorators import admin_required
+from sqlalchemy import func
 
 admin = Blueprint('admin', __name__)
 
@@ -23,13 +26,32 @@ def home():
         flash('Admin not found.', 'danger')
         return redirect(url_for('auth.admin_login'))
     hrs = HR.query.all()
+    total_hr = HR.query.count()
+    total_interviews = Interview.query.count()
+    total_sessions = Session.query.count()
 
     # Ensure created_at is datetime object (if needed)
     for hr in hrs:
         if isinstance(hr.created_at, str):
             hr.created_at = datetime.strptime(hr.created_at, '%Y-%m-%d')
     
-    return render_template('admin/admin_homepage.html', admin=admin, hrs=hrs)
+    # Fetch mean ratings per question
+    questions = ReviewQuestion.query.with_entities(ReviewQuestion.text).distinct().all()
+    question_ratings = {}
+    for question in questions:
+        avg_rating = db.session.query(func.avg(ReviewQuestion.rating)).filter(ReviewQuestion.text == question.text).scalar()
+        rating_count = db.session.query(func.count(ReviewQuestion.rating)).filter(ReviewQuestion.text == question.text).scalar()
+        question_ratings[question.text] = {
+            'avg_rating': avg_rating,
+            'rating_count': rating_count
+        }
+
+    # Fetch other necessary data for the template
+    hrs = HR.query.all()  # Or your method to fetch HRs
+
+    return render_template('admin/admin_homepage.html', admin=admin, hrs=hrs, 
+                           total_hr=total_hr, total_interviews=total_interviews, 
+                           total_sessions=total_sessions, question_ratings=question_ratings)
 
 
 
