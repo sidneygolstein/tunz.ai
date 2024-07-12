@@ -1,8 +1,8 @@
-"""empty message
+"""new migration
 
-Revision ID: 6d2fd719abfc
+Revision ID: 9d013a2f99f1
 Revises: 
-Create Date: 2024-07-07 11:40:26.154296
+Create Date: 2024-07-12 09:18:36.019505
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '6d2fd719abfc'
+revision = '9d013a2f99f1'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -89,6 +89,8 @@ def upgrade():
     sa.Column('start_time', sa.DateTime(), nullable=True),
     sa.Column('applicant_id', sa.Integer(), nullable=True),
     sa.Column('finished', sa.Boolean(), nullable=True),
+    sa.Column('thread_id', sa.String(), nullable=True),
+    sa.Column('assistant_id', sa.String(), nullable=True),
     sa.Column('interview_parameter_id', sa.Integer(), nullable=True),
     sa.Column('remaining_time', sa.Integer(), nullable=True),
     sa.ForeignKeyConstraint(['applicant_id'], ['applicant.id'], ),
