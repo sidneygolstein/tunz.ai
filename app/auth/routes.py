@@ -104,9 +104,13 @@ def register():
         data = request.get_json()
         email = data.get('email')
         password = data.get('password')
+        confirm_password = data.get('confirm_password')
         name = data.get('name')
         surname = data.get('surname')
         company_name = data.get('company_name')
+
+        if password != confirm_password:
+            return jsonify({"msg": "Passwords do not match"}), 400
 
         existing_user = HR.query.filter_by(email=email).first()
         if existing_user:
@@ -146,6 +150,7 @@ def register():
 
         return jsonify({"msg": "Registration request sent to admin for confirmation. You will receive an email when your account will be confirmed"}), 200
     return render_template('auth/register.html')
+
 
 
 
@@ -213,8 +218,12 @@ def admin_register():
         data = request.get_json()
         email = data.get('email')
         password = data.get('password')
+        confirm_password = data.get('confirm_password')
         name = data.get('name')
         surname = data.get('surname')
+
+        if password != confirm_password:
+            return jsonify({"msg": "Passwords do not match"}), 400
 
         if email != 'sidney@tunz.ai':
             return jsonify({"msg": "Only the designated admin can register"}), 400
@@ -230,6 +239,7 @@ def admin_register():
 
         return jsonify({"msg": "Admin registration successful"}), 200
     return render_template('auth/admin_register.html')
+
 
 
 @auth.route('/admin_login', methods=['GET', 'POST'])
