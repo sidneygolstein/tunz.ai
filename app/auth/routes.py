@@ -9,6 +9,8 @@ from flask_mail import Message
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired
 from helpers import get_url
 jwt = JWTManager()
+import re
+
 
 auth = Blueprint('auth', __name__)
 
@@ -68,6 +70,18 @@ If you did not make this request then simply ignore this email and no changes wi
     mail.send(msg)
 
 
+def is_strong_password(password):
+    if len(password) < 8:
+        return False
+    if not re.search(r"[A-Z]", password):
+        return False
+    if not re.search(r"\d", password):
+        return False
+    if not re.search(r"[!@#$%^&*(),.?\":{}|<>]", password):
+        return False
+    return True
+
+
 
 ################################################################################################
 
@@ -112,6 +126,9 @@ def register():
 
         if password != confirm_password:
             return jsonify({"msg": "Passwords do not match"}), 400
+        
+        if not is_strong_password(password):
+            return jsonify({"msg": "Password does not meet the criteria: At least 8 characters, one upper case letter, one digit, one special character"}), 400
 
         existing_user = HR.query.filter_by(email=email).first()
         if existing_user:
@@ -197,6 +214,8 @@ def reset_password(token):
         password = request.form['password']
         password_confirm = request.form['password_confirm']
         if password == password_confirm:
+            if not is_strong_password(password):
+                return jsonify({"msg": "Password does not meet the criteria: At least 8 characters, one upper case letter, one digit, one special character"}), 400
             user.set_password(password)
             db.session.commit()
             if user_type == 'admin':
@@ -225,6 +244,9 @@ def admin_register():
 
         if password != confirm_password:
             return jsonify({"msg": "Passwords do not match"}), 400
+        
+        if not is_strong_password(password):
+            return jsonify({"msg": "Password does not meet the criteria: At least 8 characters, one upper case letter, one digit, one special character"}), 400
 
         if email != 'sidney@tunz.ai':
             return jsonify({"msg": "Only the designated admin can register"}), 400

@@ -1,6 +1,7 @@
 body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
     display: flex;
+    color: #03005b;
     margin: 0;
 }
 
@@ -51,11 +52,11 @@ body {
 .message.assistant {
     background-color: #f1f1f1;
     align-self: flex-start;
-    color: black;
+    color: #03005b;;
 }
 
 .message.user {
-    background-color: #007bff;
+    background-color: #03005b;
     color: white;
     align-self: flex-end;
 }
@@ -96,7 +97,7 @@ body {
 .chat-input button {
     padding: 10px 20px;
     border: none;
-    background-color: #007bff;
+    background-color: #03005b;;
     color: white;
     border-radius: 20px;
     cursor: pointer;
@@ -104,7 +105,7 @@ body {
 
 .chat-header-right button,
 .chat-input button[type="submit"] {
-    background-color: #007bff;
+    background-color: #03005b;;
     color: white;
     border: none;
     padding: 10px 15px;
@@ -115,7 +116,7 @@ body {
 
 .chat-header-right button:hover,
 .chat-input button[type="submit"]:hover {
-    background-color: #0056b3;
+    background-color: #03005b;
 }
 
 
@@ -129,7 +130,7 @@ body {
 }
 
 .interview-link input {
-    flex: 1;
+    flex: .3;
     padding: 10px;
     font-size: 14px;
     margin-right: 10px;
@@ -161,14 +162,14 @@ body {
 .popup-content button {
     margin-top: 10px;
     padding: 5px 10px;
-    background-color: #007bff;
+    background-color: #03005b;;
     color: white;
     border: none;
     cursor: pointer;
 }
 
 .popup-content button:hover {
-    background-color: #0056b3;
+    background-color: #050090;;
 }
 
 .pending {
@@ -184,7 +185,7 @@ table {
 }
 
 th, td {
-    border: 1px solid black;
+    border: 1px solid 03005b;
     text-align: left;
     padding: 8px;
 }
@@ -241,7 +242,7 @@ th.sortable.desc::after {
 }
 .back-home .btn {
     padding: 10px 20px;
-    background-color: #007bff;
+    background-color: #03005b;
     color: white;
     text-decoration: none;
     border-radius: 5px;
@@ -259,8 +260,8 @@ th.sortable.desc::after {
     top: 10px;
     left: 50%;
     transform: translateX(-50%);
-    background-color: #333;
-    color: #fff;
+    background-color: #ffffff;
+    color: #03005b;
     padding: 15px;
     border-radius: 5px;
     z-index: 1000;
@@ -290,7 +291,7 @@ th.sortable.desc::after {
 
 .flash-success {
     background-color: #d4edda;
-    color: #155724;
+    color: #03005b;
     padding: 10px;
     margin: 10px;
     border: 1px solid #c3e6cb;
@@ -396,11 +397,79 @@ th.sortable.desc::after {
 }
 
 #confirm-yes {
-    background-color: rgb(145, 191, 255);
-    color: white;
+    background-color: #ddd8ff;
+    color: rgb(0, 0, 0);
 }
 
 #confirm-no {
     background-color: rgb(255, 167, 167);
     color: white;
+}
+
+
+.sidebar {
+    height: 100%;
+    width: 150px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: #050090;
+    padding-top: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar h2 {
+    color: rgb(255, 255, 255);
+}
+
+.sidebar a {
+    padding: 10px 15px;
+    text-decoration: none;
+    font-size: 18px;
+    color: rgb(255, 255, 255);
+    display: block;
+}
+
+
+.sidebar a.logout {
+    margin-top: auto;
+}
+
+
+.sidebar-top {
+    flex-grow: 1;
+}
+
+.sidebar a:hover {
+    background-color: #d7d1ff;
+}
+
+
+
+
+.kpi-container {
+    display: flex;
+    justify-content: space-around;
+    margin: 20px 0;
+}
+
+.kpi {
+    background: #050090;
+    border-radius: 8px;
+    padding: 20px;
+    text-align: center;
+    width: 18%;
+}
+
+.kpi h4 {
+    margin-bottom: 10px;
+    font-size: 18px;
+    color: rgb(255, 255, 255);
+}
+
+.kpi p {
+    font-size: 24px;
+    color: rgb(255, 255, 255);
+    font-weight: bold;
 }

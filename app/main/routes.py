@@ -31,6 +31,11 @@ def home(hr_id):
     
     interviews = Interview.query.filter_by(hr_id=hr_id).all()
     interview_data = []
+
+    total_sessions = 0
+    total_applicants_set = set()
+
+
     for interview in interviews:
         interview_parameters = InterviewParameter.query.filter_by(interview_id=interview.id).first()
         sessions = Session.query.filter_by(interview_parameter_id=interview.id).all()
@@ -48,6 +53,7 @@ def home(hr_id):
                 'score': score,
                 'id': session_id
             })
+            total_applicants_set.add(applicant.email_address)
         interview_data.append({
             'created_at': interview_parameters.start_time,
             'industry': interview_parameters.industry,
@@ -61,7 +67,15 @@ def home(hr_id):
             'sessions': session_data
         })
 
-    return render_template('hr/hr_homepage.html', hr_name=hr.name, hr_surname=hr.surname, company_name=hr.company.name, hr_id=hr.id, interview_data=interview_data)
+        total_sessions += len(sessions)
+
+    total_interviews = len(interviews) 
+    total_applicants = len(total_applicants_set)
+
+
+    return render_template('hr/hr_homepage.html', hr_name=hr.name, hr_surname=hr.surname, company_name=hr.company.name,
+                            hr_id=hr.id, interview_data=interview_data, total_interviews=total_interviews,
+                           total_sessions=total_sessions, total_applicants=total_applicants,)
 
 
 

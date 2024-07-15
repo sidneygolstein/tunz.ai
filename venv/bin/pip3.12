@@ -1,4 +1,4 @@
-#!/Users/sidneygolstein/Documents/WORK/KLNVL.LAB/MVP2/venv/bin/python3.12
+#!/Users/sidneygolstein/Documents/WORK/KLNVL.LAB/MVP2/venv/bin/python3
 # -*- coding: utf-8 -*-
 import re
 import sys

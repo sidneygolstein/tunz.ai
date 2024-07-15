@@ -3,24 +3,24 @@
 {% block title %}Admin Homepage{% endblock %}
 {% block content %}
 <link rel="stylesheet" href="{{ url_for('static', filename='static/styles.css') }}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 <script src="{{ url_for('static', filename='static/js/admin_logout.js') }}"></script>
 <script src="{{ url_for('static', filename='static/js/manage_windows.js') }}"></script>
 <script src="{{ url_for('static', filename='static/js/confirmation.js') }}"></script>
 <body>
-    <h1>Welcome, {{ admin.name }} {{ admin.surname }}</h1>
-    <h3>Key Performance Indicators</h3>
-    <!-- KPIs Section -->
-    <div class="kpis">
+    <h2>Welcome, {{ admin.name }} {{ admin.surname }}</h2>
+    <h3>KPI Overview</h3>
+    <div class="kpi-container">
         <div class="kpi">
-            <h3>Total HR</h3>
+            <h4>Total HR's </h4>
             <p>{{ total_hr }}</p>
         </div>
         <div class="kpi">
-            <h3>Total Interviews Created</h3>
+            <h4>Total Interviews Created</h4>
             <p>{{ total_interviews }}</p>
         </div>
         <div class="kpi">
-            <h3>Total Interviews Passed</h3>
+            <h4>Total Interviews Conducted</h4>
             <p>{{ total_sessions }}</p>
         </div>
     </div>

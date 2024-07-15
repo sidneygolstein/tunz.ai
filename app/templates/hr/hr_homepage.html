@@ -11,7 +11,22 @@
     <h2>Welcome back, {{ hr_name }} {{ hr_surname }}</h2>
     <p>Company: {{ company_name }}</p>
     <p>Welcome to your dashboard!</p>
-    <h3>General Dashboard</h3>
+    <h3>KPI Overview</h3>
+    <div class="kpi-container">
+        <div class="kpi">
+            <h4>Total Interviews Created</h4>
+            <p>{{ total_interviews }}</p>
+        </div>
+        <div class="kpi">
+            <h4>Total Interviews Conducted</h4>
+            <p>{{ total_sessions }}</p>
+        </div>
+        <div class="kpi">
+            <h4>Total Applicants</h4>
+            <p>{{ total_applicants }}</p>
+        </div>
+    </div>
+    <h3>Overview</h3>
     {% if interview_data %}
     <table border="1">
         <tr>
@@ -42,7 +57,7 @@
     {% endif %}
 
     {% if interview_data %}
-    <h3>Detailed Dashboards</h3>
+    <h3>Interview Details</h3>
     {% for interview in interview_data %}
         <h4>Interview title: {{ interview.role }} in {{ interview.industry }}</h4>
         <div class="scrollable-table">
