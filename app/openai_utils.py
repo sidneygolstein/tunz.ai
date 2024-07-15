@@ -6,7 +6,7 @@ from openai import OpenAI
 openai.api_key = os.environ.get("OPENAI_API_KEY")
 client = OpenAI()
 
-def get_initial_message(role, industry, applicant_name, applicant_surname, language):
+def get_initial_message(role, industry, situation, applicant_name, applicant_surname, language):
     return f""" 
     - You have to ask question first to {applicant_name} {applicant_surname} to start the interview for the {role} position in the {industry} industry.
     - The question must be asked in {language}. 
@@ -20,7 +20,7 @@ def get_thank_you_message(applicant_name):
 
 
 
-def create_openai_thread(language, role, industry, applicant_name, applicant_surname):
+def create_openai_thread(language, role, industry, situation, applicant_name, applicant_surname):
     
     openai_api_key = current_app.config.get('OPENAI_API_KEY')
     if not openai_api_key:
@@ -50,7 +50,7 @@ def create_openai_thread(language, role, industry, applicant_name, applicant_sur
         model="gpt-3.5-turbo",
     )
 
-    initial_message = get_initial_message(role, industry, applicant_name, applicant_surname,language)
+    initial_message = get_initial_message(role, industry, situation, applicant_name, applicant_surname,language)
 
     # THREAD CREATION
     thread = client.beta.threads.create(

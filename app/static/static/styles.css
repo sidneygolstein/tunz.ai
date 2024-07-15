@@ -473,3 +473,19 @@ th.sortable.desc::after {
     color: rgb(255, 255, 255);
     font-weight: bold;
 }
+
+/* Selected Situations List */
+.selected-situations {
+    list-style-type: disc;
+    padding-left: 20px;
+}
+
+.selected-situations li {
+    margin: 5px 0;
+    display: flex;
+    align-items: center;
+}
+
+.selected-situations .btn-sm {
+    margin-left: 10px;
+}

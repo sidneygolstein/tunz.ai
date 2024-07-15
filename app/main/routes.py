@@ -1,5 +1,7 @@
 # Contains the routes related to the main functionality
 
+import json
+import os
 from flask import render_template, request, redirect, url_for, jsonify, session, current_app, flash
 from .. import db, mail
 from ..models import Interview, InterviewParameter, Session, Question, Answer, Result, HR, Applicant, Company, Review, ReviewQuestion, Thread 
@@ -87,6 +89,7 @@ def create_interview(hr_id):
         role = request.form['role']
         industry = request.form['industry']
         duration = int(request.form['duration'])
+        situations = request.form.getlist('situations')
         
         new_interview = Interview(hr_id=hr_id)
         db.session.add(new_interview)
@@ -98,16 +101,24 @@ def create_interview(hr_id):
             role=role,
             industry=industry,
             duration=duration,
+            situation=json.dumps(situations),  # Store situations as JSON string
             interview_id=new_interview.id
         )
         
         db.session.add(interview_parameter)
         db.session.commit()
         interview_link = get_url('main.applicant_home', hr_id=hr_id, interview_parameter_id=interview_parameter.id)
-        
         return render_template('hr/interview_generated.html', interview_link=interview_link, hr_id=hr_id, interview_parameter=interview_parameter)
+    
+    # Construct the correct file path to the JSON file
+    json_path = os.path.join(current_app.root_path, 'interview_situations.json')
+    with open(json_path) as f:
+        interview_situations = json.load(f)
 
-    return render_template('hr/create_interview.html', hr_id=hr_id)
+    return render_template('hr/create_interview.html', hr_id=hr_id, interview_situations=interview_situations)
+
+
+
 
 @main.route('/session_details/<int:hr_id>/<int:session_id>', methods=['GET'])
 def session_details(hr_id, session_id):
@@ -185,6 +196,7 @@ def start_chat(hr_id, interview_parameter_id, interview_id, applicant_id):
         interview_parameter.language,
         interview_parameter.role,
         interview_parameter.industry,
+        interview_parameter.situation,
         applicant.name,
         applicant.surname
     )

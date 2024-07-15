@@ -1,5 +1,7 @@
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
+import json
+
 
 from .. import db
 
@@ -12,7 +14,7 @@ class InterviewParameter(db.Model):
     duration = db.Column(db.Integer, nullable=True)
     max_questions = db.Column(db.Integer, nullable=False)
     role = db.Column(db.String, nullable=True)                                              # marketing, sales, ops
-    situation = db.Column(db.String, nullable=True)                                         # Allow to prompt/refine the Assistant questions (commercial strategy development, OKR process)
+    situation = db.Column(db.Text, nullable=True)  # Allow storing JSON string for multiple situations
     industry = db.Column(db.String, nullable=True)                                          # Web3/blockchain, fintech, HRTech, MedTech, EdTech...
     position = db.Column(db.String, nullable=True)                                          # CTO, Head of Sales...
     evaluation_criteria = db.Column(db.String, nullable=True)                               # Allow to prompt the scoring 
@@ -22,3 +24,6 @@ class InterviewParameter(db.Model):
 
     def __repr__(self):
         return f'<Interview Parameter {self.id}>'
+    
+    def get_situations(self):
+        return json.loads(self.situation) if self.situation else []

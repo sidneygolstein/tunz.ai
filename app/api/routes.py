@@ -1,5 +1,6 @@
 # Contains the routes related to API functionality.
 
+import json
 from flask import Blueprint, jsonify, session
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
 from ..models import Question, Answer, Result, InterviewParameter, Session, Applicant, Review, ReviewQuestion, HR, Interview, Company, Admin
@@ -155,9 +156,10 @@ def get_interview_parameters():
         'max_questions': parameter.max_questions,
         'duration': parameter.duration,
         'role': parameter.role,
+        'situations': json.loads(parameter.situation) if parameter.situation else [],
         'industry': parameter.industry,
         'interview_id': parameter.interview_id
-    } for parameter in interview_parameters])
+    } for parameter in interview_parameters]) 
 
 
 @api.route('/sessions', methods=['GET'])
