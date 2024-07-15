@@ -60,6 +60,7 @@ def home(hr_id):
             'created_at': interview_parameters.start_time,
             'industry': interview_parameters.industry,
             'role': interview_parameters.role,
+            'situation': interview_parameters.get_situations(),
             'language': interview_parameters.language,
             'duration': interview_parameters.duration,
             'max_questions': interview_parameters.max_questions,
@@ -129,8 +130,8 @@ def session_details(hr_id, session_id):
 
     applicant = Applicant.query.get_or_404(session.applicant_id)
     questions = Question.query.filter_by(session_id=session_id).all()
-    #answers = Answer.query.filter_by(session_id=session_id).all()
     result = Result.query.filter_by(session_id=session_id).first()
+    interview_parameter = InterviewParameter.query.get(session.interview_parameter_id)
 
     conversation = []
     for question in questions:
@@ -139,13 +140,13 @@ def session_details(hr_id, session_id):
         if answer:
             conversation.append({'role': 'A', 'content': answer.content})
 
-
     return render_template('hr/session_details.html',
                            hr_id=hr_id,
                            session=session,
                            applicant=applicant,
                            conversation=conversation,
-                           result=result)
+                           result=result,
+                           interview_parameter=interview_parameter)
 
 ####################################################################################################################################################################################
 ############################################################ APPLICANT #############################################################################################################

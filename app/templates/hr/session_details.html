@@ -1,5 +1,5 @@
 {% extends 'base_hr_authenticated.html' %}
-{% block title %}HR Homepage{% endblock %}
+{% block title %}Session Details{% endblock %}
 {% block content %}
 
 <link rel="stylesheet" href="{{ url_for('static', filename='static/styles.css') }}">
@@ -21,8 +21,10 @@
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         width: 80%;
         max-width: 800px;
+        max-height: 80vh; /* Adjust to fit the screen */
+        overflow-y: auto; /* Enable scrolling */
     }
-    h1 {
+    h1, h2 {
         color: #333;
         text-align: center;
         margin-bottom: 20px;
@@ -30,12 +32,6 @@
     p {
         color: #555;
         margin: 8px 0;
-    }
-    h2 {
-        color: #333;
-        margin-top: 20px;
-        border-bottom: 2px solid #e6e6e6;
-        padding-bottom: 10px;
     }
     ul {
         list-style-type: none;
@@ -64,25 +60,45 @@
     a:hover {
         background-color: #0056b3;
     }
+    .conversation-box {
+        max-height: 200px; /* Adjust height as needed */
+        overflow-y: auto;
+        border: 1px solid #e6e6e6;
+        padding: 10px;
+        border-radius: 5px;
+        margin-top: 20px;
+    }
 </style>
 
 <div class="container">
     <h2>Details of the Interview</h2>
+    <p><strong>Role:</strong> {{ interview_parameter.role }}</p>
+    <p><strong>Situations:</strong>
+        <ul>
+            {% for situation in interview_parameter.get_situations() %}
+            <li>{{ situation }}</li>
+            {% endfor %}
+        </ul>
+    </p>
+    <p><strong>Industry:</strong> {{ interview_parameter.industry }}</p>
+    <p><strong>Duration:</strong> {{ interview_parameter.duration }} minutes</p>
+    <p><strong>Start Time:</strong> {{ session.start_time.strftime('%d-%m-%Y at %H:%M:%S') }}</p>
+    <p><strong>Score:</strong> {{ result.score_result }}</p>
     <p><strong>Applicant Name:</strong> {{ applicant.name }}</p>
     <p><strong>Applicant Surname:</strong> {{ applicant.surname }}</p>
     <p><strong>Applicant Email:</strong> {{ applicant.email_address }}</p>
-    <p><strong>Start Time:</strong> {{ session.start_time.strftime('%d-%m-%Y at %H:%M:%S') }}</p>
-    <p><strong>Score:</strong> {{ result.score_result }}</p>
     <h3>Conversation</h3>
-    <ul>
-        {% for item in conversation %}
-            {% if item.role == 'Q' %}
-                <li><strong>Q:</strong> {{ item.content }}</li>
-            {% else %}
-                <li><strong>A:</strong> {{ item.content }}</li>
-            {% endif %}
-        {% endfor %}
-    </ul>
+    <div class="conversation-box">
+        <ul>
+            {% for item in conversation %}
+                {% if item.role == 'Q' %}
+                    <li><strong>Q:</strong> {{ item.content }}</li>
+                {% else %}
+                    <li><strong>A:</strong> {{ item.content }}</li>
+                {% endif %}
+            {% endfor %}
+        </ul>
+    </div>
     <a href="{{ url_for('main.home', hr_id=hr_id) }}">Back to Dashboard</a>
 </div>
 {% endblock %}

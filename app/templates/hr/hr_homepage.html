@@ -33,22 +33,30 @@
             <th>Created At</th>
             <th>Industry</th>
             <th>Role</th>
+            <th>Situation(s)</th>
             <th>Language</th>
             <th>Duration</th>
             <th>Max Questions</th>
-            <th>Sessions Count</th>
-            <th>Interview Link</th>
+            <th>Number of Interviews</th>
+            <th>Link</th>
         </tr>
         {% for interview in interview_data %}
         <tr>
             <td>{{ interview.created_at.strftime('%d-%m-%Y at %H:%M:%S') }}</td>
             <td>{{ interview.industry }}</td>
             <td>{{ interview.role }}</td>
+            <td>
+                <ul>
+                    {% for situation in interview.situation %}
+                    <li>{{ situation }}</li>
+                    {% endfor %}
+                </ul>
+            </td>
             <td>{{ interview.language }}</td>
             <td>{{ interview.duration }} minutes</td>
             <td>{{ interview.max_questions }}</td>
             <td>{{ interview.sessions_count }}</td>
-            <td><a href="{{ url_for('main.applicant_home', hr_id = hr_id, interview_parameter_id=interview.interview_parameter_id) }}" target="_blank">Interview Link</a></td>
+            <td><a href="{{ url_for('main.applicant_home', hr_id = hr_id, interview_parameter_id=interview.interview_parameter_id) }}" target="_blank">Link</a></td>
         </tr>
         {% endfor %}
     </table>
@@ -57,16 +65,16 @@
     {% endif %}
 
     {% if interview_data %}
-    <h3>Interview Details</h3>
+    <h3>Details</h3>
     {% for interview in interview_data %}
-        <h4>Interview title: {{ interview.role }} in {{ interview.industry }}</h4>
+        <h4>Interview for: {{ interview.role }} position in the {{ interview.industry }} industry</h4>
         <div class="scrollable-table">
             <table border="1">
                 <thead>
                     <tr>
-                        <th class="sortable">Applicant Name</th>
-                        <th class="sortable">Applicant Surname</th>
-                        <th class="sortable">Applicant Email</th>
+                        <th class="sortable">Name</th>
+                        <th class="sortable">Surname</th>
+                        <th class="sortable">Email</th>
                         <th class="sortable">Start Time</th>
                         <th class="sortable">Score</th>
                         <th>See Details</th>
