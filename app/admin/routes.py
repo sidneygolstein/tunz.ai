@@ -47,7 +47,7 @@ def home():
         }
 
     # Fetch other necessary data for the template
-    hrs = HR.query.all()  # Or your method to fetch HRs
+    hrs = HR.query.all()  
 
     return render_template('admin/admin_homepage.html', admin=admin, hrs=hrs, 
                            total_hr=total_hr, total_interviews=total_interviews, 
@@ -87,7 +87,7 @@ def accept_account(hr_id):
     msg = Message('Account Confirmed',
                   sender='noreply@tunz.ai',
                   recipients=[user.email])
-    msg.body = f'Your account has been confirmed by the admin. You can now login using your credentials. Login here: {url_for('auth.login', _external=True)}'
+    msg.body = f'Your account has been confirmed by the admin. You can now login using your credentials. Login here: {url_for('auth.login', _external=True, _scheme='https')}'
     mail.send(msg)
     return redirect(url_for('admin.home', admin_id=admin_id))
 
@@ -125,6 +125,7 @@ def logout():
 
 
 @admin.route('/delete_hr/<int:hr_id>', methods=['POST'])
+@admin_required
 def delete_hr(hr_id):
     hr = HR.query.get_or_404(hr_id)
     db.session.delete(hr)

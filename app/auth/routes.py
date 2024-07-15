@@ -7,6 +7,7 @@ from app.models.admin import Admin
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity, decode_token, JWTManager
 from flask_mail import Message
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired
+from helpers import get_url
 jwt = JWTManager()
 
 auth = Blueprint('auth', __name__)
@@ -45,7 +46,7 @@ def verify_reset_token(token, expiration=3600):
 # Send reset email
 def send_reset_email(user, user_type):
     token = generate_reset_token(user, user_type)
-    reset_url = url_for('auth.reset_password', token=token, _external=True)
+    reset_url = get_url('auth.reset_password', token=token)
     
     if user_type == 'admin':
         msg_body = f'''Hello admin, you requested to reset your password. Here is the link to reset the password:
@@ -138,7 +139,7 @@ def register():
         if not admin_id:
             return jsonify({"msg": "Admin must be logged in to register a new HR"}), 403
         #confirm_url = url_for('admin.confirm_account', hr_id=hr.id, admin_id=admin_id, _external=True)
-        dashboard_url = url_for('admin.home', admin_id=admin_id, _external=True)
+        dashboard_url = get_url('admin.home', admin_id=admin_id)
         
         
         # Send confirmation email to admin        

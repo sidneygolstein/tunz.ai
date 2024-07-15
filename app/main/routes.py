@@ -9,6 +9,8 @@ from ..forms import ReviewForm, RatingForm
 from flask import Blueprint
 from datetime import datetime
 from flask_mail import Message
+from helpers import get_url
+
 
 main = Blueprint('main', __name__)
 
@@ -87,7 +89,7 @@ def create_interview(hr_id):
         
         db.session.add(interview_parameter)
         db.session.commit()
-        interview_link = url_for('main.applicant_home', hr_id=hr_id, interview_parameter_id=interview_parameter.id, _external=True)
+        interview_link = get_url('main.applicant_home', hr_id=hr_id, interview_parameter_id=interview_parameter.id)
         
         return render_template('hr/interview_generated.html', interview_link=interview_link, hr_id=hr_id, interview_parameter=interview_parameter)
 
@@ -245,7 +247,7 @@ def chat(hr_id, interview_id, interview_parameter_id, session_id, applicant_id):
             current_session.finished = True
             db.session.commit()
             hr_email = hr.email
-            hr_link = url_for('main.hr_result', hr_id=hr_id, interview_id=interview_id, interview_parameter_id=interview_parameter_id, session_id=session_id, applicant_id=applicant_id, _external=True)
+            hr_link = get_url('main.hr_result', hr_id=hr_id, interview_id=interview_id, interview_parameter_id=interview_parameter_id, session_id=session_id, applicant_id=applicant_id)
             msg = Message('Interview Finished',
                           sender='noreply@tunz.ai',
                           recipients=[hr_email])
@@ -306,13 +308,12 @@ def finish_chat(hr_id, interview_id, interview_parameter_id, session_id, applica
     db.session.add(result)
     db.session.commit()
 
-    hr_link = url_for('main.hr_result',
+    hr_link = get_url('main.hr_result',
                       hr_id = hr_id, 
                       interview_id=interview_id, 
                       interview_parameter_id=interview_parameter_id, 
                       session_id=session_id, 
-                      applicant_id = applicant_id, 
-                      _external=True)
+                      applicant_id = applicant_id)
     msg = Message('Interview Finished',
                   sender='noreply@tunz.ai',
                   recipients=[hr_email])
