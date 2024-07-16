@@ -9,14 +9,13 @@
 <body>
     <div class="sidebar">
         <h2>Menu</h2>
-        <ul>
-            <div class="sidebar-top">
-                <a href="{{ url_for('main.home', hr_id=hr_id) }}"><i class="fas fa-home"></i> Home</a>
-                <a href="{{ url_for('main.create_interview', hr_id=hr_id) }}"><i class="fas fa-plus-circle"></i> Create New Interview</a>
-            </div>
-            <a href="{{ url_for('auth.logout') }}"><i class="fas fa-sign-out-alt"></i> Logout</a>
-        </ul>
+        <div class="sidebar-top">
+            <a href="{{ url_for('main.home', hr_id=hr_id) }}"><i class="fas fa-home"></i> Home</a>
+            <a href="{{ url_for('main.create_interview', hr_id=hr_id) }}"><i class="fas fa-plus-circle"></i> Create New Interview</a>
+        </div>
+        <a href="{{ url_for('auth.logout') }}" class="logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
     </div>
+    
     <div class="main-content">
         {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}

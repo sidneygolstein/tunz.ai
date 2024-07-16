@@ -1,20 +1,13 @@
 body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-    display: flex;
     color: #03005b;
     margin: 0;
+    background-color: #f4f4f9;
 }
 
 .chat-container {
     display: flex;
     height: 100vh;
-}
-
-.sidebar,
-.sidebar-right {
-    flex: 0 0 20%;
-    padding: 20px;
-    background-color: #f4f4f4;
 }
 
 .chat-content {
@@ -119,11 +112,6 @@ body {
     background-color: #03005b;
 }
 
-
-
-
-
-
 .interview-link {
     display: flex;
     align-items: center;
@@ -141,7 +129,6 @@ body {
     font-size: 14px;
     cursor: pointer;
 }
-
 
 .popup {
     position: fixed;
@@ -179,15 +166,99 @@ body {
     color: red;
 }
 
-table {
-    border-collapse: collapse;
+/* DASHBOARD STYLES */
+.dashboard {
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    width: 100%; /* Ensure it spans the full width */
+    max-width: 1200px; /* Optional max-width for readability */
+    margin: auto; /* Center align */
+}
+
+.dashboard h2, .dashboard h3 {
+    text-align: center;
+    color: #050090;
+}
+
+
+
+/* KPIS STYLES */
+
+.kpi-container {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    margin: 20px 0;
     width: 100%;
 }
 
+
+
+.kpi {
+    background: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 20px;
+    text-align: center;
+    width: 28%;
+    margin: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.kpi:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.kpi h4 {
+    margin-bottom: 10px;
+    font-size: 18px;
+    color: #050090;
+}
+
+.kpi p {
+    font-size: 24px;
+    color: #03005b;
+    font-weight: bold;
+}
+
+
+/* TABLE STYLES */
+
+.table-container {
+    width: 100%;
+    overflow-x: auto;
+    margin-top: 20px;
+}
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+    background: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
 th, td {
-    border: 1px solid 03005b;
+    padding: 12px 15px;
     text-align: left;
-    padding: 8px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+th {
+    background-color: #f4f4f9;
+    color: #050090;
+    font-weight: bold;
+}
+
+td ul {
+    list-style-type: disc;
+    padding-left: 20px;
+    margin: 0;
 }
 
 th.sortable:hover {
@@ -222,24 +293,75 @@ th.sortable.desc::after {
 }
 
 
+
+/* INTERVIEW DETAILS STYLES */
+
+
+.interview-details {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* Two columns */
+    gap: 20px; /* Gap between items */
+}
+
+
+.interview-card {
+    background: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    font-size: 14px; /* Adjust text size */
+}
+
+.interview-card h4 {
+    font-size: 16px; /* Slightly larger for headers */
+}
+
+.interview-card table {
+    width: 100%;
+}
+
+.interview-card th, .interview-card td {
+    padding: 8px;
+}
+
+.interview-details .interview-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
 .interview-details ul {
     list-style: none;
     padding: 0;
 }
+
 .interview-details li {
     margin: 5px 0;
 }
+
+
+/* INTERVIEW LINK STYLES */
+
+
+
 .interview-link {
     margin: 20px 0;
 }
+
 .interview-link input {
     width: 80%;
     padding: 10px;
     margin-right: 10px;
 }
+
 .interview-link button {
     padding: 10px 20px;
 }
+
+
+/* BACK HOME BUTTON STYLES */
+
 .back-home .btn {
     padding: 10px 20px;
     background-color: #03005b;
@@ -247,13 +369,12 @@ th.sortable.desc::after {
     text-decoration: none;
     border-radius: 5px;
 }
+
 .back-home .btn:hover {
     background-color: #0056b3;
 }
 
-
-
-/* FLASH */
+/* FLASH STYLES */
 
 .notification {
     position: fixed;
@@ -279,7 +400,6 @@ th.sortable.desc::after {
 .notification .error {
     background-color: red;
 }
-
 
 .flashes {
     position: fixed;
@@ -307,7 +427,6 @@ th.sortable.desc::after {
     border-radius: 5px;
 }
 
-
 .main-content {
     padding: 20px;
 }
@@ -318,52 +437,10 @@ th.sortable.desc::after {
 }
 
 
-/* SIDEBAR */
-
-
-.sidebar {
-    width: 200px;
-    background-color: #f8f9fa;
-    padding: 15px;
-    height: 100vh;
-    position: fixed;
-    left: 0;
-    top: 0;
-    overflow: auto;
-}
-
-.sidebar h2 {
-    text-align: center;
-    margin-bottom: 20px;
-}
-
-.sidebar ul {
-    list-style-type: none;
-    padding: 0;
-}
-
-.sidebar ul li {
-    margin: 10px 0;
-}
-
-.sidebar ul li a {
-    text-decoration: none;
-    color: #333;
-    display: block;
-    padding: 10px;
-    border-radius: 5px;
-    transition: background-color 0.3s;
-}
-
-.sidebar ul li a:hover {
-    background-color: #ddd;
-}
-
 .main-content {
     margin-left: 220px; /* Same width as the sidebar + some space */
     width: calc(100% - 220px);
 }
-
 
 /* Modal styling */
 .modal {
@@ -379,6 +456,9 @@ th.sortable.desc::after {
     background-color: rgba(0,0,0,0.4); 
     padding-top: 60px; 
 }
+
+/* CONFIRM BOX STYLES */
+
 
 .modal-content {
     background-color: #fefefe;
@@ -406,6 +486,7 @@ th.sortable.desc::after {
     color: white;
 }
 
+/* SIDEBAR STYLES */
 
 .sidebar {
     height: 100%;
@@ -414,65 +495,48 @@ th.sortable.desc::after {
     top: 0;
     left: 0;
     background-color: #050090;
-    padding-top: 20px;
     display: flex;
     flex-direction: column;
+    justify-content: space-between; /* Ensure items are spaced between top and bottom */
 }
 
 .sidebar h2 {
     color: rgb(255, 255, 255);
+    text-align: center; /* Align text to the left */
+    margin-bottom: 20px; /* Add space below the heading */
+}
+
+.sidebar ul {
+    padding-left: 0;
+}
+
+.sidebar-top {
+    display: flex;
+    flex-direction: column;
 }
 
 .sidebar a {
-    padding: 10px 15px;
     text-decoration: none;
     font-size: 18px;
     color: rgb(255, 255, 255);
     display: block;
+    padding: 10px 15px; /* Add padding to the left */
+    text-align: left; /* Align text to the left */
 }
-
 
 .sidebar a.logout {
-    margin-top: auto;
-}
-
-
-.sidebar-top {
-    flex-grow: 1;
+    margin-top: auto; /* Pushes the logout link to the bottom */
+    padding: 10px 15px; /* Ensure the logout link also has padding */
+    margin-bottom: 30px; /* Add margin to ensure it's not too low */
 }
 
 .sidebar a:hover {
     background-color: #d7d1ff;
+    width: 80%; /* Ensure the hover effect spans the entire width */
 }
 
 
 
-
-.kpi-container {
-    display: flex;
-    justify-content: space-around;
-    margin: 20px 0;
-}
-
-.kpi {
-    background: #050090;
-    border-radius: 8px;
-    padding: 20px;
-    text-align: center;
-    width: 18%;
-}
-
-.kpi h4 {
-    margin-bottom: 10px;
-    font-size: 18px;
-    color: rgb(255, 255, 255);
-}
-
-.kpi p {
-    font-size: 24px;
-    color: rgb(255, 255, 255);
-    font-weight: bold;
-}
 
 /* Selected Situations List */
 .selected-situations {

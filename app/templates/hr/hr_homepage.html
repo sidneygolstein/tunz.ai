@@ -37,8 +37,8 @@
             <th>Language</th>
             <th>Duration</th>
             <th>Max Questions</th>
-            <th>Number of Interviews</th>
-            <th>Link</th>
+            <th>Number of Interviews passed</th>
+            <th>Interview Link</th>
         </tr>
         {% for interview in interview_data %}
         <tr>
@@ -56,7 +56,7 @@
             <td>{{ interview.duration }} minutes</td>
             <td>{{ interview.max_questions }}</td>
             <td>{{ interview.sessions_count }}</td>
-            <td><a href="{{ url_for('main.applicant_home', hr_id = hr_id, interview_parameter_id=interview.interview_parameter_id) }}" target="_blank">Link</a></td>
+            <td><a href="{{ url_for('main.applicant_home', hr_id = hr_id, interview_parameter_id=interview.interview_parameter_id) }}" target="_blank">Interview Link</a></td>
         </tr>
         {% endfor %}
     </table>
@@ -66,35 +66,37 @@
 
     {% if interview_data %}
     <h3>Details</h3>
-    {% for interview in interview_data %}
-        <h4>Interview for: {{ interview.role }} position in the {{ interview.industry }} industry</h4>
-        <div class="scrollable-table">
-            <table border="1">
-                <thead>
-                    <tr>
-                        <th class="sortable">Name</th>
-                        <th class="sortable">Surname</th>
-                        <th class="sortable">Email</th>
-                        <th class="sortable">Start Time</th>
-                        <th class="sortable">Score</th>
-                        <th>See Details</th>
-                    </tr>
-                </thead>
-                <tbody>
-                {% for session in interview.sessions %}
-                    <tr>
-                        <td>{{ session.applicant_name }}</td>
-                        <td>{{ session.applicant_surname }}</td>
-                        <td>{{ session.applicant_email }}</td>
-                        <td>{{ session.start_time.strftime('%d-%m-%Y at %H:%M:%S') }}</td>
-                        <td>{{ session.score }}</td>
-                        <td><a href="{{ url_for('main.session_details', hr_id=hr_id, session_id=session.id) }}">See Details</a></td>
-                    </tr>
-                {% endfor %}
-                </tbody>
-            </table>
+        <div class="interview-details">
+            {% for interview in interview_data %}
+            <div class="interview-card">
+                <h4>Interview for: {{ interview.role }} position in the {{ interview.industry }} industry</h4>
+                <table>
+                    <thead>
+                        <tr>
+                            <th class="sortable">Name</th>
+                            <th class="sortable">Surname</th>
+                            <th class="sortable">Email</th>
+                            <th class="sortable">Start Time</th>
+                            <th class="sortable">Score</th>
+                            <th>See Details</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for session in interview.sessions %}
+                        <tr>
+                            <td>{{ session.applicant_name }}</td>
+                            <td>{{ session.applicant_surname }}</td>
+                            <td>{{ session.applicant_email }}</td>
+                            <td>{{ session.start_time.strftime('%d-%m-%Y at %H:%M:%S') }}</td>
+                            <td>{{ session.score }}</td>
+                            <td><a href="{{ url_for('main.session_details', hr_id=hr_id, session_id=session.id) }}">See Details</a></td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% endfor %}
         </div>
-    {% endfor %}
     {% endif %}
     
     <script src="{{ url_for('static', filename='js/sortable.js') }}"></script>
