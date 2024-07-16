@@ -6,10 +6,13 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 <script src="{{ url_for('static', filename='static/js/admin_logout.js') }}"></script>
 <script src="{{ url_for('static', filename='static/js/manage_windows.js') }}"></script>
+<script src="{{ url_for('static', filename='static/js/sort_table.js') }}" defer></script>
 <script src="{{ url_for('static', filename='static/js/confirmation.js') }}"></script>
 <body>
-    <h2>Welcome, {{ admin.name }} {{ admin.surname }}</h2>
-    <h3>KPI Overview</h3>
+    <div class="text-center">
+        <h1>Welcome, {{ admin.name }} {{ admin.surname }}</h1>
+        <h2>My Overview</h2>
+    </div>
     <div class="kpi-container">
         <div class="kpi">
             <h4>Total HR's </h4>
@@ -25,9 +28,11 @@
         </div>
     </div>
    <!-- Mean Ratings Section -->
+   <div class="dashboard">
    <div class="mean-ratings">
     <h3>Mean Review Ratings per Question</h3>
-    <table border="1">
+    <div class="table-container">
+    <table>
         <tr>
             <th>Question</th>
             <th>Mean Rating</th>
@@ -42,42 +47,52 @@
         {% endfor %}
     </table>
     </div>
-    <div class="container">
-        <div class="dashboard">
-            <h3>HR List</h3>
-            <table border="1">
-                <tr>
-                    <th>Name</th>
-                    <th>Surname</th>
-                    <th>Email</th>
-                    <th>Company</th>
-                    <th>Confirmed</th>
-                    <th>Date of Subscription</th>
-                    <th>View Infos</th>
-                    <th>Action</th>
-                </tr>
-                {% for hr in hrs %}
-                <tr class="{% if not hr.confirmed %}pending{% endif %}">
-                    <td>{{ hr.name }}</td>
-                    <td>{{ hr.surname }}</td>
-                    <td>{{ hr.email }}</td>
-                    <td>{{ hr.company.name }}</td>
-                    <td>{{ hr.confirmed }}</td>
-                    <td>{{ hr.created_at.strftime('%d.%m.%Y') }}</td>
-                    <td><a href="{{ url_for('admin.view_hr_info', hr_id=hr.id, admin_id=admin.id) }}">View Infos</a></td>
-                    <td>
-                        {% if not hr.confirmed %}
-                        <a href="{{ url_for('admin.confirm_account', hr_id=hr.id, admin_id=admin.id) }}}" class="review-button">Review</a>
-                        {% else %}
-                        <form class="delete-hr-form" action="{{ url_for('admin.delete_hr', hr_id=hr.id) }}" method="POST">
-                            <button type="button" class="btn btn-danger" data-action="delete">Delete</button>
-                        </form>
-                        {% endif %}
-                    </td>
-                </tr>
-                {% endfor %}
+    </div>
+    </div>
+    <div class="dashboard">
+        <h2>My HR's</h2>
+        <div class="scrollable-table">
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th class="sortable">Name</td>
+                        <th class="sortable">Surname</td>
+                        <th class="sortable">Email</td>
+                        <th>Company</th>
+                        <th class="sortable">Date of Subscription</td>
+                        <th class="sortable">Interviews</td>
+                        <th class="sortable">Sessions</td>
+                        <th>View Infos</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for data in hr_interview_session_data %}
+                    <tr class="{% if not data.hr.confirmed %}pending{% endif %}">
+                        <td>{{ data.hr.name }}</td>
+                        <td>{{ data.hr.surname }}</td>
+                        <td>{{ data.hr.email }}</td>
+                        <td>{{ data.hr.company.name }}</td>
+                        <td>{{ data.hr.created_at.strftime('%d.%m.%Y') }}</td>
+                        <td>{{ data.interview_count }}</td>
+                        <td>{{ data.session_count }}</td>
+                        <td><a href="{{ url_for('admin.view_hr_info', hr_id=data.hr.id, admin_id=admin.id) }}">View Infos</a></td>
+                        <td>
+                            {% if not data.hr.confirmed %}
+                            <a href="{{ url_for('admin.confirm_account', hr_id=data.hr.id, admin_id=admin.id) }}}" class="review-button">Review</a>
+                            {% else %}
+                            <form class="delete-hr-form" action="{{ url_for('admin.delete_hr', hr_id=data.hr.id) }}" method="POST">
+                                <button type="button" class="btn btn-danger" data-action="delete">Delete</button>
+                            </form>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
             </table>
         </div>
+    </div>
     </div>
 
     <!-- Confirmation Modal -->

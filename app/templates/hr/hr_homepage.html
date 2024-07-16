@@ -6,70 +6,81 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <script src="{{ url_for('static', filename='static/js/sort_table.js') }}" defer></script>
     <script src="{{ url_for('static', filename='static/js/details.js') }}"></script>
-
-
-    <h2>Welcome back, {{ hr_name }} {{ hr_surname }}</h2>
-    <p>Company: {{ company_name }}</p>
-    <p>Welcome to your dashboard!</p>
-    <h3>KPI Overview</h3>
-    <div class="kpi-container">
-        <div class="kpi">
-            <h4>Total Interviews Created</h4>
-            <p>{{ total_interviews }}</p>
+    <div class="text-center">
+        <h1>Welcome To Your Dashboard, {{ hr_name }} {{ hr_surname }}</h1>
+        <h2>Company: {{ company_name }}</h2>
+        <h2>My Overview</h2>
+    </div>
+        <div class="kpi-container">
+            <div class="kpi">
+                <h4>Total Interviews Created</h4>
+                <p>{{ total_interviews }}</p>
+            </div>
+            <div class="kpi">
+                <h4>Total Interviews Conducted</h4>
+                <p>{{ total_sessions }}</p>
+            </div>
+            <div class="kpi">
+                <h4>Total Applicants</h4>
+                <p>{{ total_applicants }}</p>
+            </div>
         </div>
-        <div class="kpi">
-            <h4>Total Interviews Conducted</h4>
-            <p>{{ total_sessions }}</p>
+    <div class="dashboard">
+        <h2>My Interviews</h2>
+        <div class="scrollable-table">
+        <div class="table-container">
+            {% if interview_data %}
+            <table>
+                <thead>
+                    <tr>
+                        <th class="sortable">Created At</td>
+                        <th class="sortable">Industry</td>
+                        <th>Role</th>
+                        <th>Situation(s)</th>
+                        <th class="sortable"> Language</td>
+                        <th>Duration</th>
+                        <th>Max Questions</th>
+                        <th class="sortable">Number of Sessions</td>
+                        <th>Interview Link</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for interview in interview_data %}
+                    <tr>
+                        <td>{{ interview.created_at.strftime('%d-%m-%Y at %H:%M:%S') }}</td>
+                        <td>{{ interview.industry }}</td>
+                        <td>{{ interview.role }}</td>
+                        <td>
+                            <ul>
+                                {% for situation in interview.situation %}
+                                <li>{{ situation }}</li>
+                                {% endfor %}
+                            </ul>
+                        </td>
+                        <td>{{ interview.language }}</td>
+                        <td>{{ interview.duration }} min</td>
+                        <td align="center">{{ interview.max_questions }}</td>
+                        <td align="center">{{ interview.sessions_count }}</td>
+                        <td><a href="{{ url_for('main.applicant_home', hr_id = hr_id, interview_parameter_id=interview.interview_parameter_id) }}" target="_blank">Interview Link</a></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p>You still have not created any interview.</p>
+            {% endif %}
         </div>
-        <div class="kpi">
-            <h4>Total Applicants</h4>
-            <p>{{ total_applicants }}</p>
         </div>
     </div>
-    <h3>Overview</h3>
-    {% if interview_data %}
-    <table border="1">
-        <tr>
-            <th>Created At</th>
-            <th>Industry</th>
-            <th>Role</th>
-            <th>Situation(s)</th>
-            <th>Language</th>
-            <th>Duration</th>
-            <th>Max Questions</th>
-            <th>Number of Interviews passed</th>
-            <th>Interview Link</th>
-        </tr>
-        {% for interview in interview_data %}
-        <tr>
-            <td>{{ interview.created_at.strftime('%d-%m-%Y at %H:%M:%S') }}</td>
-            <td>{{ interview.industry }}</td>
-            <td>{{ interview.role }}</td>
-            <td>
-                <ul>
-                    {% for situation in interview.situation %}
-                    <li>{{ situation }}</li>
-                    {% endfor %}
-                </ul>
-            </td>
-            <td>{{ interview.language }}</td>
-            <td>{{ interview.duration }} minutes</td>
-            <td>{{ interview.max_questions }}</td>
-            <td>{{ interview.sessions_count }}</td>
-            <td><a href="{{ url_for('main.applicant_home', hr_id = hr_id, interview_parameter_id=interview.interview_parameter_id) }}" target="_blank">Interview Link</a></td>
-        </tr>
-        {% endfor %}
-    </table>
-    {% else %}
-    <p>You still have not created any interview.</p>
-    {% endif %}
 
-    {% if interview_data %}
-    <h3>Details</h3>
+        {% if interview_data %}
+    <div class="dashboard">
+        <h2>My Interview details</h2>
         <div class="interview-details">
             {% for interview in interview_data %}
             <div class="interview-card">
                 <h4>Interview for: {{ interview.role }} position in the {{ interview.industry }} industry</h4>
+                <div class="scrollable-table">
                 <table>
                     <thead>
                         <tr>
@@ -95,9 +106,11 @@
                     </tbody>
                 </table>
             </div>
+            </div>
             {% endfor %}
         </div>
-    {% endif %}
+        {% endif %}
+    </div>
     
     <script src="{{ url_for('static', filename='js/sortable.js') }}"></script>
 

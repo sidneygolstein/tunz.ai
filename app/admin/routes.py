@@ -3,6 +3,7 @@ from app import db, mail
 from app.models.hr import HR
 from app.models.company import Company
 from app.models.interview import Interview
+from app.models.interview_parameter import InterviewParameter
 from app.models.admin import Admin
 from app.models.session import Session
 from app.models.review_question import ReviewQuestion
@@ -46,12 +47,22 @@ def home():
             'rating_count': rating_count
         }
 
-    # Fetch other necessary data for the template
-    hrs = HR.query.all()  
+
+    # Fetch interviews and sessions count for each HR
+    hr_interview_session_data = []
+    for hr in hrs:
+        interview_count = Interview.query.filter_by(hr_id=hr.id).count()
+        session_count = db.session.query(Session).join(InterviewParameter).join(Interview).filter(Interview.hr_id == hr.id).count()
+        hr_interview_session_data.append({
+            'hr': hr,
+            'interview_count': interview_count,
+            'session_count': session_count
+        }) 
 
     return render_template('admin/admin_homepage.html', admin=admin, hrs=hrs, 
                            total_hr=total_hr, total_interviews=total_interviews, 
-                           total_sessions=total_sessions, question_ratings=question_ratings)
+                           total_sessions=total_sessions, question_ratings=question_ratings,
+                           hr_interview_session_data=hr_interview_session_data)
 
 
 
