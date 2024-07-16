@@ -232,6 +232,8 @@ def chat(hr_id, interview_id, interview_parameter_id, session_id, applicant_id):
     
     # Retrieve data
     hr = HR.query.get_or_404(hr_id)
+    company = Company.query.get_or_404(hr.company_id)
+
     interview_parameter = InterviewParameter.query.get_or_404(interview_parameter_id)
     current_session = Session.query.get_or_404(session_id)
     applicant = Applicant.query.get_or_404(applicant_id)
@@ -297,6 +299,9 @@ def chat(hr_id, interview_id, interview_parameter_id, session_id, applicant_id):
     remaining_time = current_session.remaining_time
 
     return render_template('applicant/chat.html',
+                           interview_parameter = interview_parameter,
+                           company = company,
+                           hr =hr,
                            questions=questions,
                            hr_id=hr_id,
                            answers=answers,
@@ -308,7 +313,8 @@ def chat(hr_id, interview_id, interview_parameter_id, session_id, applicant_id):
                            is_finished=current_session.finished,
                            interview_id=interview_id,
                            interview_parameter_id=interview_parameter_id,
-                           applicant_id=applicant_id)
+                           applicant_id=applicant_id,
+                           applicant = applicant)
 
 
 

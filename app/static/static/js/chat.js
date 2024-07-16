@@ -24,7 +24,7 @@ document.addEventListener("DOMContentLoaded", function() {
         }
         let minutes = Math.floor(timerDuration / 60);
         let seconds = timerDuration % 60;
-        timerElement.innerHTML = `Time Left: ${minutes}:${seconds < 10 ? '0' + seconds : seconds}`;
+        timerElement.innerHTML = `Time Remaining: ${minutes}:${seconds < 10 ? '0' + seconds : seconds}`;
 
         if (timerDuration <= 30 && !warningShown && !warningClosed) {
             showWarningPopup();

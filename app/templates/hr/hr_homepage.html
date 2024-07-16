@@ -41,7 +41,7 @@
                         <th>Duration</th>
                         <th>Max Questions</th>
                         <th class="sortable">Number of Sessions</td>
-                        <th>Interview Link</th>
+                        <th>Link</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -61,7 +61,7 @@
                         <td>{{ interview.duration }} min</td>
                         <td align="center">{{ interview.max_questions }}</td>
                         <td align="center">{{ interview.sessions_count }}</td>
-                        <td><a href="{{ url_for('main.applicant_home', hr_id = hr_id, interview_parameter_id=interview.interview_parameter_id) }}" target="_blank">Interview Link</a></td>
+                        <td><a href="{{ url_for('main.applicant_home', hr_id = hr_id, interview_parameter_id=interview.interview_parameter_id) }}" target="_blank">Link</a></td>
                     </tr>
                     {% endfor %}
                 </tbody>
