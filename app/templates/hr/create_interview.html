@@ -26,8 +26,8 @@
         <div class="form-group">
             <label for="role">Role:</label>
             <select name="role" class="form-control" id="role-select" required>
-                <option value="Sales">Sales</option>
-                <option value="Marketing">Marketing</option>
+                <option value="sales">Sales</option>
+                <option value="marketing">Marketing</option>
                 <option value="operations">Operations</option>
             </select>
         </div>
@@ -50,6 +50,14 @@
             </select>
         </div>
         <div class="form-group">
+            <label for="duration">Interview Duration:</label>
+            <select name="duration" class="form-control" required>
+                <option value="1">1 minute</option>
+                <option value="5">5 minutes</option>
+                <option value="30">30 minutes</option>
+            </select>
+        </div>
+        <div class="form-group">
             <label for="situations">Situations:</label>
             <select id="situations-select" class="form-control">
                 <option value="" disabled selected>Select a situation</option>
@@ -62,15 +70,7 @@
                 <!-- Selected situations will be shown here -->
             </ul>
         </div>
-        <div class="form-group">
-            <label for="duration">Interview Duration:</label>
-            <select name="duration" class="form-control" required>
-                <option value="1">1 minute</option>
-                <option value="5">5 minutes</option>
-                <option value="30">30 minutes</option>
-            </select>
-        </div>
-        <button type="button" class="btn btn-danger" data-action-url="{{ url_for('main.create_interview', hr_id=hr_id) }}" data-action="create-itw" id="create-interview-btn">Create Interview</button>
+        <button type="submit" class="btn btn-primary">Create Interview</button>
     </form>
 </div>
 
@@ -141,6 +141,5 @@
         populateSituations(roleSelect.value);
     });
 </script>
-
 
 {% endblock %}
