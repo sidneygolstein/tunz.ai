@@ -141,7 +141,7 @@ def session_details(hr_id, session_id):
             conversation.append({'role': 'A', 'content': answer.content})
 
     return render_template('hr/session_details.html',
-                           hr_id=hr_id,
+                           hr_id=hr_id,    
                            session=session,
                            applicant=applicant,
                            conversation=conversation,
