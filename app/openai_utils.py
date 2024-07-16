@@ -22,7 +22,7 @@ def get_initial_message(role, industry, situation, applicant_name, applicant_sur
     - The first question should always be focused on the interview practical case scenario."""
 
 def get_thank_you_message(applicant_name):
-    return f"Thank you for the interview, {applicant_name}. We will keep you in touch as soon as possible."
+    return f"Thank you for the interview, {applicant_name}. We will keep you in touch as soon as possible!"
 
 
 
