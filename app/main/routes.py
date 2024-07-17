@@ -148,6 +148,38 @@ def session_details(hr_id, session_id):
                            result=result,
                            interview_parameter=interview_parameter)
 
+
+@main.route('/hr_result/<int:hr_id>/<int:interview_id>/<int:interview_parameter_id>/<int:session_id>/<int:applicant_id>', methods=['GET'])
+def hr_result(hr_id, interview_id, interview_parameter_id, session_id, applicant_id):
+    applicant = Applicant.query.get_or_404(applicant_id)
+    applicant_email = applicant.email_address
+    session_data = Session.query.get_or_404(session_id)
+    interview_parameter = InterviewParameter.query.get_or_404(interview_parameter_id)
+    result = Result.query.filter_by(session_id=session_id).first()
+    score = result.score_result if result else "No score available"
+
+    # Fetch questions and answers
+    questions = Question.query.filter_by(session_id=session_id).all()
+    answers = Answer.query.filter_by(session_id=session_id).all()
+
+    # Create a dictionary to map question ids to their answers
+    conversation = []
+    for question in questions:
+        conversation.append({
+            'question': question.content,
+            'answers': [answer.content for answer in answers if answer.question_id == question.id]
+        })
+
+
+    return render_template('hr/hr_result.html', 
+                           score=score, 
+                           applicant = applicant,
+                           interview_parameter = interview_parameter,
+                           session_data=session_data, 
+                           applicant_email=applicant_email,
+                           conversation=conversation)
+
+
 ####################################################################################################################################################################################
 ############################################################ APPLICANT #############################################################################################################
 ####################################################################################################################################################################################
@@ -191,6 +223,11 @@ def start_chat(hr_id, interview_parameter_id, interview_id, applicant_id):
     # Retrieve data
     interview_parameter = InterviewParameter.query.get_or_404(interview_parameter_id)
     applicant = Applicant.query.get_or_404(applicant_id)
+    hr = HR.query.get_or_404(hr_id)
+
+    company = Company.query.get_or_404(hr.company_id)
+
+    company_name = company.name
 
     # Create thread
     thread_id, assistant_id, assistant_response = create_openai_thread(
@@ -199,7 +236,8 @@ def start_chat(hr_id, interview_parameter_id, interview_id, applicant_id):
         interview_parameter.industry,
         interview_parameter.situation,
         applicant.name,
-        applicant.surname
+        applicant.surname,
+        company_name
     )
     
     # Create and save a new session
@@ -425,35 +463,6 @@ def applicant_result(hr_id, interview_id, interview_parameter_id, session_id, ap
                             applicant_id = applicant_id)
 
 
-@main.route('/hr_result/<int:hr_id>/<int:interview_id>/<int:interview_parameter_id>/<int:session_id>/<int:applicant_id>', methods=['GET'])
-def hr_result(hr_id, interview_id, interview_parameter_id, session_id, applicant_id):
-    applicant = Applicant.query.get_or_404(applicant_id)
-    applicant_email = applicant.email_address
-    session_data = Session.query.get_or_404(session_id)
-    interview_parameter = InterviewParameter.query.get_or_404(interview_parameter_id)
-    result = Result.query.filter_by(session_id=session_id).first()
-    score = result.score_result if result else "No score available"
-
-    # Fetch questions and answers
-    questions = Question.query.filter_by(session_id=session_id).all()
-    answers = Answer.query.filter_by(session_id=session_id).all()
-
-    # Create a dictionary to map question ids to their answers
-    conversation = []
-    for question in questions:
-        conversation.append({
-            'question': question.content,
-            'answers': [answer.content for answer in answers if answer.question_id == question.id]
-        })
-
-
-    return render_template('hr/hr_result.html', 
-                           score=score, 
-                           applicant = applicant,
-                           interview_parameter = interview_parameter,
-                           session_data=session_data, 
-                           applicant_email=applicant_email,
-                           conversation=conversation)
 
 
 

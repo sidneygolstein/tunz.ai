@@ -7,71 +7,99 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 
 <div class="container">
-    <h1>Set Interview Parameters</h1>
+    <h1>Design Your Interview</h1>
     <form id="create-interview-form" action="{{ url_for('main.create_interview', hr_id=hr_id) }}" method="POST">
-        <div class="form-group">
-            <label for="language">Language:</label>
-            <select name="language" class="form-control" required>
-                <option value="english">English</option>
-                <option value="french">French</option>
-            </select>
+        <div class="kpi-container">
+            <div class="interview-param-box">
+                <label for="language">Select the language of the interview:</label>
+                <div class="select">
+                    <select name="language" class="form-control" required>
+                        <option value="english">English</option>
+                        <option value="french">French</option>
+                    </select>
+                </div>
+            </div>
         </div>
-        <br>
-        <label for="max_questions">Number of Questions:</label>
-        <select name="max_questions" id="max_questions">
-            <option value="2">2</option>
-            <option value="5">5</option>
-            <option value="7">7</option>
-        </select>
-        <br>
-        <div class="form-group">
-            <label for="role">Role:</label>
-            <select name="role" class="form-control" id="role-select" required>
-                <option value="sales">Sales</option>
-                <option value="marketing">Marketing</option>
-                <option value="operations">Operations</option>
-            </select>
+        <div class="kpi-container">
+            <div class="interview-param-box">
+                <label for="max_questions">Set the maximum number of questions:</label>
+                <div class="select">
+                    <select name="max_questions" id="max_questions">
+                        <option value="2">2</option>
+                        <option value="5">5</option>
+                        <option value="7">7</option>
+                    </select>
+                </div>
+            </div>
         </div>
-        <div class="form-group">
-            <label for="industry">Industry:</label>
-            <select name="industry" class="form-control" required>
-                <option value="Blockchain/Web3">Blockchain/Web3</option>
-                <option value="FinTech">FinTech</option>
-                <option value="HR Tech">HR Tech</option>
-                <option value="Consulting">Consulting</option>
-                <option value="Banking & Finance">Banking & Finance</option>
-                <option value="e-Commerce">e-Commerce</option>
-                <option value="Healthcare">Healthcare</option>
-                <option value="Retail">Retail</option>
-                <option value="EdTech">EdTech</option>
-                <option value="Cybersecurity">Cybersecurity</option>
-                <option value="Real Estate">Real Estate</option>
-                <option value="Gaming">Gaming</option>
-                <option value="Other">Other</option>
-            </select>
+        <div class="kpi-container">
+            <div class="interview-param-box">
+                <label for="duration">Set the interview duration:</label>
+                <div class="select">
+                    <select name="duration" class="form-control" required>
+                        <option value="1">1 minute</option>
+                        <option value="5">5 minutes</option>
+                        <option value="30">30 minutes</option>
+                    </select>
+                </div>
+            </div>
         </div>
-        <div class="form-group">
-            <label for="duration">Interview Duration:</label>
-            <select name="duration" class="form-control" required>
-                <option value="1">1 minute</option>
-                <option value="5">5 minutes</option>
-                <option value="30">30 minutes</option>
-            </select>
+        <div class="kpi-container">
+            <div class="interview-param-box">
+                <label for="role">Choose a Role:</label>
+                <div class="select">
+                    <select name="role" class="form-control" id="role-select" required>
+                        <option value="sales">Sales</option>
+                        <option value="marketing">Marketing</option>
+                        <option value="operations">Operations</option>
+                    </select>
+                </div>
+            </div>
         </div>
-        <div class="form-group">
-            <label for="situations">Situations:</label>
-            <select id="situations-select" class="form-control">
-                <option value="" disabled selected>Select a situation</option>
-                <!-- Options will be populated dynamically based on the selected role -->
-            </select>
+        <div class="kpi-container" style="grid-column: span 2;">
+            <div class="interview-param-box">
+                <div class="situations-container">
+                    <div class="select-situation">
+                        <label for="situations">Select one or multiple situations:</label>
+                        <div class="select">
+                        <select id="situations-select" class="form-control">
+                            <option value="" disabled selected>Select a situation</option>
+                            <!-- Options will be populated dynamically based on the selected role -->
+                        </select>
+                    </div>
+                    </div>
+                    <div class="selected-situations">
+                        <label>Selected Situations:</label>
+                        <ul id="selected-situations">
+                            <!-- Selected situations will be shown here -->
+                        </ul>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="form-group">
-            <label>Selected Situations:</label>
-            <ul id="selected-situations" class="selected-situations">
-                <!-- Selected situations will be shown here -->
-            </ul>
+        <div class="kpi-container">
+            <div class="interview-param-box">
+                <label for="industry">Choose an Industry:</label>
+                <div class="select">
+                    <select name="industry" class="form-control" required>
+                        <option value="Blockchain/Web3">Blockchain/Web3</option>
+                        <option value="FinTech">FinTech</option>
+                        <option value="HR Tech">HR Tech</option>
+                        <option value="Consulting">Consulting</option>
+                        <option value="Banking & Finance">Banking & Finance</option>
+                        <option value="e-Commerce">e-Commerce</option>
+                        <option value="Healthcare">Healthcare</option>
+                        <option value="Retail">Retail</option>
+                        <option value="EdTech">EdTech</option>
+                        <option value="Cybersecurity">Cybersecurity</option>
+                        <option value="Real Estate">Real Estate</option>
+                        <option value="Gaming">Gaming</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+            </div>
         </div>
-        <button type="submit" class="btn btn-primary">Create Interview</button>
+        <button type="submit" class="btn btn-primary create-interview-btn">Create Interview</button>
     </form>
 </div>
 

@@ -415,7 +415,6 @@ tbody tr {
 
 
 
-/* INTERVIEW DETAILS STYLES */
 
 
 .interview-details {
@@ -471,7 +470,7 @@ tbody tr {
 }
 
 .interview-link input {
-    width: 80%;
+    width: 60%;
     padding: 10px;
     margin-right: 10px;
 }
@@ -479,6 +478,8 @@ tbody tr {
 .interview-link button {
     padding: 10px 20px;
 }
+
+
 
 
 /* BACK HOME BUTTON STYLES */
@@ -586,7 +587,7 @@ tbody tr {
     margin: 5% auto; 
     padding: 20px;
     border: 1px solid #888;
-    width: 80%;
+    width: 60%;
     text-align: center;
 }
 
@@ -659,20 +660,88 @@ tbody tr {
 }
 
 
+/* CREATE INTERVIEW SCREEN */
+.situations-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* Two equal columns */
+    gap: 20px; /* Gap between columns */
+}
 
-
-/* Selected Situations List */
-.selected-situations {
+.selected-situations ul {
     list-style-type: disc;
     padding-left: 20px;
+    margin: 0;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 10px;
+    background-color: #f4f4f9;
 }
-
-.selected-situations li {
-    margin: 5px 0;
+.select-situation,
+.selected-situations {
     display: flex;
-    align-items: center;
+    flex-direction: column;
 }
 
-.selected-situations .btn-sm {
-    margin-left: 10px;
+
+.select select {
+    padding: 10px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    margin-top: 10px;
+    background-color: #fff;
 }
+
+.situations-container label {
+    font-weight: bold;
+    color: #050090;
+}
+
+
+form {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+form .form-group:nth-last-child(-n+2) {
+    grid-column: span 3;
+}
+
+.create-interview-btn {
+    background-color: #050090;
+    color: #ffffff;
+    padding: 15px 30px;
+    font-size: 18px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+    margin: 20px 0;
+    width: 50%;
+    text-align: center;
+}
+
+.create-interview-btn:hover {
+    background-color: #03005b;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+
+/* INTERVIEW DETAILS STYLES */
+
+
+.interview-param-box {
+    background: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 20px;
+    text-align: center;
+    width: 70%;
+    margin: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+
+
