@@ -775,4 +775,22 @@ form .form-group:nth-last-child(-n+2) {
 }
 
 
+/* PROGRESS BAR */
 
+.progress {
+    height: 20px;
+    background-color: #e9ecef;
+    border-radius: 5px;
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
+}
+
+.progress-bar {
+    height: 100%;
+    background-color: #007bff;
+    text-align: center;
+    color: white;
+    white-space: nowrap;
+    transition: width 0.6s ease;
+}

@@ -88,7 +88,7 @@
                             <th class="sortable">Surname</th>
                             <th class="sortable">Email</th>
                             <th class="sortable">Start Time</th>
-                            <th class="sortable">Score</th>
+                            <th class="sortable">Mean Criteria Score</th>
                             <th>See Details</th>
                         </tr>
                     </thead>
@@ -99,7 +99,11 @@
                             <td>{{ session.applicant_surname }}</td>
                             <td>{{ session.applicant_email }}</td>
                             <td>{{ session.start_time.strftime('%d-%m-%Y at %H:%M:%S') }}</td>
-                            <td>{{ session.score }}</td>
+                            <td>
+                                <div class="progress">
+                                    <div class="progress-bar" role="progressbar" style="width: {{ session.mean_score * 10 }}%;" aria-valuenow="{{ session.mean_score * 10 }}" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                            </td>
                             <td><a href="{{ url_for('main.session_details', hr_id=hr_id, session_id=session.id) }}">See Details</a></td>
                         </tr>
                     {% endfor %}

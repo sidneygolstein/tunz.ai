@@ -132,7 +132,6 @@ def get_scores():
         response.append({
             'id': result.id,
             'score_type': result.score_type,
-            'score_result': result.score_result,
             'session_id': result.session_id,
             'criteria_scores': criteria_scores_cleaned  # Ensure criteria_scores is properly formatted
         })

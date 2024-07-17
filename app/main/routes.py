@@ -62,14 +62,18 @@ def home(hr_id):
             applicant = Applicant.query.get(session.applicant_id)
             session_id = session.id
             result = Result.query.filter_by(session_id=session.id).first()
-            score = result.score_result if result else "No score"
+            criteria_scores = result.criteria_scores if result and result.criteria_scores else {}
+            mean_score = (
+                sum(criteria_scores.values()) / len(criteria_scores)
+                if criteria_scores else "No scores available"
+            )
             session_data.append({
                 'applicant_name': applicant.name,
                 'applicant_surname': applicant.surname,
                 'applicant_email': applicant.email_address,
                 'start_time': session.start_time,
-                'score': score,
-                'id': session_id
+                'id': session_id,
+                'mean_score': mean_score
             })
             total_applicants_set.add(applicant.email_address)
         interview_data.append({
@@ -395,9 +399,8 @@ def finish_chat(hr_id, interview_id, interview_parameter_id, session_id, applica
                                                                      conversation)
     # Convert the dictionary to a JSON string before saving to the database
     criteria_result_str = json.loads(criteria_result)  
-    score = calculate_score(answers,session_id)  # Implement this function based on your grading logic
     
-    result = Result(score_type = 'applicant_score', score_result= score, session_id = session_id, criteria_scores = criteria_result_str)
+    result = Result(score_type = 'applicant_score', session_id = session_id, criteria_scores = criteria_result_str)
     db.session.add(result)
     db.session.commit()
 
