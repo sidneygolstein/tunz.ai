@@ -20,6 +20,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 confirmationMessage.textContent = 'Are you sure you want to deny this HR?';
             } else if (actionType === 'create-itw') {
                 confirmationMessage.textContent = 'Are you sure you want to create this interview?';
+            }
+            else if (actionType === 'start-itw') {
+                confirmationMessage.textContent = 'Are you ready?';
             } else {
                 confirmationMessage.textContent = 'Are you sure you want to perform this action?';
             }

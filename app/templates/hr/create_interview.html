@@ -97,13 +97,14 @@
                         <option value="Cybersecurity">Cybersecurity</option>
                         <option value="Real Estate">Real Estate</option>
                         <option value="Gaming">Gaming</option>
-                        <option value="Other">Other</option>
                     </select>
                 </div>
             </div>
         </div>
-        <button type="submit" class="btn btn-primary create-interview-btn" data-action="create-itw">Create Interview</button>
-    </form>
+        <div class="create-button-container">
+            <button type="submit" class="btn btn-primary create-interview-btn" data-action="create-itw">Create Interview</button>
+        </div>
+        </form>
 </div>
 
 <!-- Confirmation Modal -->
@@ -142,10 +143,8 @@
             input.name = "situations";
             input.value = situation;
             li.appendChild(input);
-            const removeButton = document.createElement("button");
-            removeButton.type = "button";
-            removeButton.textContent = "Remove";
-            removeButton.classList.add("btn", "btn-danger", "btn-sm", "ml-2");
+            const removeButton = document.createElement("i");
+            removeButton.classList.add("fas", "fa-times", "remove-btn");
             removeButton.addEventListener("click", () => {
                 selectedSituationsList.removeChild(li);
                 const option = document.createElement("option");

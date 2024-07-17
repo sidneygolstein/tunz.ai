@@ -11,6 +11,18 @@ body {
 
 
 
+.select select {
+    padding: 10px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    margin-top: 10px;
+    background-color: #fff;
+}
+
+
+
+
+
 /* CHAT DESIGN */
 
 /* Chat Container */
@@ -668,34 +680,33 @@ tbody tr {
 }
 
 .selected-situations ul {
-    list-style-type: disc;
-    padding-left: 20px;
+    list-style-type: none; /* Remove list style */
+    padding-left: 0; /* Remove padding */
     margin: 0;
     border: 1px solid #e0e0e0;
     border-radius: 8px;
     padding: 10px;
     background-color: #f4f4f9;
 }
-.select-situation,
-.selected-situations {
+
+.selected-situations li {
     display: flex;
-    flex-direction: column;
+    justify-content: space-between; /* Justify content to left and right */
+    align-items: center;
+    padding: 5px 0;
+    border-bottom: 1px solid #ddd;
 }
 
-
-.select select {
-    padding: 10px;
-    border: 1px solid #e0e0e0;
-    border-radius: 8px;
-    margin-top: 10px;
-    background-color: #fff;
+.selected-situations li:last-child {
+    border-bottom: none; /* Remove border from last item */
 }
 
-.situations-container label {
-    font-weight: bold;
-    color: #050090;
+.selected-situations .remove-btn {
+    color: red;
+    cursor: pointer;
+    margin-left: 10px;
+    font-size: 1.2em;
 }
-
 
 form {
     display: grid;
@@ -717,7 +728,7 @@ form .form-group:nth-last-child(-n+2) {
     cursor: pointer;
     transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
     margin: 20px 0;
-    width: 50%;
+    width: 20%;
     text-align: center;
 }
 
@@ -727,6 +738,13 @@ form .form-group:nth-last-child(-n+2) {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
+.create-button-container {
+    text-align: center;
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    grid-column: span 3; /* Ensure it spans full width of form */
+}
 
 /* INTERVIEW DETAILS STYLES */
 
