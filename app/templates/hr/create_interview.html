@@ -39,7 +39,10 @@
                     <select name="duration" class="form-control" required>
                         <option value="1">1 minute</option>
                         <option value="5">5 minutes</option>
+                        <option value="15">15 minutes</option>
                         <option value="30">30 minutes</option>
+                        <option value="45">45 minutes</option>
+                        <option value="60">60 minutes</option>
                     </select>
                 </div>
             </div>
@@ -57,7 +60,7 @@
             </div>
         </div>
         <div class="kpi-container" style="grid-column: span 2;">
-            <div class="interview-param-box">
+            <div class="interview-param-box-big">
                 <div class="situations-container">
                     <div class="select-situation">
                         <label for="situations">Select one or multiple situations:</label>
@@ -99,7 +102,7 @@
                 </div>
             </div>
         </div>
-        <button type="submit" class="btn btn-primary create-interview-btn">Create Interview</button>
+        <button type="submit" class="btn btn-primary create-interview-btn" data-action="create-itw">Create Interview</button>
     </form>
 </div>
 
