@@ -5,7 +5,7 @@ import os
 from flask import render_template, request, redirect, url_for, jsonify, session, current_app, flash
 from .. import db, mail
 from ..models import Interview, InterviewParameter, Session, Question, Answer, Result, HR, Applicant, Company, Review, ReviewQuestion, Thread 
-from ..openai_utils import create_openai_thread, get_openai_thread_response, get_thank_you_message
+from ..openai_utils import create_openai_thread, get_openai_thread_response, get_thank_you_message, create_scoring_thread
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
 from ..forms import ReviewForm, RatingForm
 from flask import Blueprint
@@ -15,6 +15,22 @@ from helpers import get_url
 
 
 main = Blueprint('main', __name__)
+
+
+### USEFUL METHOD
+
+def get_interview_conversation(session_id):
+    questions = Question.query.filter_by(session_id=session_id).all()
+    conversation = []
+    for question in questions:
+        conversation.append({'role': 'Q', 'content': question.content})
+        answer = Answer.query.filter_by(question_id=question.id).first()
+        if answer:
+            conversation.append({'role': 'A', 'content': answer.content})
+    return conversation
+
+
+######### HR ROUTES 
 
 @main.before_request
 def create_or_load_session():
@@ -133,12 +149,9 @@ def session_details(hr_id, session_id):
     result = Result.query.filter_by(session_id=session_id).first()
     interview_parameter = InterviewParameter.query.get(session.interview_parameter_id)
 
-    conversation = []
-    for question in questions:
-        conversation.append({'role': 'Q', 'content': question.content})
-        answer = Answer.query.filter_by(question_id=question.id).first()
-        if answer:
-            conversation.append({'role': 'A', 'content': answer.content})
+    conversation = get_interview_conversation(session_id)
+    # Load criteria scores from the JSON string
+    criteria_scores = result.criteria_scores
 
     return render_template('hr/session_details.html',
                            hr_id=hr_id,    
@@ -146,9 +159,10 @@ def session_details(hr_id, session_id):
                            applicant=applicant,
                            conversation=conversation,
                            result=result,
-                           interview_parameter=interview_parameter)
+                           interview_parameter=interview_parameter,
+                           criteria_scores = criteria_scores)
 
-
+"""
 @main.route('/hr_result/<int:hr_id>/<int:interview_id>/<int:interview_parameter_id>/<int:session_id>/<int:applicant_id>', methods=['GET'])
 def hr_result(hr_id, interview_id, interview_parameter_id, session_id, applicant_id):
     applicant = Applicant.query.get_or_404(applicant_id)
@@ -178,6 +192,7 @@ def hr_result(hr_id, interview_id, interview_parameter_id, session_id, applicant
                            session_data=session_data, 
                            applicant_email=applicant_email,
                            conversation=conversation)
+"""
 
 
 ####################################################################################################################################################################################
@@ -212,9 +227,6 @@ def applicant_home(hr_id, interview_parameter_id):
         hr_email=hr.email,
         duration=duration
     )
-
-
-
 
 
 
@@ -314,7 +326,7 @@ def chat(hr_id, interview_id, interview_parameter_id, session_id, applicant_id):
             current_session.finished = True
             db.session.commit()
             hr_email = hr.email
-            hr_link = get_url('main.hr_result', hr_id=hr_id, interview_id=interview_id, interview_parameter_id=interview_parameter_id, session_id=session_id, applicant_id=applicant_id)
+            hr_link = get_url('main.home', hr_id=hr_id)
             msg = Message('Interview Finished',
                           sender='noreply@tunz.ai',
                           recipients=[hr_email])
@@ -373,18 +385,24 @@ def finish_chat(hr_id, interview_id, interview_parameter_id, session_id, applica
     applicant_surname = applicant.surname
 
     answers = Answer.query.filter_by(session_id=session_id).all()
+
+    conversation = get_interview_conversation(session_id)
+    
+    criteria_result = create_scoring_thread(interview_parameter.language, 
+                                                                     interview_parameter.role, 
+                                                                     interview_parameter.industry, 
+                                                                     interview_parameter.situation, 
+                                                                     conversation)
+    # Convert the dictionary to a JSON string before saving to the database
+    criteria_result_str = json.loads(criteria_result)  
     score = calculate_score(answers,session_id)  # Implement this function based on your grading logic
     
-    result = Result(score_type = 'applicant_score', score_result= score, session_id = session_id)
+    result = Result(score_type = 'applicant_score', score_result= score, session_id = session_id, criteria_scores = criteria_result_str)
     db.session.add(result)
     db.session.commit()
 
-    hr_link = get_url('main.hr_result',
-                      hr_id = hr_id, 
-                      interview_id=interview_id, 
-                      interview_parameter_id=interview_parameter_id, 
-                      session_id=session_id, 
-                      applicant_id = applicant_id)
+    hr_link = get_url('main.home',
+                      hr_id = hr_id)
     msg = Message('Interview Finished',
                   sender='noreply@tunz.ai',
                   recipients=[hr_email])
@@ -479,11 +497,6 @@ def restart():
 
 def calculate_score(answers,session_id):
     score_result = len(answers) * 10  # Example logic: 10 points per answer
-    score_type = "applicant_score"
-    current_session_id = session_id
-    result = Result(score_type = score_type, score_result = score_result, session_id = current_session_id)
-    db.session.add(result)
-    db.session.commit()
     return score_result
 
 

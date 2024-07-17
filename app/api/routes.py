@@ -125,12 +125,19 @@ def delete_all_answers():
 @api.route('/results', methods=['GET'])
 def get_scores():
     results = Result.query.all()
-    return jsonify([{
-        'id': result.id,
-        'score_type': result.score_type,
-        'score_result': result.score_result,
-        'session_id': result.session_id
-    } for result in results])
+    response = []
+
+    for result in results:
+        criteria_scores_cleaned = result.criteria_scores
+        response.append({
+            'id': result.id,
+            'score_type': result.score_type,
+            'score_result': result.score_result,
+            'session_id': result.session_id,
+            'criteria_scores': criteria_scores_cleaned  # Ensure criteria_scores is properly formatted
+        })
+
+    return jsonify(response)
 
 
 @api.route('/delete_results', methods=['DELETE'])

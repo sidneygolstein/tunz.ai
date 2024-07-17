@@ -2,6 +2,7 @@ import openai
 from flask import current_app
 import os
 from openai import OpenAI
+import json 
 
 openai.api_key = os.environ.get("OPENAI_API_KEY")
 client = OpenAI()
@@ -139,3 +140,79 @@ def get_openai_thread_response(thread_id, assistant_id, user_message):
     assistant_response = messages.data[0].content[0].text.value
 
     return assistant_response
+
+
+
+
+
+
+
+
+
+def create_scoring_thread(language, role, industry, situation, conversation):
+    
+    openai_api_key = current_app.config.get('OPENAI_API_KEY')
+    if not openai_api_key:
+        raise ValueError("OPENAI_API_KEY is not set in the environment variables.")
+    
+    client.api_key = openai_api_key
+    instructions = (
+        f"""
+            - You are an helpful assistant expert in field hiring candidates for {role} in the {industry} industry
+            - Your objective is to review the quality of the interview of the applicant. 
+            - The interview is stored in {conversation} (it's a set of questions/answers) 
+            - The questions are the questions asked by the interviewer
+            - The answers are the answers of the assistant based on the interviewer's questions. 
+            - The evaluation is based on 7 evaluation criteria: 
+                    - communication skills, 
+                    - logical reasoning, 
+                    - structure and problem solving, 
+                    - creativity, 
+                    - business acumen, 
+                    - analytical skills, 
+                    - project management and prioritization.
+            - The result of the evaluation should be a dictionary in a Json file (without spacing or breakline) with the 7 keys being the criteria (string) and the 7 corresponding values being a score (integer) from 0 to 10 based on their performance on each criteria. 
+            - An example could be: f'{{"communication_skills":8,"logical_reasoning":7,"structure_and_problem_solving":9,"creativity":6,"business_acumen":8,"analytical_skills":7,"project_management_and_prioritization":7}}
+            - The values are being 0 and 10 (0 being not relevant or extremely wrong/bad answer and 10 being an absolutely perfect answer/performance or score).
+            - No spacing, no brackets, no brakes, no backslashes characters in the resulting dictionary please.
+    """
+    )
+    
+    # ASSISTANT CREATION 
+    assistant = client.beta.assistants.create(
+        name="Scoring Thread",
+        model="gpt-3.5-turbo",
+    )
+
+    conversation_json = json.dumps(conversation)
+
+    thread = client.beta.threads.create(
+        messages = [
+            {
+                "role": "user",
+                "content": conversation_json
+            }
+        ]
+    )
+    # RUN THREAD
+    run = client.beta.threads.runs.create_and_poll(
+        thread_id=thread.id,
+        assistant_id = assistant.id,
+        model="gpt-3.5-turbo",
+        instructions = instructions,
+    )
+
+    run_status = client.beta.threads.runs.retrieve(
+        thread_id=thread.id,
+        run_id = run.id
+    )
+
+    if run_status.status == "completed":
+        messages = client.beta.threads.messages.list(
+            thread_id = thread.id)
+
+    # RETRIEVE MESSAGE
+    criteria_result = messages.data[0].content[0].text.value
+    #criteria_result = messages.data[0]
+
+    return criteria_result
