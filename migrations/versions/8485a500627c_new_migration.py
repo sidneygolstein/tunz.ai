@@ -1,16 +1,17 @@
-"""new migration
+"""New migration
 
-Revision ID: 9d013a2f99f1
+Revision ID: 8485a500627c
 Revises: 
-Create Date: 2024-07-12 09:18:36.019505
+Create Date: 2024-07-17 22:19:45.763679
 
 """
 from alembic import op
 import sqlalchemy as sa
-
+from sqlalchemy.dialects import postgresql
+from sqlalchemy import Text  # Import Text from SQLAlchemy
 
 # revision identifiers, used by Alembic.
-revision = '9d013a2f99f1'
+revision = '8485a500627c'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -75,7 +76,7 @@ def upgrade():
     sa.Column('duration', sa.Integer(), nullable=True),
     sa.Column('max_questions', sa.Integer(), nullable=False),
     sa.Column('role', sa.String(), nullable=True),
-    sa.Column('situation', sa.String(), nullable=True),
+    sa.Column('situation', sa.Text(), nullable=True),
     sa.Column('industry', sa.String(), nullable=True),
     sa.Column('position', sa.String(), nullable=True),
     sa.Column('evaluation_criteria', sa.String(), nullable=True),
@@ -107,12 +108,13 @@ def upgrade():
     )
     op.create_table('result',
     sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('score_type', sa.String(), nullable=False),
-    sa.Column('score_result', sa.Integer(), nullable=False),
+    sa.Column('score_type', sa.String(), nullable=True),
+    sa.Column('score_result', sa.Integer(), nullable=True),
     sa.Column('timestamp', sa.DateTime(), nullable=True),
     sa.Column('feedback_type', sa.String(), nullable=True),
     sa.Column('feedback_content', sa.String(), nullable=True),
     sa.Column('session_id', sa.Integer(), nullable=False),
+    sa.Column('criteria_scores', postgresql.JSON(astext_type=Text()), nullable=True),
     sa.ForeignKeyConstraint(['session_id'], ['session.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
