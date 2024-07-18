@@ -73,49 +73,69 @@
         </div>
     </div>
 
-        {% if interview_data %}
-    <div class="dashboard">
-        <h2>My Interview details</h2>
-        <div class="interview-details">
-            {% for interview in interview_data %}
-            <div class="interview-card">
-                <h4>Interview for: {{ interview.role }} position in the {{ interview.industry }} industry</h4>
-                <div class="scrollable-table">
-                <table>
-                    <thead>
-                        <tr>
-                            <th class="sortable">Name</th>
-                            <th class="sortable">Surname</th>
-                            <th class="sortable">Email</th>
-                            <th class="sortable">Start Time</th>
-                            <th class="sortable">Mean Criteria Score</th>
-                            <th>See Details</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    {% for session in interview.sessions %}
-                        <tr>
-                            <td>{{ session.applicant_name }}</td>
-                            <td>{{ session.applicant_surname }}</td>
-                            <td>{{ session.applicant_email }}</td>
-                            <td>{{ session.start_time.strftime('%d-%m-%Y at %H:%M:%S') }}</td>
-                            <td>
-                                <div class="progress">
-                                    <div class="progress-bar" role="progressbar" style="width: {{ session.mean_score * 10 }}%;" aria-valuenow="{{ session.mean_score * 10 }}" aria-valuemin="0" aria-valuemax="100"></div>
-                                </div>
-                            </td>
-                            <td><a href="{{ url_for('main.session_details', hr_id=hr_id, session_id=session.id) }}">See Details</a></td>
-                        </tr>
-                    {% endfor %}
-                    </tbody>
-                </table>
+    {% if interview_data %}
+        <div class="dashboard">
+            <h2>My Interview details</h2>
+            <div class="interview-details">
+                {% for interview in interview_data %}
+                    <div class="interview-card">
+                        <h4>Interview for: {{ interview.role }} position in the {{ interview.industry }} industry</h4>
+                        <div class="scrollable-table">
+                        <table id="interview-details-table-{{ interview.interview_parameter_id }}">
+                            <thead>
+                                <tr>
+                                    <th class="sortable">Name</th>
+                                    <th class="sortable">Surname</th>
+                                    <th class="sortable">Email</th>
+                                    <th class="sortable">Start Time</th>
+                                    <th class="sortable" onclick="sortTableByMeanScore('{{ interview.interview_parameter_id }}')">Mean Evaluation</th>
+                                    <th>See Details</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            {% for session in interview.sessions %}
+                                <tr>
+                                    <td>{{ session.applicant_name }}</td>
+                                    <td>{{ session.applicant_surname }}</td>
+                                    <td>{{ session.applicant_email }}</td>
+                                    <td>{{ session.start_time.strftime('%d-%m-%Y at %H:%M:%S') }}</td>
+                                    <td>
+                                        <div class="progress">
+                                            <div class="progress-bar" role="progressbar" style="width: {{ session.mean_score * 10 }}%;" aria-valuenow="{{ session.mean_score * 10 }}" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                        <span class="hidden-mean-score">{{ session.mean_score }}</span>
+                                    </td>
+                                    <td><a href="{{ url_for('main.session_details', hr_id=hr_id, session_id=session.id) }}">See Details</a></td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                {% endfor %}
             </div>
-            </div>
-            {% endfor %}
-        </div>
         {% endif %}
     </div>
     
-    <script src="{{ url_for('static', filename='js/sortable.js') }}"></script>
 
+    <script>
+        function sortTableByMeanScore(interviewId) {
+            const table = document.getElementById('interview-details-table-' + interviewId);
+            const tbody = table.getElementsByTagName('tbody')[0];
+            const rows = Array.from(tbody.rows);
+            const ascending = table.dataset.sortOrder !== 'asc';
+    
+            rows.sort((a, b) => {
+                const scoreA = parseFloat(a.querySelector('.hidden-mean-score').textContent);
+                const scoreB = parseFloat(b.querySelector('.hidden-mean-score').textContent);
+                return ascending ? scoreA - scoreB : scoreB - scoreA;
+            });
+    
+            // Remove all rows and re-append in sorted order
+            rows.forEach(row => tbody.appendChild(row));
+    
+            // Update the sort order data attribute
+            table.dataset.sortOrder = ascending ? 'asc' : 'desc';
+        }
+    </script>
 {% endblock %}

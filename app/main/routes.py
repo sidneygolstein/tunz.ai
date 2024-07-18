@@ -46,7 +46,7 @@ def home(hr_id):
     hr = HR.query.get(hr_id)
     if not hr:
         return redirect(url_for('auth.login'))
-    
+
     interviews = Interview.query.filter_by(hr_id=hr_id).all()
     interview_data = []
 
@@ -76,6 +76,8 @@ def home(hr_id):
                 'mean_score': mean_score
             })
             total_applicants_set.add(applicant.email_address)
+
+
         interview_data.append({
             'created_at': interview_parameters.start_time,
             'industry': interview_parameters.industry,
@@ -98,7 +100,7 @@ def home(hr_id):
 
     return render_template('hr/hr_homepage.html', hr_name=hr.name, hr_surname=hr.surname, company_name=hr.company.name,
                             hr_id=hr.id, interview_data=interview_data, total_interviews=total_interviews,
-                           total_sessions=total_sessions, total_applicants=total_applicants,)
+                           total_sessions=total_sessions, total_applicants=total_applicants)
 
 
 
@@ -166,37 +168,6 @@ def session_details(hr_id, session_id):
                            interview_parameter=interview_parameter,
                            criteria_scores = criteria_scores)
 
-"""
-@main.route('/hr_result/<int:hr_id>/<int:interview_id>/<int:interview_parameter_id>/<int:session_id>/<int:applicant_id>', methods=['GET'])
-def hr_result(hr_id, interview_id, interview_parameter_id, session_id, applicant_id):
-    applicant = Applicant.query.get_or_404(applicant_id)
-    applicant_email = applicant.email_address
-    session_data = Session.query.get_or_404(session_id)
-    interview_parameter = InterviewParameter.query.get_or_404(interview_parameter_id)
-    result = Result.query.filter_by(session_id=session_id).first()
-    score = result.score_result if result else "No score available"
-
-    # Fetch questions and answers
-    questions = Question.query.filter_by(session_id=session_id).all()
-    answers = Answer.query.filter_by(session_id=session_id).all()
-
-    # Create a dictionary to map question ids to their answers
-    conversation = []
-    for question in questions:
-        conversation.append({
-            'question': question.content,
-            'answers': [answer.content for answer in answers if answer.question_id == question.id]
-        })
-
-
-    return render_template('hr/hr_result.html', 
-                           score=score, 
-                           applicant = applicant,
-                           interview_parameter = interview_parameter,
-                           session_data=session_data, 
-                           applicant_email=applicant_email,
-                           conversation=conversation)
-"""
 
 
 ####################################################################################################################################################################################
