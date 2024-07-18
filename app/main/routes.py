@@ -108,7 +108,6 @@ def home(hr_id):
 def create_interview(hr_id):
     if request.method == 'POST':
         language = request.form['language']
-        max_questions = int(request.form['max_questions'])
         role = request.form['role']
         industry = request.form['industry']
         duration = int(request.form['duration'])
@@ -120,7 +119,6 @@ def create_interview(hr_id):
 
         interview_parameter = InterviewParameter(
             language=language,
-            max_questions=max_questions,
             role=role,
             industry=industry,
             duration=duration,
@@ -295,9 +293,9 @@ def chat(hr_id, interview_id, interview_parameter_id, session_id, applicant_id):
             db.session.add(answer)
             db.session.commit()
 
-        num_questions = Question.query.filter_by(session_id=session_id).count()
+        
 
-        if num_questions >= interview_parameter.max_questions or remaining_time <= 0:
+        if remaining_time <= 0:
             current_session.finished = True
             db.session.commit()
             hr_email = hr.email
