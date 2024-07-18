@@ -39,7 +39,6 @@
                         <th>Situation(s)</th>
                         <th class="sortable"> Language</td>
                         <th>Duration</th>
-                        <th>Max Questions</th>
                         <th class="sortable">Number of Sessions</td>
                         <th>Link</th>
                     </tr>
@@ -59,7 +58,6 @@
                         </td>
                         <td>{{ interview.language }}</td>
                         <td>{{ interview.duration }} min</td>
-                        <td align="center">{{ interview.max_questions }}</td>
                         <td align="center">{{ interview.sessions_count }}</td>
                         <td><a href="{{ url_for('main.applicant_home', hr_id = hr_id, interview_parameter_id=interview.interview_parameter_id) }}" target="_blank">Link</a></td>
                     </tr>
