@@ -32,6 +32,78 @@ body {
     background-color: #f4f4f9;
 }
 
+/* Chat Input : Text Area */
+.chat-input {
+    display: flex;
+    align-items: center;
+    position: relative;
+}
+
+.chat-input form {
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+.chat-input textarea {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 20px;
+    margin-right: 10px;
+    resize: none; /* Prevent manual resizing */
+    overflow: hidden; /* Hide scrollbar */
+}
+
+.chat-input .icons {
+    display: flex;
+    align-items: center;
+    margin-right: 10px;
+}
+
+.chat-input .icons i {
+    margin: 0 5px;
+    color: #999;
+    cursor: pointer;
+}
+
+.chat-input button {
+    padding: 10px 20px;
+    border: none;
+    background-color: #03005b;
+    color: white;
+    border-radius: 20px;
+    cursor: pointer;
+}
+
+.chat-input button:hover {
+    background-color: #03005b;
+}
+
+.chips-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-top: 5px;
+}
+
+.chip {
+    display: inline-flex;
+    align-items: center;
+    padding: 5px 10px;
+    background-color: #eee;
+    border-radius: 16px;
+    margin-right: 5px;
+    font-size: 14px;
+}
+
+.chip .close-btn {
+    margin-left: 5px;
+    cursor: pointer;
+}
+
+
+
 /* Sidebar Left */
 .chat-sidebar-left {
     flex: 0 0 15%;

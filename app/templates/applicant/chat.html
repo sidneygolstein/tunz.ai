@@ -4,6 +4,7 @@
 {% block content %}
 <link rel="stylesheet" href="{{ url_for('static', filename='static/styles.css') }}">
 <script src="{{ url_for('static', filename='static/js/chat.js') }}"></script>
+<script src="{{ url_for('static', filename='static/js/chat-input.js') }}"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 
 
@@ -66,7 +67,10 @@
             <form action="{{ url_for('main.chat', hr_id=hr_id, interview_id=interview_id, interview_parameter_id=interview_parameter_id, session_id=session_id, applicant_id=applicant.id, thread_id=thread_id) }}" method="post" id="chat-form">
                 <input type="hidden" name="question_id" value="{{ questions[-1].id }}">
                 <input type="hidden" name="thread_id" value="{{ thread_id }}">
-                <input type="text" name="answer" required placeholder="Enter your message">
+                <textarea name="answer" id="chat-textarea" required placeholder="Enter your message"></textarea>
+                <div class="chips-container">
+                    <!-- Chips will be added here dynamically if needed -->
+                </div>
                 <div class="icons">
                     <i class="fas fa-microphone"></i>
                     <i class="fas fa-smile"></i>
@@ -79,7 +83,7 @@
                 <button type="submit">Finish Interview</button>
             </form>
             {% endif %}
-        </div>
+        </div>        
     </div>
     <div class="chat-sidebar-right">
         <div class="sidebar-right-header">
