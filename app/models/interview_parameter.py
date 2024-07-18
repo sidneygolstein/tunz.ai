@@ -12,7 +12,7 @@ class InterviewParameter(db.Model):
     start_time = db.Column(db.DateTime, default=datetime.utcnow)
     end_time = db.Column(db.DateTime, nullable=True)
     duration = db.Column(db.Integer, nullable=True)
-    max_questions = db.Column(db.Integer, nullable=False)
+    max_questions = db.Column(db.Integer, nullable=True)
     role = db.Column(db.String, nullable=True)                                              # marketing, sales, ops
     situation = db.Column(db.Text, nullable=True)  # Allow storing JSON string for multiple situations
     industry = db.Column(db.String, nullable=True)                                          # Web3/blockchain, fintech, HRTech, MedTech, EdTech...
