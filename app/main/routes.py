@@ -184,6 +184,7 @@ def comparison_details(hr_id, interview_id):
             comparison_data.append({
                 'applicant_name': applicant.name,
                 'applicant_surname': applicant.surname,
+                'applicant_email': applicant.email_address,
                 'criteria_scores': result.criteria_scores,
                 'mean_score': mean_score,
                 'id': session.id  # Add session id here

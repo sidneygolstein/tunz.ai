@@ -79,9 +79,6 @@
                     <div class="interview-card">
                         <div class="interview-header">
                             <h4>Interview for: {{ interview.role }} position in the {{ interview.industry }} industry</h4>
-                            <a href="{{ url_for('main.comparison_details', hr_id=hr_id, interview_id=interview.interview_id) }}" class="comparison-button">
-                                <i class="fas fa-chart-bar"></i> Comparison Detail
-                            </a>
                         </div>
                         <div class="scrollable-table">
                             <table id="interview-details-table-{{ interview.interview_parameter_id }}">
@@ -118,12 +115,18 @@
                                 </tbody>
                             </table>
                         </div>
+                        <!-- Centered Button -->
+                        <div style="text-align: center; margin-top: 20px;">
+                            <a href="{{ url_for('main.comparison_details', hr_id=hr_id, interview_id = interview.interview_id) }}" class="comparison-button" style="text-decoration: none;">
+                                <i class="fas fa-eye"></i> See detailed comparisons
+                            </a>
+                        </div>
                     </div>
+                    
                 {% endfor %}
             </div>
         </div>
     {% endif %}
-
     </div>
     
 

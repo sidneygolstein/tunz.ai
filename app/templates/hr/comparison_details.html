@@ -12,13 +12,14 @@
                 <tr>
                     <th class="sortable" onclick="sortTable(0)">Name</th>
                     <th class="sortable" onclick="sortTable(1)">Surname</th>
-                    <th class="sortable" style="width: 15%;" onclick="sortTable(2, true)">Communication Skills</th>
-                    <th class="sortable" style="width: 15%;" onclick="sortTable(3, true)">Logical Reasoning & Structure and Problem Solving</th>
-                    <th class="sortable" style="width: 15%;" onclick="sortTable(4, true)">Creativity</th>
-                    <th class="sortable" style="width: 15%;" onclick="sortTable(5, true)">Business Acumen</th>
-                    <th class="sortable" style="width: 15%;" onclick="sortTable(6, true)">Analytical Skills</th>
-                    <th class="sortable" style="width: 15%;" onclick="sortTable(7, true)">Project Management and Prioritization</th>
-                    <th class="sortable" style="width: 15%;" onclick="sortTable(8, true)">Mean Evaluation</th>
+                    <th class="sortable" onclick="sortTable(2)">Email</th>
+                    <th class="sortable" style="width: 15%;" onclick="sortTable(3, true)">Communication Skills</th>
+                    <th class="sortable" style="width: 15%;" onclick="sortTable(4, true)">Logical Reasoning & Structure and Problem Solving</th>
+                    <th class="sortable" style="width: 15%;" onclick="sortTable(5, true)">Creativity</th>
+                    <th class="sortable" style="width: 15%;" onclick="sortTable(6, true)">Business Acumen</th>
+                    <th class="sortable" style="width: 15%;" onclick="sortTable(7, true)">Analytical Skills</th>
+                    <th class="sortable" style="width: 15%;" onclick="sortTable(8, true)">Project Management and Prioritization</th>
+                    <th class="sortable" style="width: 15%;" onclick="sortTable(9, true)">Mean Evaluation</th>
                     <th>See Details</th>
                 </tr>
             </thead>
@@ -27,6 +28,7 @@
                     <tr>
                         <td>{{ session.applicant_name }}</td>
                         <td>{{ session.applicant_surname }}</td>
+                        <td>{{ session.applicant_email }}</td>
                         {% for criterion, value in session.criteria_scores.items() %}
                             <td data-value="{{ value }}">
                                 <div class="progress">
