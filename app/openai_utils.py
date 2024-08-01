@@ -7,6 +7,13 @@ import json
 openai.api_key = os.environ.get("OPENAI_API_KEY")
 client = OpenAI()
 
+
+
+#####################################################################################################################################################################
+############################################################################# INTERVIEW #############################################################################
+#####################################################################################################################################################################
+
+
 def get_initial_message(role, industry, situation, applicant_name, applicant_surname, language, company_name):
     return f""" 
     - You are an assistant expert in the field of recruiting and hiring, especially for the {role} and {industry}.
@@ -69,7 +76,7 @@ def create_openai_thread(language, role, industry, situation, applicant_name, ap
         name="Interview Thread",
         instructions=instructions,
         tools=[],
-        model="gpt-3.5-turbo",
+        model="gpt-4o-mini",
     )
 
     initial_message = get_initial_message(role, industry, situation, applicant_name, applicant_surname,language, company_name)
@@ -144,6 +151,7 @@ def get_openai_thread_response(thread_id, assistant_id, user_message):
 
 
 #####################################################################################################################################################################
+############################################################################### SCORING #############################################################################
 #####################################################################################################################################################################
 
 
@@ -188,7 +196,7 @@ def create_scoring_thread(language, role, industry, situation, conversation):
     # ASSISTANT CREATION 
     assistant = client.beta.assistants.create(
         name="Scoring Thread",
-        model="gpt-3.5-turbo",
+        model="gpt-4o-mini",
     )
 
     conversation_json = json.dumps(conversation)
@@ -205,7 +213,7 @@ def create_scoring_thread(language, role, industry, situation, conversation):
     run = client.beta.threads.runs.create_and_poll(
         thread_id=thread.id,
         assistant_id = assistant.id,
-        model="gpt-3.5-turbo",
+        model="gpt-4o-mini",
         instructions = instructions,
     )
 
