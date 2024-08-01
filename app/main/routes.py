@@ -11,7 +11,7 @@ from ..forms import ReviewForm, RatingForm
 from flask import Blueprint
 from datetime import datetime
 from flask_mail import Message
-from helpers import get_url
+from helpers import get_url, get_color
 
 
 main = Blueprint('main', __name__)
@@ -20,64 +20,66 @@ main = Blueprint('main', __name__)
 ### USEFUL METHOD
 
 def get_interview_conversation(session_id):
+    # Retrieve all questions and answers for the session
     questions = Question.query.filter_by(session_id=session_id).all()
+    answers = Answer.query.filter_by(session_id=session_id).all()
+
+    # Initialize conversation list
     conversation = []
-    for question in questions:
-        conversation.append({'role': 'Q', 'content': question.content})
-        answer = Answer.query.filter_by(question_id=question.id).first()
-        if answer:
-            conversation.append({'role': 'A', 'content': answer.content})
+
+    # Iterate through questions and answers, assuming they are in order
+    for i in range(max(len(questions), len(answers))):
+        if i < len(questions):
+            conversation.append({'role': 'Q', 'content': questions[i].content})
+        if i < len(answers):
+            conversation.append({'role': 'A', 'content': answers[i].content})
+
     return conversation
+
 
 
 ######### HR ROUTES 
 
-@main.before_request
-def create_or_load_session():
-    if 'session_id' not in session:
-        session['thread_id'] = None
-        session['assistant_id'] = None
-        session['language'] = None
-
-#@jwt_required()
-# routes/main.py
 @main.route('/home/<int:hr_id>')
 def home(hr_id):
-    hr = HR.query.get(hr_id)
+    hr = HR.query.get_or_404(hr_id)
     if not hr:
         return redirect(url_for('auth.login'))
-
+    
     interviews = Interview.query.filter_by(hr_id=hr_id).all()
     interview_data = []
 
     total_sessions = 0
     total_applicants_set = set()
 
-
     for interview in interviews:
         interview_parameters = InterviewParameter.query.filter_by(interview_id=interview.id).first()
-        sessions = Session.query.filter_by(interview_parameter_id=interview.id).all()
+        if not interview_parameters:
+            continue  # Skip if no interview parameters are found
+
+        sessions = Session.query.filter_by(interview_parameter_id=interview_parameters.id).all()
         session_data = []
         for session in sessions:
             applicant = Applicant.query.get(session.applicant_id)
-            session_id = session.id
             result = Result.query.filter_by(session_id=session.id).first()
-            criteria_scores = result.criteria_scores if result and result.criteria_scores else {}
-            mean_score = (
-                sum(criteria_scores.values()) / len(criteria_scores)
-                if criteria_scores else "No scores available"
-            )
+            if not result or not result.criteria_scores:
+                continue  # Skip sessions with no results or criteria scores
+
+            mean_score = sum(result.criteria_scores.values()) / len(result.criteria_scores)
+            if mean_score is None:
+                continue  # Skip if mean score is None
+
+            score = result.score_result if result else "No score"
             session_data.append({
                 'applicant_name': applicant.name,
                 'applicant_surname': applicant.surname,
                 'applicant_email': applicant.email_address,
                 'start_time': session.start_time,
-                'id': session_id,
-                'mean_score': mean_score
+                'score': score,
+                'mean_score': mean_score,
+                'id': session.id
             })
             total_applicants_set.add(applicant.email_address)
-
-
         interview_data.append({
             'created_at': interview_parameters.start_time,
             'industry': interview_parameters.industry,
@@ -97,10 +99,9 @@ def home(hr_id):
     total_interviews = len(interviews) 
     total_applicants = len(total_applicants_set)
 
-
     return render_template('hr/hr_homepage.html', hr_name=hr.name, hr_surname=hr.surname, company_name=hr.company.name,
                             hr_id=hr.id, interview_data=interview_data, total_interviews=total_interviews,
-                           total_sessions=total_sessions, total_applicants=total_applicants)
+                           total_sessions=total_sessions, total_applicants=total_applicants, get_color = get_color)
 
 
 
@@ -165,6 +166,36 @@ def session_details(hr_id, session_id):
                            result=result,
                            interview_parameter=interview_parameter,
                            criteria_scores = criteria_scores)
+
+
+
+@main.route('/comparison_details/<int:hr_id>/<int:interview_id>', methods=['GET'])
+def comparison_details(hr_id, interview_id):
+    hr = HR.query.get_or_404(hr_id)
+    interview_parameters = InterviewParameter.query.filter_by(interview_id=interview_id).first()
+    sessions = Session.query.filter_by(interview_parameter_id=interview_parameters.id).all()
+    comparison_data = []
+
+    for session in sessions:
+        applicant = Applicant.query.get(session.applicant_id)
+        result = Result.query.filter_by(session_id=session.id).first()
+        if result and result.criteria_scores:
+            mean_score = sum(result.criteria_scores.values()) / len(result.criteria_scores)
+            comparison_data.append({
+                'applicant_name': applicant.name,
+                'applicant_surname': applicant.surname,
+                'criteria_scores': result.criteria_scores,
+                'mean_score': mean_score,
+                'id': session.id  # Add session id here
+            })
+
+    return render_template('hr/comparison_details.html',
+                           hr=hr,
+                           hr_id = hr_id,
+                           interview_parameters=interview_parameters,
+                           comparison_data=comparison_data,
+                           get_color=get_color)
+
 
 
 
@@ -276,7 +307,7 @@ def chat(hr_id, interview_id, interview_parameter_id, session_id, applicant_id):
     # If POST
     if request.method == 'POST':
         user_input = request.form['answer']
-        question_id = request.form['question_id']
+        question_id = request.form['question_id'] # ALWAYS THE SAME QUESTION ID
         remaining_time = int(request.form['remaining_time'])
         current_session.remaining_time = remaining_time
         db.session.commit()

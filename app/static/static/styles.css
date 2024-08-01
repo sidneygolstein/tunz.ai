@@ -849,6 +849,7 @@ form .form-group:nth-last-child(-n+2) {
 
 /* PROGRESS BAR */
 
+
 .progress {
     height: 20px;
     background-color: #e9ecef;
@@ -860,7 +861,6 @@ form .form-group:nth-last-child(-n+2) {
 
 .progress-bar {
     height: 100%;
-    background-color: #007bff;
     text-align: center;
     color: white;
     white-space: nowrap;

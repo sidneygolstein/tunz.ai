@@ -214,7 +214,19 @@ def delete_sessions():
         db.session.rollback()
         return jsonify({"msg": "An error occurred while deleting sessions", "error": str(e)}), 500
 
-
+@api.route('/delete_session/<int:session_id>', methods=['DELETE'])
+def delete_session(session_id):
+    try:
+        session = Session.query.get(session_id)
+        if not session:
+            return jsonify({"msg": "Session not found"}), 404
+        db.session.delete(session)
+        db.session.commit()
+        return jsonify({"msg": f"Session {session_id} has been deleted successfully"}), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"msg": "An error occurred while deleting the session", "error": str(e)}), 500
+    
 
 @api.route('/applicants', methods=['GET'])
 def get_applicants():
