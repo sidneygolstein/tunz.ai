@@ -59,6 +59,7 @@ def get_all_interviews():
                     'max_questions': param.max_questions,
                     'duration': param.duration,
                     'role': param.role,
+                    'subrole': param.subrole,
                     'industry': param.industry,
                     # Add other fields from interview parameters if needed
                 }
@@ -162,6 +163,7 @@ def get_interview_parameters():
         'max_questions': parameter.max_questions,
         'duration': parameter.duration,
         'role': parameter.role,
+        'subrole': parameter.subrole,
         'situations': json.loads(parameter.situation) if parameter.situation else [],
         'industry': parameter.industry,
         'interview_id': parameter.interview_id

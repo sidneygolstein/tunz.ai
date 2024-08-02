@@ -11,11 +11,11 @@
     <form id="create-interview-form" action="{{ url_for('main.create_interview', hr_id=hr_id) }}" method="POST">
         <div class="kpi-container">
             <div class="interview-param-box">
-                <label for="language">Select the language of the interview:</label>
+                <label for="language">Select the language:</label>
                 <div class="select">
                     <select name="language" class="form-control" required>
-                        <option value="english">English</option>
-                        <option value="french">French</option>
+                        <option value="English">English</option>
+                        <option value="French">French</option>
                     </select>
                 </div>
             </div>
@@ -26,7 +26,9 @@
                 <div class="select">
                     <select name="duration" class="form-control" required>
                         <option value="1">1 minute</option>
+                        <option value="2">2 minutes</option>
                         <option value="5">5 minutes</option>
+                        <option value="10">10 minutes</option>
                         <option value="15">15 minutes</option>
                         <option value="30">30 minutes</option>
                         <option value="45">45 minutes</option>
@@ -37,12 +39,12 @@
         </div>
         <div class="kpi-container">
             <div class="interview-param-box">
-                <label for="role">Choose a Role:</label>
+                <label for="subrole">Choose a Sales Role:</label>
                 <div class="select">
-                    <select name="role" class="form-control" id="role-select" required>
-                        <option value="sales">Sales</option>
-                        <option value="marketing">Marketing</option>
-                        <option value="operations">Operations</option>
+                    <select name="subrole" class="form-control" id="subrole-select" required>
+                        <option value="Business Development">Business Development</option>
+                        <option value="Sales Development">Sales Development</option>
+                        <option value="Account Management">Account Management</option>
                     </select>
                 </div>
             </div>
@@ -53,11 +55,11 @@
                     <div class="select-situation">
                         <label for="situations">Select one or multiple situation(s):</label>
                         <div class="select">
-                        <select id="situations-select" class="form-control">
-                            <option value="" disabled selected>Select a situation</option>
-                            <!-- Options will be populated dynamically based on the selected role -->
-                        </select>
-                    </div>
+                            <select id="situations-select" class="form-control">
+                                <option value="" disabled selected>Select a situation</option>
+                                <!-- Options will be populated dynamically based on the selected role -->
+                            </select>
+                        </div>
                     </div>
                     <div class="selected-situations">
                         <label>Selected Situations:</label>
@@ -68,6 +70,8 @@
                 </div>
             </div>
         </div>
+        
+
         <div class="kpi-container">
             <div class="interview-param-box">
                 <label for="industry">Choose an Industry:</label>
@@ -106,15 +110,16 @@
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {
-        const roleSelect = document.getElementById("role-select");
+        const subRoleSelect = document.getElementById("subrole-select");
         const situationsSelect = document.getElementById("situations-select");
         const selectedSituationsList = document.getElementById("selected-situations");
         const interviewSituations = {{ interview_situations | tojson }};
         
-        function populateSituations(role) {
+        function populateSituations(subrole) {
             situationsSelect.innerHTML = '<option value="" disabled selected>Select a situation</option>';
-            if (role in interviewSituations) {
-                interviewSituations[role].forEach(situation => {
+            const salesSituations = interviewSituations["Sales"];
+            if (subrole in salesSituations) {
+                salesSituations[subrole].forEach(situation => {
                     const option = document.createElement("option");
                     option.value = situation;
                     option.text = situation;
@@ -144,8 +149,8 @@
             selectedSituationsList.appendChild(li);
         }
 
-        roleSelect.addEventListener("change", function() {
-            populateSituations(roleSelect.value);
+        subRoleSelect.addEventListener("change", function() {
+            populateSituations(subRoleSelect.value);
             selectedSituationsList.innerHTML = ""; // Clear the selected situations when the role changes
         });
 
@@ -154,11 +159,17 @@
             if (selectedOption.value !== "") {
                 addSelectedSituation(selectedOption.value);
                 situationsSelect.remove(situationsSelect.selectedIndex); // Remove the selected option from the dropdown
+                
+                // Reset the dropdown to show "Select a situation" without adding it as a new option
+                situationsSelect.selectedIndex = 0;
             }
         });
 
-        populateSituations(roleSelect.value);
+        populateSituations(subRoleSelect.value);
     });
 </script>
+
+
+
 
 {% endblock %}

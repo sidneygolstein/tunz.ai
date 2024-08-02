@@ -109,7 +109,9 @@ def home(hr_id):
 def create_interview(hr_id):
     if request.method == 'POST':
         language = request.form['language']
-        role = request.form['role']
+        #role = request.form['role']
+        role = "Sales"
+        subrole = request.form['subrole']
         industry = request.form['industry']
         duration = int(request.form['duration'])
         situations = request.form.getlist('situations')
@@ -121,6 +123,7 @@ def create_interview(hr_id):
         interview_parameter = InterviewParameter(
             language=language,
             role=role,
+            subrole = subrole,
             industry=industry,
             duration=duration,
             situation=json.dumps(situations),  # Store situations as JSON string
@@ -133,7 +136,11 @@ def create_interview(hr_id):
         return render_template('hr/interview_generated.html', interview_link=interview_link, hr_id=hr_id, interview_parameter=interview_parameter)
     
     # Construct the correct file path to the JSON file
-    json_path = os.path.join(current_app.root_path, 'interview_situations.json')
+    #json_path = os.path.join(current_app.root_path, 'interview_situations.json')
+
+    # Construct the correct file path to the JSON file
+    json_path = os.path.join(current_app.root_path, 'interview_situations_v2.json')
+
     with open(json_path) as f:
         interview_situations = json.load(f)
 
