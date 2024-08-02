@@ -76,57 +76,59 @@
             <h2>My Interview details</h2>
             <div class="interview-details">
                 {% for interview in interview_data %}
-                    <div class="interview-card">
-                        <div class="interview-header">
-                            <h4>Interview for: {{ interview.role }} position in the {{ interview.industry }} industry</h4>
-                        </div>
-                        <div class="scrollable-table">
-                            <table id="interview-details-table-{{ interview.interview_parameter_id }}">
-                                <thead>
-                                    <tr>
-                                        <th class="sortable">Name</th>
-                                        <th class="sortable">Surname</th>
-                                        <th class="sortable">Email</th>
-                                        <th class="sortable">Start Time</th>
-                                        <th class="sortable" onclick="sortTableByMeanScore('{{ interview.interview_parameter_id }}')">Mean Evaluation</th>
-                                        <th>See Details</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for session in interview.sessions %}
+                    {% if interview.sessions_count > 0 %}
+                        <div class="interview-card">
+                            <div class="interview-header">
+                                <h4>Interview for: {{ interview.role }} position in the {{ interview.industry }} industry</h4>
+                            </div>
+                            <div class="scrollable-table">
+                                <table id="interview-details-table-{{ interview.interview_parameter_id }}">
+                                    <thead>
                                         <tr>
-                                            <td>{{ session.applicant_name }}</td>
-                                            <td>{{ session.applicant_surname }}</td>
-                                            <td>{{ session.applicant_email }}</td>
-                                            <td>{{ session.start_time.strftime('%d-%m-%Y at %H:%M:%S') }}</td>
-                                            <td>
-                                                <div class="progress">
-                                                    <div class="progress-bar" role="progressbar" 
-                                                        style="width: {{ session.mean_score * 10 }}%; 
-                                                                background-color: {{ get_color(session.mean_score) }};" 
-                                                        aria-valuenow="{{ session.mean_score * 10 }}" aria-valuemin="0" aria-valuemax="100">
-                                                    </div>
-                                                </div>
-                                                <span class="hidden-mean-score">{{ session.mean_score }}</span>
-                                            </td>
-                                            <td><a href="{{ url_for('main.session_details', hr_id=hr_id, session_id=session.id) }}">See Details</a></td>
+                                            <th class="sortable">Name</th>
+                                            <th class="sortable">Surname</th>
+                                            <th class="sortable">Email</th>
+                                            <th class="sortable">Start Time</th>
+                                            <th class="sortable" onclick="sortTableByMeanScore('{{ interview.interview_parameter_id }}')">Mean Evaluation</th>
+                                            <th>See Details</th>
                                         </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
+                                    </thead>
+                                    <tbody>
+                                        {% for session in interview.sessions %}
+                                            <tr>
+                                                <td>{{ session.applicant_name }}</td>
+                                                <td>{{ session.applicant_surname }}</td>
+                                                <td>{{ session.applicant_email }}</td>
+                                                <td>{{ session.start_time.strftime('%d-%m-%Y at %H:%M:%S') }}</td>
+                                                <td>
+                                                    <div class="progress">
+                                                        <div class="progress-bar" role="progressbar" 
+                                                            style="width: {{ session.mean_score * 10 }}%; 
+                                                                    background-color: {{ get_color(session.mean_score) }};" 
+                                                            aria-valuenow="{{ session.mean_score * 10 }}" aria-valuemin="0" aria-valuemax="100">
+                                                        </div>
+                                                    </div>
+                                                    <span class="hidden-mean-score">{{ session.mean_score }}</span>
+                                                </td>
+                                                <td><a href="{{ url_for('main.session_details', hr_id=hr_id, session_id=session.id) }}">See Details</a></td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            <!-- Centered Button -->
+                            <div style="text-align: center; margin-top: 20px;">
+                                <a href="{{ url_for('main.comparison_details', hr_id=hr_id, interview_id = interview.interview_id) }}" class="comparison-button" style="text-decoration: none;">
+                                    <i class="fas fa-eye"></i> See detailed comparisons
+                                </a>
+                            </div>
                         </div>
-                        <!-- Centered Button -->
-                        <div style="text-align: center; margin-top: 20px;">
-                            <a href="{{ url_for('main.comparison_details', hr_id=hr_id, interview_id = interview.interview_id) }}" class="comparison-button" style="text-decoration: none;">
-                                <i class="fas fa-eye"></i> See detailed comparisons
-                            </a>
-                        </div>
-                    </div>
-                    
+                    {% endif %}
                 {% endfor %}
             </div>
         </div>
     {% endif %}
+
     </div>
     
 

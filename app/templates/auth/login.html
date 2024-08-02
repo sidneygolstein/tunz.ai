@@ -2,21 +2,19 @@
 
 {% block title %}Login{% endblock %}
 {% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='static/styles_auth.css') }}">
 
-<head>
-    <meta charset="UTF-8">
-    <title>HR Login</title>
-</head>
 <body>
-    <h1>Login</h1>
-    <form action="{{ url_for('auth.login') }}" method="POST">
-        <label for="email">Email:</label>
-        <input type="email" id="email" name="email" required>
-        <label for="password">Password:</label>
-        <input type="password" id="password" name="password" required>
-        <button type="submit">Login</button>
-    </form>
-    <p>Don't have an account? <a href="{{ url_for('auth.register') }}">Register</a></p>
-    <p>Forgot your password?<a href="{{ url_for('auth.request_reset_password') }}">Forgot Password?</a></p>
+    <div class="login-container">
+        <h2>WELCOME TO TUNZ</h2>
+        <h2>Please Login</h2>
+        <form action="{{ url_for('auth.login') }}" method="POST">
+            <input type="email" id="email" name="email" placeholder="Enter your email" required>
+            <input type="password" id="password" name="password" placeholder="Enter your password" required>
+            <a href="{{ url_for('auth.request_reset_password') }}" class="forgot-password-link">Forgot Password?</a>
+            <button type="submit">Login now</button>
+        </form>
+        <a href="{{ url_for('auth.register') }}" class="register-link">Register</a>
+    </div>
 </body>
 {% endblock %}
