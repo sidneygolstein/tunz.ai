@@ -1,26 +1,31 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Admin Register</title>
-</head>
+
+{% extends 'base.html' %}
+
+{% block title %}Register{% endblock %}
+{% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='static/styles_auth.css') }}">
+
 <body>
-    <h1>Admin Register</h1>
-    <form id="admin-register-form">
-        <label for="email">Email:</label>
-        <input type="email" id="email" name="email" required>
-        <label for="name">Name:</label>
-        <input type="text" id="name" name="name" required>
-        <label for="surname">Surname:</label>
-        <input type="text" id="surname" name="surname" required>
-        <label for="password">Password:</label>
-        <input type="password" id="password" name="password" required>
-        <label for="confirm-password">Confirm Password:</label>
-        <input type="password" id="confirm-password" name="confirm-password" required>
-        <button type="submit">Register</button>
-    </form>
-    <p>Already have an account? <a href="{{ url_for('auth.admin_login') }}">Login</a></p>
+    <div class="login-container">
+        <h2>WELCOME TO TUNZ</h2>
+        <h2>Please Register</h2>
+        <form id="register-form">
+            <label for="name">Name:</label>
+            <input type="text" id="name" name="name" placeholder="Please enter your name" required>
+            <label for="surname">Surname:</label>
+            <input type="text" id="surname" name="surname" placeholder="Please enter your surnname" required>
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" placeholder="Please enter your email" required>
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" placeholder="Please enter your password" required>
+            <label for="confirm-password">Confirm Password:</label>
+            <input type="password" id="confirm-password" name="confirm-password" placeholder="Please confirm your surnname" required>
+            <button type="submit">Register</button>
+        </form>
+        <a href="{{ url_for('auth.admin_login') }}" class="register-link">Already have an account?</a>
+    </div>
 </body>
+
 <script>
     document.addEventListener("DOMContentLoaded", function() {
         document.getElementById('admin-register-form').addEventListener('submit', async (event) => {
@@ -54,4 +59,6 @@
         });
     });
 </script>
-</html>
+{% endblock %}
+
+

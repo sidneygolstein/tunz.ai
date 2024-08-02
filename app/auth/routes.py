@@ -265,17 +265,24 @@ def admin_register():
 
 
 
+
 @auth.route('/admin_login', methods=['GET', 'POST'])
 def admin_login():
     if request.method == 'POST':
-        data = request.get_json()
-        email = data.get('email')
-        password = data.get('password')
+        email = request.form['email']
+        password = request.form['password']
         admin = Admin.query.filter_by(email=email).first()
 
         if admin and admin.check_password(password):
             session['admin_id'] = admin.id  # Store admin_id in session
             session['admin_email'] = admin.email
-            return jsonify({"msg": "Login successful", "admin_id": admin.id}), 200
-        return jsonify({"msg": "Invalid credentials"}), 401
+            return redirect(url_for('admin.home'))
+        else:
+            return jsonify({"msg": "Invalid credentials"}), 401
     return render_template('auth/admin_login.html')
+
+
+# To be enhanced with jwt
+@auth.route('/admin_logout', methods=['GET','POST'])
+def admin_logout():
+    return redirect(url_for('auth.admin_login'))
