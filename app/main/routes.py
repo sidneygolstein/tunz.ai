@@ -235,7 +235,8 @@ def applicant_home(hr_id, interview_parameter_id):
         'applicant/applicant_home.html', 
         interview_parameter_id=interview_parameter_id, 
         hr_id = hr_id,
-        role=interview_parameter.role, 
+        role=interview_parameter.role,
+        subrole = interview_parameter.subrole, 
         industry=interview_parameter.industry, 
         hr_email=hr.email,
         duration=duration
@@ -258,6 +259,7 @@ def start_chat(hr_id, interview_parameter_id, interview_id, applicant_id):
     thread_id, assistant_id, assistant_response = create_openai_thread(
         interview_parameter.language,
         interview_parameter.role,
+        interview_parameter.subrole,
         interview_parameter.industry,
         interview_parameter.situation,
         applicant.name,
@@ -345,12 +347,24 @@ def chat(hr_id, interview_id, interview_parameter_id, session_id, applicant_id):
                           recipients=[hr_email])
             msg.body = f'The interview of {applicant_name} {applicant_surname} (email: {applicant_email}) has finished. Click the following link to view the result: {hr_link}'
             mail.send(msg)
+
         else:
             assistant_response = get_openai_thread_response(thread_id, assistant_id, user_input)
             question = Question(content=assistant_response, session_id=session_id)
             db.session.add(question)
             db.session.commit()
 
+        # STILL NEED TO BE ENHANCED: WHEN THE SESSION IS FINISHED? NOT POSSIBLE TO COME BACK
+        """
+        if current_session.finished:
+            return  redirect(url_for('main.applicant_review', 
+                                    hr_id=hr_id, 
+                                    interview_id=interview_id, 
+                                    interview_parameter_id=interview_parameter_id, 
+                                    session_id=session_id,
+                                    applicant_id=applicant_id))
+        """
+        
         return redirect(url_for('main.chat', 
                             hr_id=hr_id, 
                             interview_id=interview_id, 
@@ -358,7 +372,7 @@ def chat(hr_id, interview_id, interview_parameter_id, session_id, applicant_id):
                             session_id=session_id, 
                             applicant_name=applicant_name, 
                             applicant_id=applicant.id))
-    
+        
     remaining_time = current_session.remaining_time
 
     return render_template('applicant/chat.html',
@@ -403,6 +417,7 @@ def finish_chat(hr_id, interview_id, interview_parameter_id, session_id, applica
     
     criteria_result = create_scoring_thread(interview_parameter.language, 
                                                                      interview_parameter.role, 
+                                                                     interview_parameter.subrole,
                                                                      interview_parameter.industry, 
                                                                      interview_parameter.situation, 
                                                                      conversation)
