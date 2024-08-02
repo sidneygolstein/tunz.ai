@@ -35,7 +35,7 @@
                     <tr>
                         <th class="sortable">Created At</td>
                         <th class="sortable">Industry</td>
-                        <th>Role</th>
+                        <th>Sales Role</th>
                         <th>Situation(s)</th>
                         <th class="sortable"> Language</td>
                         <th>Duration</th>
@@ -46,9 +46,9 @@
                 <tbody>
                     {% for interview in interview_data %}
                     <tr>
-                        <td>{{ interview.created_at.strftime('%d-%m-%Y at %H:%M:%S') }}</td>
+                        <td>{{ interview.created_at.strftime('%d/%m/%Y') }}</td>
                         <td>{{ interview.industry }}</td>
-                        <td>{{ interview.role }}</td>
+                        <td>{{ interview.subrole }}</td>
                         <td>
                             <ul>
                                 {% for situation in interview.situation %}
@@ -73,13 +73,13 @@
 
     {% if interview_data %}
         <div class="dashboard">
-            <h2>My Interview details</h2>
+            <h2>My Interview Details</h2>
             <div class="interview-details">
                 {% for interview in interview_data %}
                     {% if interview.sessions_count > 0 %}
                         <div class="interview-card">
                             <div class="interview-header">
-                                <h4>Interview for: {{ interview.role }} position in the {{ interview.industry }} industry</h4>
+                                <h4> Sales interview for the {{interview.subrole}} position in the {{interview.industry}} industry</h4>
                             </div>
                             <div class="scrollable-table">
                                 <table id="interview-details-table-{{ interview.interview_parameter_id }}">
@@ -88,9 +88,9 @@
                                             <th class="sortable">Name</th>
                                             <th class="sortable">Surname</th>
                                             <th class="sortable">Email</th>
-                                            <th class="sortable">Start Time</th>
+                                            <th class="sortable">Interview Start Time</th>
                                             <th class="sortable" onclick="sortTableByMeanScore('{{ interview.interview_parameter_id }}')">Mean Evaluation</th>
-                                            <th>See Details</th>
+                                            <th> </th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -99,7 +99,7 @@
                                                 <td>{{ session.applicant_name }}</td>
                                                 <td>{{ session.applicant_surname }}</td>
                                                 <td>{{ session.applicant_email }}</td>
-                                                <td>{{ session.start_time.strftime('%d-%m-%Y at %H:%M:%S') }}</td>
+                                                <td>{{ session.start_time.strftime('%d/%m/%Y at %H:%M') }}</td>
                                                 <td>
                                                     <div class="progress">
                                                         <div class="progress-bar" role="progressbar" 
@@ -110,7 +110,11 @@
                                                     </div>
                                                     <span class="hidden-mean-score">{{ session.mean_score }}</span>
                                                 </td>
-                                                <td><a href="{{ url_for('main.session_details', hr_id=hr_id, session_id=session.id) }}">See Details</a></td>
+                                                <td>
+                                                    <a href="{{ url_for('main.session_details', hr_id=hr_id, session_id=session.id) }}" style="text-decoration: none;">
+                                                        <p><i class="fas fa-eye"></i> Details</p>
+                                                    </a>
+                                                </td>
                                             </tr>
                                         {% endfor %}
                                     </tbody>
@@ -118,8 +122,8 @@
                             </div>
                             <!-- Centered Button -->
                             <div style="text-align: center; margin-top: 20px;">
-                                <a href="{{ url_for('main.comparison_details', hr_id=hr_id, interview_id = interview.interview_id) }}" class="comparison-button" style="text-decoration: none;">
-                                    <i class="fas fa-eye"></i> See detailed comparisons
+                                <a href="{{ url_for('main.comparison_details', hr_id=hr_id, interview_id = interview.interview_id) }}" class="comparison-button">
+                                    <i class="fas fa-eye"></i> Detailed comparisons
                                 </a>
                             </div>
                         </div>

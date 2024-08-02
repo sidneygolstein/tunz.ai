@@ -870,3 +870,54 @@ form .form-group:nth-last-child(-n+2) {
 .hidden-mean-score {
     display: none;
 }
+
+
+
+/* COMPARISON BUTTON IN HR HOMEPAGE */
+
+.comparison-button {
+    display: inline-block;
+    padding: 10px 20px;
+    font-size: 12px;
+    font-weight: bold;
+    color: #fff;
+    background-color: #050090; /* Change this color to your preferred button color */
+    border: none;
+    border-radius: 5px;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.comparison-button i {
+    margin-right: 10px;
+}
+
+.comparison-button:hover {
+    background-color: #0056b3; /* Change this color for the hover effect */
+}
+
+
+
+/* SMALLER FONT CLASS */
+.smaller-font {
+    font-size: 0.9em; /* Adjust the value to your preference */
+}
+
+.smaller-font h3 {
+    font-size: 1.1em; /* Adjust the value to your preference */
+}
+
+.smaller-font table th,
+.smaller-font table td {
+    font-size: 0.9em; /* Adjust the value to your preference */
+}
+
+.smaller-font .progress-bar {
+    font-size: 0.8em; /* Adjust the value to your preference */
+}
+
+.smaller-font .fa-eye {
+    font-size: 0.9em; /* Adjust the value to your preference */
+}

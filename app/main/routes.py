@@ -83,7 +83,8 @@ def home(hr_id):
         interview_data.append({
             'created_at': interview_parameters.start_time,
             'industry': interview_parameters.industry,
-            'role': interview_parameters.role,
+            'role': interview_parameters.role,            
+            'subrole': interview_parameters.subrole,
             'situation': interview_parameters.get_situations(),
             'language': interview_parameters.language,
             'duration': interview_parameters.duration,

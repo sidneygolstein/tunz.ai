@@ -4,8 +4,10 @@
 
 <link rel="stylesheet" href="{{ url_for('static', filename='static/styles.css') }}">
 <script src="{{ url_for('static', filename='static/js/sort_table.js') }}" defer></script>
-<div class="dashboard">
-    <h2>Comparison Details for {{ interview_parameters.role }} Position</h2>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+<div class="dashboard smaller-font">
+    <h2>Sales interview for the {{interview_parameters.subrole}} position in the {{interview_parameters.industry}} industry</h2>
+    <h2> Detailed comparaison for every applicants</h2>
     <div class="scrollable-table">
         <table id="comparison-table">
             <thead>
@@ -13,14 +15,14 @@
                     <th class="sortable" onclick="sortTable(0)">Name</th>
                     <th class="sortable" onclick="sortTable(1)">Surname</th>
                     <th class="sortable" onclick="sortTable(2)">Email</th>
-                    <th class="sortable" style="width: 15%;" onclick="sortTable(3, true)">Communication Skills</th>
-                    <th class="sortable" style="width: 15%;" onclick="sortTable(4, true)">Logical Reasoning & Structure and Problem Solving</th>
-                    <th class="sortable" style="width: 15%;" onclick="sortTable(5, true)">Creativity</th>
-                    <th class="sortable" style="width: 15%;" onclick="sortTable(6, true)">Business Acumen</th>
-                    <th class="sortable" style="width: 15%;" onclick="sortTable(7, true)">Analytical Skills</th>
-                    <th class="sortable" style="width: 15%;" onclick="sortTable(8, true)">Project Management and Prioritization</th>
-                    <th class="sortable" style="width: 15%;" onclick="sortTable(9, true)">Mean Evaluation</th>
-                    <th>See Details</th>
+                    <th class="sortable" style="width: 10%;" onclick="sortTable(3, true)">Communication Skills</th>
+                    <th class="sortable" style="width: 10%;" onclick="sortTable(4, true)">Logical Reasoning & Structure and Problem Solving</th>
+                    <th class="sortable" style="width: 10%;" onclick="sortTable(5, true)">Creativity</th>
+                    <th class="sortable" style="width: 10%;" onclick="sortTable(6, true)">Business Acumen</th>
+                    <th class="sortable" style="width: 10%;" onclick="sortTable(7, true)">Analytical Skills</th>
+                    <th class="sortable" style="width: 10%;" onclick="sortTable(8, true)">Project Management and Prioritization</th>
+                    <th class="sortable" style="width: 10%;" onclick="sortTable(9, true)">Mean Evaluation</th>
+                    <th> </th>
                 </tr>
             </thead>
             <tbody>
@@ -50,7 +52,9 @@
                             </div>
                         </td>
                         <td>
-                            <a href="{{ url_for('main.session_details', hr_id=hr_id, session_id=session.id) }}">See Details</a>
+                            <a href="{{ url_for('main.session_details', hr_id=hr_id, session_id=session.id) }}" style="text-decoration: none;">
+                                <p><i class="fas fa-eye"></i> Details</p>
+                            </a>
                         </td>
                     </tr>
                 {% endfor %}
