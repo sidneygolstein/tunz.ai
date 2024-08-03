@@ -2,31 +2,46 @@
 {% block title %}Create Interview{% endblock %}
 {% block content %}
 
-<link rel="stylesheet" href="{{ url_for('static', filename='static/styles.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='static/styles_applicant.css') }}">
 <script src="{{ url_for('static', filename='static/js/confirmation.js') }}"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 
-    <h1>Welcome, Applicant!</h1>
-    <p>Role: {{ role }}</p>
-    <p>Industry: {{ industry }}</p>
-    <p>HR Contact: {{ hr_email }}</p>
-    <form action="{{ url_for('main.applicant_home', hr_id = hr_id, interview_parameter_id=interview_parameter_id) }}" method="POST">
-        <label for="name">Name:</label>
-        <input type="text" id="name" name="name" required><br><br>
-        <label for="surname">Surname:</label>
-        <input type="text" id="surname" name="surname" required><br><br>
-        <label for="email">Email:</label>
-        <input type="email" id="email" name="email" required><br><br>
-        <button type="submit" class="btn btn-primary start-interview-btn" data-action="start-itw">Start Interview</button>    </form>
+<body>
+    <div class="applicant-container">
+        <h1>Welcome!</h1>
+        <p>Thank you for your application to join {{ company_name }} in {{ subrole }}, we are very excited to meet you and learn more about who you are and your awesome skills!</p>
+        <p>Your first round interview will consist in a short conversation with our innovative AI-based interviewer. The interview will be centered around real-life situational-based questions to test your sales skills in a practical and fun way!</p>
+        <p>Please read the following instructions carefully before starting the interview! Good luck!</p>
+        
+        <div class="instructions">
+            <h2>Instructions:</h2>
+            <ul>
+                <li>Please be specific in your answers and clearly explain your thinking. There are no right or wrong answers; the objective is to understand how you think about certain problems & solutions and what steps you would take to solve particular problems.</li>
+                <li>Please note that each answer you provide will be considered final when you submit it after clicking on “send”. Thus, please ensure you provide your complete answer in one message/block.</li>
+                <li>The interview will finish when the timer ends (you will get a reminder 30 seconds before the end of the interview to finish your last answer). The interview will last for {{duration}} min. </li>
+                <li>Don’t hesitate to ask clarifying questions if the questions are not clear.</li>
+                <li>After the interview is finished you will be asked to provide some short feedback about the experience and you will then be able to get initial feedback about your performance on the interview. This will help you understand what you did great and what you can improve for future rounds!</li>
+            </ul>
+        </div>
 
-
-<!-- Confirmation Modal -->
-<div id="confirmation-modal" class="modal">
-    <div class="modal-content">
-        <p id="confirmation-message">Are you sure you want to create this interview?</p>
-        <button id="confirm-yes">Yes</button>
-        <button id="confirm-no">No</button>
+        <form action="{{ url_for('main.applicant_home', hr_id=hr_id, interview_parameter_id=interview_parameter_id) }}" method="POST">
+            <label for="name">Name:</label>
+            <input type="text" id="name" name="name" placeholder="Please enter your name" required>
+            <label for="surname">Surname:</label>
+            <input type="text" id="surname" name="surname" placeholder="Please enter your surname" required>
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" placeholder="Please enter your email" required>
+            <button type="submit" class="btn btn-primary start-interview-btn" data-action="start-itw">Start Interview</button>
+        </form>
     </div>
-</div>
 
+    <!-- Confirmation Modal -->
+    <div id="confirmation-modal" class="modal">
+        <div class="modal-content">
+            <p id="confirmation-message">Are you sure you want to create this interview?</p>
+            <button id="confirm-yes">Yes</button>
+            <button id="confirm-no">No</button>
+        </div>
+    </div>
+</body>
 {% endblock %}

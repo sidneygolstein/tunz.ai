@@ -218,6 +218,8 @@ def applicant_home(hr_id, interview_parameter_id):
     interview_parameter = InterviewParameter.query.get_or_404(interview_parameter_id)
     interview_id = interview_parameter.interview_id
     duration = interview_parameter.duration
+    company = Company.query.get_or_404(hr.company_id)
+    company_name = company.name
     
 
     if request.method == 'POST':
@@ -239,7 +241,8 @@ def applicant_home(hr_id, interview_parameter_id):
         subrole = interview_parameter.subrole, 
         industry=interview_parameter.industry, 
         hr_email=hr.email,
-        duration=duration
+        duration=duration,
+        company_name = company_name
     )
 
 
@@ -364,7 +367,7 @@ def chat(hr_id, interview_id, interview_parameter_id, session_id, applicant_id):
                                     session_id=session_id,
                                     applicant_id=applicant_id))
         """
-        
+
         return redirect(url_for('main.chat', 
                             hr_id=hr_id, 
                             interview_id=interview_id, 

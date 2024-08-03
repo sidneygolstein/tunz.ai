@@ -1,0 +1,113 @@
+/* LOGIN */
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f4f4f9;
+    font-family: Arial, sans-serif;
+    margin: 0;
+}
+
+.applicant-container {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    width: 80%;
+    max-width: 800px;
+    margin: auto;
+}
+
+.applicant-container h1 {
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+.applicant-container p {
+    text-align: left;
+    margin-bottom: 15px;
+}
+
+.instructions {
+    text-align: left;
+    margin-bottom: 20px;
+}
+
+.instructions h2 {
+    font-size: 20px;
+    margin-bottom: 10px;
+}
+
+.instructions ul {
+    list-style-type: disc;
+    padding-left: 20px;
+}
+
+.instructions ul li {
+    margin-bottom: 10px;
+}
+
+.applicant-container form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.applicant-container label {
+    display: none; /* Hide the label */
+}
+
+.applicant-container input[type="email"],
+.applicant-container input[type="text"],
+.applicant-container input[type="confirm_password"],
+.applicant-container input[type="password"] {
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    font-size: 14px;
+    width: 95%;
+}
+
+.applicant-container input::placeholder {
+    font-size: 14px;
+    color: #aaa;
+}
+
+.applicant-container button {
+    padding: 10px;
+    background-color: #03005b;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    margin-top: 10px;
+    width: 100%;
+}
+
+.applicant-container button:hover {
+    background-color: #03005b;
+}
+
+.applicant-container .forgot-password-link {
+    display: block;
+    margin-top: 10px;
+    font-size: 14px;
+    color: #03005b;
+    text-decoration: none;
+    text-align: right;
+}
+
+.applicant-container .forgot-password-link:hover {
+    text-decoration: underline;
+}
+
+/* Responsive adjustments */
+@media (min-width: 768px) {
+    .applicant-container {
+        width: 60%;
+    }
+}
