@@ -3,72 +3,9 @@
 {% block content %}
 
 <link rel="stylesheet" href="{{ url_for('static', filename='static/styles.css') }}">
-<style>
-    body {
-        font-family: Arial, sans-serif;
-        background-color: #f4f4f9;
-        margin: 0;
-        padding: 0;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-    }
-    .container {
-        background-color: #fff;
-        padding: 20px;
-        border-radius: 8px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        width: 80%;
-        max-width: 800px;
-        max-height: 80vh; /* Adjust to fit the screen */
-        overflow-y: auto; /* Enable scrolling */
-    }
-    h1, h2 {
-        color: #333;
-        text-align: center;
-        margin-bottom: 20px;
-    }
-    p {
-        color: #555;
-        margin: 8px 0;
-    }
-    ul {
-        list-style-type: none;
-        padding: 0;
-    }
-    ul li {
-        background-color: #f9f9f9;
-        margin: 10px 0;
-        padding: 10px;
-        border-radius: 5px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
-    ul li strong {
-        color: #333;
-    }
-    a {
-        display: inline-block;
-        margin-top: 20px;
-        background-color: #007bff;
-        color: #fff;
-        padding: 10px 20px;
-        text-decoration: none;
-        border-radius: 5px;
-        text-align: center;
-    }
-    a:hover {
-        background-color: #0056b3;
-    }
-    .conversation-box {
-        max-height: 200px; /* Adjust height as needed */
-        overflow-y: auto;
-        border: 1px solid #e6e6e6;
-        padding: 10px;
-        border-radius: 5px;
-        margin-top: 20px;
-    }
-</style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 
 <div class="container">
     <h2>Details of the Interview</h2>
@@ -106,6 +43,61 @@
             {% endfor %}
         </ul>
     </div>
+    <h3>Performance Radar Chart</h3>
+    <canvas id="radarChart"></canvas>
     <a href="{{ url_for('main.home', hr_id=hr_id) }}">Back to Dashboard</a>
 </div>
+
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const ctx = document.getElementById('radarChart').getContext('2d');
+        const data = {
+            labels: [
+                'Analytical Skills', 
+                'Business Acumen', 
+                'Communication Skills', 
+                'Creativity', 
+                'Logical Reasoning & Structure and Problem Solving', 
+                'Project Management and Prioritization'
+            ],
+            datasets: [{
+                label: 'Criteria Scores',
+                data: [
+                    {{ score_interview.criteria_score.analytical_skills }},
+                    {{ score_interview.criteria_score.business_acumen }},
+                    {{ score_interview.criteria_score.communication_skills }},
+                    {{ score_interview.criteria_score.creativity }},
+                    {{ score_interview.criteria_score.logical_reasoning_and_structure_and_problem_solving }},
+                    {{ score_interview.criteria_score.project_management_and_prioritization }}
+                ],
+                backgroundColor: 'rgba(34, 202, 236, 0.2)',
+                borderColor: 'rgba(34, 202, 236, 1)',
+                pointBackgroundColor: 'rgba(34, 202, 236, 1)',
+                pointBorderColor: '#fff',
+                pointHoverBackgroundColor: '#fff',
+                pointHoverBorderColor: 'rgba(34, 202, 236, 1)'
+            }]
+        };
+        const config = {
+            type: 'radar',
+            data: data,
+            options: {
+                scales: {
+                    r: {
+                        angleLines: {
+                            display: false
+                        },
+                        suggestedMin: 0,
+                        suggestedMax: 5
+                    }
+                }
+            }
+        };
+        new Chart(ctx, config);
+    });
+</script>
+
+
 {% endblock %}

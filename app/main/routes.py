@@ -183,24 +183,26 @@ def comparison_details(hr_id, interview_id):
     interview_parameters = InterviewParameter.query.filter_by(interview_id=interview_id).first()
     sessions = Session.query.filter_by(interview_parameter_id=interview_parameters.id).all()
     comparison_data = []
-
     for session in sessions:
         applicant = Applicant.query.get(session.applicant_id)
         result = Result.query.filter_by(session_id=session.id).first()
-        if result and result.criteria_scores:
-            mean_score = sum(result.criteria_scores.values()) / len(result.criteria_scores)
-            comparison_data.append({
-                'applicant_name': applicant.name,
-                'applicant_surname': applicant.surname,
-                'applicant_email': applicant.email_address,
-                'criteria_scores': result.criteria_scores,
-                'mean_score': mean_score,
-                'id': session.id  # Add session id here
-            })
+        
+        if result and result.score_interview:
+            criteria_score = result.score_interview.get("criteria_score")
+            if criteria_score:
+                mean_score = sum(criteria_score.values()) / len(criteria_score)
+                comparison_data.append({
+                    'applicant_name': applicant.name,
+                    'applicant_surname': applicant.surname,
+                    'applicant_email': applicant.email_address,
+                    'criteria_scores': criteria_score,
+                    'mean_score': mean_score,
+                    'id': session.id  # Add session id here
+                })
 
     return render_template('hr/comparison_details.html',
                            hr=hr,
-                           hr_id = hr_id,
+                           hr_id=hr_id,
                            interview_parameters=interview_parameters,
                            comparison_data=comparison_data,
                            get_color=get_color)
