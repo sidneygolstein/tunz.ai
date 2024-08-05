@@ -86,7 +86,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
 
     // Prevent pasting into the chat textarea
-    const chatTextarea = document.getElementById('chat-textarea');
+    /* const chatTextarea = document.getElementById('chat-textarea');
     if (chatTextarea) {
         chatTextarea.addEventListener('paste', function(e) {
             e.preventDefault();
@@ -96,5 +96,5 @@ document.addEventListener("DOMContentLoaded", function() {
         chatTextarea.addEventListener('contextmenu', function(e) {
             e.preventDefault();
         });
-    }
+    } */
 });

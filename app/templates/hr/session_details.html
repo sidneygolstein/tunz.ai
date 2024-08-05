@@ -6,49 +6,180 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
+<style>
+    .conversation-box {
+        max-height: 600px; /* Adjust height as needed */
+        overflow-y: auto;
+        border: 1px solid #e6e6e6;
+        padding: 10px;
+        border-radius: 8px;
+        background-color: #fff;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        margin-top: 10px;
+    }
+    .radar-container {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 20px;
+    }
+    .radar-chart-box, .criteria-explanations-box {
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    .radar-chart-box {
+        flex: 1 1 45%;
+    }
+    .criteria-explanations-box {
+        flex: 1 1 45%;
+        margin-left: 20px;
+    }
+    .pros-cons {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 20px;
+    }
+    .pros, .cons {
+        flex: 1 1 45%;
+        padding: 10px;
+        border: 1px solid #e6e6e6;
+        border-radius: 8px;
+        background-color: #fff;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        margin: 0 10px;
+    }
+    .container p {
+        display: inline-block;
+        margin: 5px;
+    }
+    .container .info-columns {
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+    }
+    .container .info-columns .info-item {
+        flex: 1 1 30%;
+    }
+    ul {
+        list-style-type: none;
+        padding: 0;
+    }
+    ul li {
+        background-color: #f9f9f9;
+        margin: 10px 0;
+        padding: 10px;
+        border-radius: 5px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    ul.pros-cons-list {
+        list-style-type: disc;
+        padding-left: 20px;
+    }
+    .title-container {
+        margin-top: 20px;
+    }
+    .title-container h3 {
+        margin-bottom: 0;
+    }
+</style>
 
 <div class="container">
     <h2>Details of the Interview</h2>
-    <p><strong>Role:</strong> {{ interview_parameter.role }}</p>
-    <p><strong>Situations:</strong>
-        <ul>
-            {% for situation in interview_parameter.get_situations() %}
-            <li>{{ situation }}</li>
-            {% endfor %}
-        </ul>
-    </p>
-    <p><strong>Industry:</strong> {{ interview_parameter.industry }}</p>
-    <p><strong>Duration:</strong> {{ interview_parameter.duration }} minutes</p>
-    <p><strong>Start Time:</strong> {{ session.start_time.strftime('%d-%m-%Y at %H:%M:%S') }}</p>
-    <p><strong>Applicant Name:</strong> {{ applicant.name }}</p>
-    <p><strong>Applicant Surname:</strong> {{ applicant.surname }}</p>
-    <p><strong>Applicant Email:</strong> {{ applicant.email_address }}</p>
-    <div class="criteria-scores">
-        <h3>Criteria Scores</h3>
-        <ul>
-            {% for criteria, score in score_interview.items() %}
-            <li><strong>{{ criteria.replace('_', ' ').title() }}:</strong> {{ score }}</li>
-            {% endfor %}
-        </ul>
+    <div class="info-columns">
+        <div class="info-item">
+            <p><strong>Applicant Name:</strong> {{ applicant.name }}</p>
+        </div>
+        <div class="info-item">
+            <p><strong>Applicant Surname:</strong> {{ applicant.surname }}</p>
+        </div>
+        <div class="info-item">
+            <p><strong>Applicant Email:</strong> {{ applicant.email_address }}</p>
+        </div>
     </div>
-    <h3>Conversation</h3>
-    <div class="conversation-box">
-        <ul>
-            {% for item in conversation %}
-                {% if item.role == 'Q' %}
-                    <li><strong>Q:</strong> {{ item.content }}</li>
-                {% else %}
-                    <li><strong>A:</strong> {{ item.content }}</li>
-                {% endif %}
-            {% endfor %}
-        </ul>
+    <div class="info-columns">
+        <div class="info-item">
+            <p><strong>Role:</strong> {{ interview_parameter.role }}</p>
+        </div>
+        <div class="info-item">
+            <p><strong>Industry:</strong> {{ interview_parameter.industry }}</p>
+        </div>
+        <div class="info-item">
+            <p><strong>Duration:</strong> {{ interview_parameter.duration }} minutes</p>
+        </div>
     </div>
-    <h3>Performance Radar Chart</h3>
-    <canvas id="radarChart"></canvas>
+    <div>
+        <p><strong>Start Time:</strong> {{ session.start_time.strftime('%d-%m-%Y at %H:%M:%S') }}</p>
+    </div>
+    <div>
+        <p><strong>Situations:</strong>
+            <ul>
+                {% for situation in interview_parameter.get_situations() %}
+                <li>{{ situation }}</li>
+                {% endfor %}
+            </ul>
+        </p>
+    </div>
+    
+    <div class="title-container">
+        <div class="radar-container">
+            <div class="radar-chart-box">
+                <h3>Criteria Evaluation</h3>
+                <canvas id="radarChart" style="max-height: 400px;"></canvas> <!-- Adjusted height -->
+            </div>
+            <div class="criteria-explanations-box">
+                <h3>Criteria Explanations</h3>
+                <ul>
+                    {% for criteria, explanation in score_interview.criteria_explanation.items() %}
+                    <li><strong>{{ criteria.replace('_', ' ').title() }}:</strong> {{ explanation }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="title-container">
+        <div class="pros-cons">
+            <div class="pros">
+                <h3>Interview Pros</h3>
+                <ul class="pros-cons-list">
+                    {% for pro in score_interview.interview_pros.split(';') %}
+                        {% if pro %}
+                            <li>{{ pro }}</li>
+                        {% endif %}
+                    {% endfor %}
+                </ul>
+            </div>
+            <div class="cons">
+                <h3>Interview Cons</h3>
+                <ul class="pros-cons-list">
+                    {% for con in score_interview.interview_cons.split(';') %}
+                        {% if con %}
+                            <li>{{ con }}</li>
+                        {% endif %}
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="title-container">
+        <h3>Conversation</h3>
+        <div class="conversation-box">
+            <ul>
+                {% for item in conversation %}
+                    {% if item.role == 'Q' %}
+                        <li><strong>Assistant:</strong> {{ item.content }}</li>
+                    {% else %}
+                        <li><strong>{{ applicant.name }} {{ applicant.surname }}:</strong> {{ item.content }}</li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
     <a href="{{ url_for('main.home', hr_id=hr_id) }}">Back to Dashboard</a>
 </div>
-
-
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {
@@ -56,11 +187,11 @@
         const data = {
             labels: [
                 'Analytical Skills', 
-                'Business Acumen', 
-                'Communication Skills', 
+                'Business\nAcumen', 
+                'Communication\nSkills', 
                 'Creativity', 
-                'Logical Reasoning & Structure and Problem Solving', 
-                'Project Management and Prioritization'
+                'Logical Reasoning &\nStructure and Problem Solving', 
+                'Project Management\nand Prioritization'
             ],
             datasets: [{
                 label: 'Criteria Scores',
@@ -72,12 +203,12 @@
                     {{ score_interview.criteria_score.logical_reasoning_and_structure_and_problem_solving }},
                     {{ score_interview.criteria_score.project_management_and_prioritization }}
                 ],
-                backgroundColor: 'rgba(34, 202, 236, 0.2)',
-                borderColor: 'rgba(34, 202, 236, 1)',
-                pointBackgroundColor: 'rgba(34, 202, 236, 1)',
+                backgroundColor: 'rgba(5, 0, 144, 0.2)',
+                borderColor: '#050090',
+                pointBackgroundColor: '#050090',
                 pointBorderColor: '#fff',
                 pointHoverBackgroundColor: '#fff',
-                pointHoverBorderColor: 'rgba(34, 202, 236, 1)'
+                pointHoverBorderColor: '#050090'
             }]
         };
         const config = {
@@ -89,8 +220,45 @@
                         angleLines: {
                             display: false
                         },
+                        ticks: {
+                            display: true,
+                            callback: function(value, index, values) {
+                                switch (value) {
+                                    case 2:
+                                        return 'Bad';
+                                    case 4:
+                                        return 'Insufficient';
+                                    case 6:
+                                        return 'Correct';
+                                    case 8:
+                                        return 'Good';
+                                    case 10:
+                                        return 'Excellent';
+                                    default:
+                                        return '';
+                                }
+                            }
+                        },
                         suggestedMin: 0,
-                        suggestedMax: 5
+                        suggestedMax: 10,
+                        stepSize: 2,
+                        pointLabels: {
+                            font: {
+                                family: 'Arial, sans-serif', // Match the font family
+                                size: 14,
+                                color: '#050090' // Match the color
+                            },
+                            callback: function(label) {
+                                return label.split('\n');
+                            }
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'bottom',
+                        align: 'end'
                     }
                 }
             }
@@ -98,6 +266,5 @@
         new Chart(ctx, config);
     });
 </script>
-
 
 {% endblock %}
