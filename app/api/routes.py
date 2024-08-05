@@ -129,12 +129,12 @@ def get_scores():
     response = []
 
     for result in results:
-        criteria_scores_cleaned = result.criteria_scores
+        score_interview = result.score_interview
         response.append({
             'id': result.id,
             'score_type': result.score_type,
             'session_id': result.session_id,
-            'criteria_scores': criteria_scores_cleaned  # Ensure criteria_scores is properly formatted
+            'score_interview': score_interview  # Ensure criteria_scores is properly formatted
         })
 
     return jsonify(response)

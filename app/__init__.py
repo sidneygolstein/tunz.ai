@@ -9,12 +9,14 @@ from flask import Flask
 from flask_bcrypt import Bcrypt
 from flask_jwt_extended import JWTManager
 from flask_mail import Mail, Message
+from markupsafe import Markup
 
 db = SQLAlchemy()
 jwt = JWTManager()
 migrate = Migrate()
 mail = Mail()
 bcrypt = Bcrypt()
+
 
 
 def create_app():
@@ -26,6 +28,10 @@ def create_app():
     jwt.init_app(app)
     bcrypt.init_app(app)
     mail.init_app(app)
+
+    @app.template_filter('nl2br')
+    def nl2br(value):
+        return Markup(value.replace('\n', '<br>\n'))
 
     with app.app_context():
         from app import models

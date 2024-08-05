@@ -62,20 +62,20 @@ def home(hr_id):
         for session in sessions:
             applicant = Applicant.query.get(session.applicant_id)
             result = Result.query.filter_by(session_id=session.id).first()
-            if not result or not result.criteria_scores:
-                continue  # Skip sessions with no results or criteria scores
+            if not result or not result.score_interview or not result.score_interview.get('criteria_score'):
+                continue  # Skip sessions with no results, no score_interview, or no criteria scores
 
-            mean_score = sum(result.criteria_scores.values()) / len(result.criteria_scores)
+            criteria_scores = result.score_interview['criteria_score']
+            mean_score = sum(criteria_scores.values()) / len(criteria_scores)
             if mean_score is None:
                 continue  # Skip if mean score is None
 
-            score = result.score_result if result else "No score"
             session_data.append({
                 'applicant_name': applicant.name,
                 'applicant_surname': applicant.surname,
                 'applicant_email': applicant.email_address,
                 'start_time': session.start_time,
-                'score': score,
+                'score': criteria_scores,
                 'mean_score': mean_score,
                 'id': session.id
             })
@@ -102,7 +102,7 @@ def home(hr_id):
 
     return render_template('hr/hr_homepage.html', hr_name=hr.name, hr_surname=hr.surname, company_name=hr.company.name,
                             hr_id=hr.id, interview_data=interview_data, total_interviews=total_interviews,
-                           total_sessions=total_sessions, total_applicants=total_applicants, get_color = get_color)
+                           total_sessions=total_sessions, total_applicants=total_applicants, get_color=get_color)
 
 
 
@@ -164,7 +164,7 @@ def session_details(hr_id, session_id):
 
     conversation = get_interview_conversation(session_id)
     # Load criteria scores from the JSON string
-    criteria_scores = result.criteria_scores
+    score_interview = result.score_interview
 
     return render_template('hr/session_details.html',
                            hr_id=hr_id,    
@@ -173,7 +173,7 @@ def session_details(hr_id, session_id):
                            conversation=conversation,
                            result=result,
                            interview_parameter=interview_parameter,
-                           criteria_scores = criteria_scores)
+                           score_interview = score_interview)
 
 
 
@@ -418,16 +418,18 @@ def finish_chat(hr_id, interview_id, interview_parameter_id, session_id, applica
 
     conversation = get_interview_conversation(session_id)
     
-    criteria_result = create_scoring_thread(interview_parameter.language, 
+    score_interview = create_scoring_thread(interview_parameter.language, 
                                                                      interview_parameter.role, 
                                                                      interview_parameter.subrole,
                                                                      interview_parameter.industry, 
                                                                      interview_parameter.situation, 
                                                                      conversation)
-    # Convert the dictionary to a JSON string before saving to the database
-    criteria_result_str = json.loads(criteria_result)  
     
-    result = Result(score_type = 'applicant_score', session_id = session_id, criteria_scores = criteria_result_str)
+    # CRITERIA RESULT = TOUT LE BIG DICO. 
+    # Convert the dictionary to a JSON string before saving to the database
+    score_interview_str = json.loads(score_interview)  
+    
+    result = Result(score_type = 'applicant_score', session_id = session_id, score_interview = score_interview_str)
     db.session.add(result)
     db.session.commit()
 
@@ -498,6 +500,7 @@ def applicant_result(hr_id, interview_id, interview_parameter_id, session_id, ap
     if not current_session_id:
         return redirect(url_for('main.home'))
     score = Result.query.filter_by(session_id=session_id).first()  # Implement this function based on your grading logic
+    applicant_feedback = score.score_interview['applicant_feedback']
     applicant = Applicant.query.get_or_404(applicant_id)
     applicant_name = applicant.name
     applicant_email = applicant.email_address
@@ -505,6 +508,7 @@ def applicant_result(hr_id, interview_id, interview_parameter_id, session_id, ap
 
     return render_template('applicant/applicant_result.html',
                             score=score, 
+                            applicant_feedback = applicant_feedback,
                             applicant_email=applicant_email, 
                             applicant_name=applicant_name, 
                             applicant_surname=applicant_surname, 

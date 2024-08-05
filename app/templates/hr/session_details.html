@@ -89,7 +89,7 @@
     <div class="criteria-scores">
         <h3>Criteria Scores</h3>
         <ul>
-            {% for criteria, score in criteria_scores.items() %}
+            {% for criteria, score in score_interview.items() %}
             <li><strong>{{ criteria.replace('_', ' ').title() }}:</strong> {{ score }}</li>
             {% endfor %}
         </ul>

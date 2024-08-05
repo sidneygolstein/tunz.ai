@@ -46,22 +46,22 @@
         <div id="chat-box">
             {% for question in questions %}
             <div class="message assistant">
-                <p>{{ question.content }}</p>
+                <p>{{ question.content | replace('\n', '<br>') | safe }}</p>
             </div>
             {% for answer in answers %}
             {% if answer.question_id == question.id %}
             <div class="message user">
-                <p>{{ answer.content }}</p>
+                <p>{{ answer.content | replace('\n', '<br>') | safe }}</p>
             </div>
             {% endif %}
             {% endfor %}
             {% endfor %}
             {% if is_finished %}
             <div class="message assistant">
-                <p>{{ thank_you_message }}</p>
+                <p>{{ thank_you_message | replace('\n', '<br>') | safe }}</p>
             </div>
             {% endif %}
-        </div>
+        </div>        
         <div class="chat-input">
             {% if not is_finished %}
             <form action="{{ url_for('main.chat', hr_id=hr_id, interview_id=interview_id, interview_parameter_id=interview_parameter_id, session_id=session_id, applicant_id=applicant.id, thread_id=thread_id) }}" method="post" id="chat-form">

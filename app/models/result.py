@@ -11,10 +11,10 @@ class Result(db.Model):
     score_type = db.Column(db.String, nullable=True)
     score_result = db.Column(db.Integer, nullable=True)
     timestamp = db.Column(db.DateTime, nullable = True, default=datetime.utcnow)
-    feedback_type = db.Column(db.String, nullable=True)
-    feedback_content = db.Column(db.String, nullable=True)
+    #feedback_type = db.Column(db.String, nullable=True)
+    #feedback_content = db.Column(db.String, nullable=True)
     session_id = db.Column(db.Integer, db.ForeignKey('session.id'), nullable=False)
-    criteria_scores = db.Column(JSON, nullable=True, default=dict)
+    score_interview = db.Column(JSON, nullable=True, default=dict)
 
 
     def __repr__(self):
