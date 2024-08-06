@@ -1,6 +1,7 @@
 # Contains the routes related to API functionality.
 
 import json
+import math
 from flask import Blueprint, jsonify, session
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
 from ..models import Question, Answer, Result, InterviewParameter, Session, Applicant, Review, ReviewQuestion, HR, Interview, Company, Admin
@@ -130,11 +131,26 @@ def get_scores():
 
     for result in results:
         score_interview = result.score_interview
+        criteria_scores = result.score_interview['criteria_score']
+
+        criteria_keys = [
+            'communication_skills',
+            'logical_reasoning_and_structure_and_problem_solving',
+            'creativity',
+            'business_acumen',
+            'analytical_skills',
+            'project_management_and_prioritization'
+        ]
+
+            # Retrieve the criteria values
+        criteria_value = [criteria_scores.get(key, 0) for key in criteria_keys]
+        
         response.append({
             'id': result.id,
             'score_type': result.score_type,
             'session_id': result.session_id,
-            'score_interview': score_interview  # Ensure criteria_scores is properly formatted
+            'score_interview': score_interview,  # Ensure criteria_scores is properly formatted
+            'criteria_value': criteria_value,
         })
 
     return jsonify(response)
@@ -157,17 +173,27 @@ def delete_scores():
 @api.route('/interview_parameters', methods=['GET'])
 def get_interview_parameters():
     interview_parameters = InterviewParameter.query.all()
-    return jsonify([{
-        'id': parameter.id,
-        'language': parameter.language,
-        'max_questions': parameter.max_questions,
-        'duration': parameter.duration,
-        'role': parameter.role,
-        'subrole': parameter.subrole,
-        'situations': json.loads(parameter.situation) if parameter.situation else [],
-        'industry': parameter.industry,
-        'interview_id': parameter.interview_id
-    } for parameter in interview_parameters]) 
+    parameters_data = []
+
+    for parameter in interview_parameters:
+        situations = json.loads(parameter.situation) if parameter.situation else []
+        ponderation = json.loads(parameter.ponderation) if parameter.ponderation else [[3, 3, 3, 3, 3, 3] for _ in range(len(situations))]
+
+        parameters_data.append({
+            'id': parameter.id,
+            'language': parameter.language,
+            'max_questions': parameter.max_questions,
+            'duration': parameter.duration,
+            'role': parameter.role,
+            'subrole': parameter.subrole,
+            'situations': situations,
+            'industry': parameter.industry,
+            'interview_id': parameter.interview_id,
+            'ponderation': ponderation
+        })
+
+    return jsonify(parameters_data)
+
 
 
 @api.route('/sessions', methods=['GET'])

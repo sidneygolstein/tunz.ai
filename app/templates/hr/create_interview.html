@@ -119,12 +119,13 @@
             situationsSelect.innerHTML = '<option value="" disabled selected>Select a situation</option>';
             const salesSituations = interviewSituations["Sales"];
             if (subrole in salesSituations) {
-                salesSituations[subrole].forEach(situation => {
+                const subroleSituations = salesSituations[subrole];
+                for (const situation in subroleSituations) {
                     const option = document.createElement("option");
                     option.value = situation;
                     option.text = situation;
                     situationsSelect.add(option);
-                });
+                }
             }
         }
 
@@ -168,6 +169,7 @@
         populateSituations(subRoleSelect.value);
     });
 </script>
+
 
 
 

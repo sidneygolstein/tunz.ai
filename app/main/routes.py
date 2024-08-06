@@ -1,6 +1,7 @@
 # Contains the routes related to the main functionality
 
 import json
+import math
 import os
 from flask import render_template, request, redirect, url_for, jsonify, session, current_app, flash
 from .. import db, mail
@@ -66,7 +67,30 @@ def home(hr_id):
                 continue  # Skip sessions with no results, no score_interview, or no criteria scores
 
             criteria_scores = result.score_interview['criteria_score']
-            mean_score = sum(criteria_scores.values()) / len(criteria_scores)
+
+            criteria_keys = [
+                'communication_skills',
+                'logical_reasoning_and_structure_and_problem_solving',
+                'creativity',
+                'business_acumen',
+                'analytical_skills',
+                'project_management_and_prioritization'
+            ]
+
+             # Retrieve the criteria values
+            criteria_value = [criteria_scores.get(key, 0) for key in criteria_keys]
+
+            # Load the ponderation from the interview parameters
+            situations = json.loads(interview_parameters.situation) if interview_parameters.situation else []
+            ponderation = json.loads(interview_parameters.ponderation) if interview_parameters.ponderation else [[1, 1, 1, 1, 1, 1] for _ in range(len(situations))]
+
+
+            # Calculate the weighted criteria values
+            weighted_criteria_values = [criteria_value[i] * ponderation[0][i] for i in range(len(criteria_value))]
+
+
+            mean_score = sum(weighted_criteria_values) / (sum(ponderation[0]))
+
             if mean_score is None:
                 continue  # Skip if mean score is None
 
@@ -116,7 +140,18 @@ def create_interview(hr_id):
         industry = request.form['industry']
         duration = int(request.form['duration'])
         situations = request.form.getlist('situations')
+
+        # Load the JSON file to get the ponderation
+        json_path = os.path.join(current_app.root_path, 'interview_situations_v3.json')
+        with open(json_path) as f:
+            interview_situations = json.load(f)
         
+        ponderations = []
+        for situation in situations:
+            ponderation = interview_situations.get(role, {}).get(subrole, {}).get(situation, [3, 3, 3, 3, 3])
+            ponderation = [1+(int(ponderation[i])-3)*0.1 for i in range(len(ponderation))]
+            ponderations.append(ponderation)
+
         new_interview = Interview(hr_id=hr_id)
         db.session.add(new_interview)
         db.session.commit()
@@ -128,6 +163,7 @@ def create_interview(hr_id):
             industry=industry,
             duration=duration,
             situation=json.dumps(situations),  # Store situations as JSON string
+            ponderation=json.dumps(ponderations),  # Store ponderations as JSON string
             interview_id=new_interview.id
         )
         
@@ -140,7 +176,7 @@ def create_interview(hr_id):
     #json_path = os.path.join(current_app.root_path, 'interview_situations.json')
 
     # Construct the correct file path to the JSON file
-    json_path = os.path.join(current_app.root_path, 'interview_situations_v2.json')
+    json_path = os.path.join(current_app.root_path, 'interview_situations_v3.json')
 
     with open(json_path) as f:
         interview_situations = json.load(f)
@@ -166,7 +202,36 @@ def session_details(hr_id, session_id):
     # Load criteria scores from the JSON string
     score_interview = result.score_interview
 
+    criteria_scores = result.score_interview['criteria_score']
+
+    criteria_keys = [
+        'communication_skills',
+        'logical_reasoning_and_structure_and_problem_solving',
+        'creativity',
+        'business_acumen',
+        'analytical_skills',
+        'project_management_and_prioritization'
+    ]
+
+
+    # Load the ponderation from the interview parameters
+    situations = json.loads(interview_parameter.situation) if interview_parameter.situation else []
+    ponderation = json.loads(interview_parameter.ponderation) if interview_parameter.ponderation else [[1, 1, 1, 1, 1, 1] for _ in range(len(situations))]
+
+    # Map the ponderation values to importance descriptions
+    ponderation_map = {
+        1.2: 'Very important',
+        1.1: 'Important',
+        1.0: 'Moderately important',
+        0.9: 'Slightly important',
+        0.8: 'Not important'
+    }
+    criteria_importance = [(criteria_keys[i], ponderation_map.get(ponderation[0][i], 'Unknown')) for i in range(len(criteria_keys))]
+
+
+
     return render_template('hr/session_details.html',
+                           criteria_importance=criteria_importance,
                            hr_id=hr_id,    
                            session=session,
                            applicant=applicant,
@@ -206,9 +271,6 @@ def comparison_details(hr_id, interview_id):
                            interview_parameters=interview_parameters,
                            comparison_data=comparison_data,
                            get_color=get_color)
-
-
-
 
 ####################################################################################################################################################################################
 ############################################################ APPLICANT #############################################################################################################
@@ -499,10 +561,13 @@ def applicant_review(hr_id, interview_id, interview_parameter_id, session_id, ap
 @main.route('/applicant_result/<int:hr_id>/<int:interview_id>/<int:interview_parameter_id>/<int:session_id>/<int:applicant_id>', methods=['GET'])
 def applicant_result(hr_id, interview_id, interview_parameter_id, session_id, applicant_id):
     current_session_id = session_id
+    interview_parameter = InterviewParameter.query.get_or_404(interview_parameter_id)
     if not current_session_id:
         return redirect(url_for('main.home'))
     score = Result.query.filter_by(session_id=session_id).first()  # Implement this function based on your grading logic
     applicant_feedback = score.score_interview['applicant_feedback']
+
+
     applicant = Applicant.query.get_or_404(applicant_id)
     applicant_name = applicant.name
     applicant_email = applicant.email_address
