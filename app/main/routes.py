@@ -148,9 +148,18 @@ def create_interview(hr_id):
         
         ponderations = []
         for situation in situations:
-            ponderation = interview_situations.get(role, {}).get(subrole, {}).get(situation, [3, 3, 3, 3, 3])
-            ponderation = [1+(int(ponderation[i])-3)*0.1 for i in range(len(ponderation))]
-            ponderations.append(ponderation)
+            default_ponderation = interview_situations.get(role, {}).get(subrole, {}).get(situation, [3, 3, 3, 3, 3])
+            # Override default ponderation if provided by HR
+            custom_ponderation = [
+                int(request.form.get(f'ponderation_{i+1}', default_ponderation[i]))
+                for i in range(6)
+            ]
+            custom_ponderation = [1+(int(custom_ponderation[i])-3)*0.1 for i in range(len(custom_ponderation))]
+            ponderations.append(custom_ponderation)
+
+        # Use default ponderation if no situations are selected
+        if not situations:
+            ponderations = [[1, 1, 1, 1, 1, 1]]
 
         new_interview = Interview(hr_id=hr_id)
         db.session.add(new_interview)

@@ -11,7 +11,7 @@ from flask_jwt_extended import JWTManager
 from flask_mail import Mail, Message
 from markupsafe import Markup
 
-db = SQLAlchemy()
+db = SQLAlchemy(session_options={"autoflush": False})
 jwt = JWTManager()
 migrate = Migrate()
 mail = Mail()

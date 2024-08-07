@@ -93,6 +93,36 @@
                 </div>
             </div>
         </div>
+        <!-- Criteria Ponderation Section -->
+        <div class="criteria-container">
+            <h3>Set Criteria Importance</h3>
+            <div class="criteria-list">
+                <div class="criteria-item">
+                    <label>Communication Skills:</label>
+                    <input type="number" name="ponderation_1" min="1" max="5" value="3" required>
+                </div>
+                <div class="criteria-item">
+                    <label>Logical Reasoning & Structure and Problem Solving:</label>
+                    <input type="number" name="ponderation_2" min="1" max="5" value="3" required>
+                </div>
+                <div class="criteria-item">
+                    <label>Creativity:</label>
+                    <input type="number" name="ponderation_3" min="1" max="5" value="3" required>
+                </div>
+                <div class="criteria-item">
+                    <label>Business Acumen:</label>
+                    <input type="number" name="ponderation_4" min="1" max="5" value="3" required>
+                </div>
+                <div class="criteria-item">
+                    <label>Analytical Skills:</label>
+                    <input type="number" name="ponderation_5" min="1" max="5" value="3" required>
+                </div>
+                <div class="criteria-item">
+                    <label>Project Management and Prioritization:</label>
+                    <input type="number" name="ponderation_6" min="1" max="5" value="3" required>
+                </div>
+            </div>
+        </div>
         <div class="create-button-container">
             <button type="submit" class="btn btn-primary create-interview-btn" data-action="create-itw">Create Interview</button>
         </div>
@@ -114,7 +144,17 @@
         const situationsSelect = document.getElementById("situations-select");
         const selectedSituationsList = document.getElementById("selected-situations");
         const interviewSituations = {{ interview_situations | tojson }};
-        
+
+        // Elements for ponderation
+        const ponderationInputs = [
+            document.querySelector('input[name="ponderation_1"]'),
+            document.querySelector('input[name="ponderation_2"]'),
+            document.querySelector('input[name="ponderation_3"]'),
+            document.querySelector('input[name="ponderation_4"]'),
+            document.querySelector('input[name="ponderation_5"]'),
+            document.querySelector('input[name="ponderation_6"]')
+        ];
+
         function populateSituations(subrole) {
             situationsSelect.innerHTML = '<option value="" disabled selected>Select a situation</option>';
             const salesSituations = interviewSituations["Sales"];
@@ -145,14 +185,34 @@
                 option.value = situation;
                 option.text = situation;
                 situationsSelect.add(option);
+                resetPonderation();
             });
             li.appendChild(removeButton);
             selectedSituationsList.appendChild(li);
+
+            // Update ponderation based on the selected situation
+            updatePonderation(situation);
+        }
+
+        function updatePonderation(situation) {
+            const role = "Sales";
+            const subrole = subRoleSelect.value;
+            const defaultPonderation = interviewSituations[role][subrole][situation] || [3, 3, 3, 3, 3, 3];
+            ponderationInputs.forEach((input, index) => {
+                input.value = defaultPonderation[index];
+            });
+        }
+
+        function resetPonderation() {
+            ponderationInputs.forEach(input => {
+                input.value = 3;
+            });
         }
 
         subRoleSelect.addEventListener("change", function() {
             populateSituations(subRoleSelect.value);
             selectedSituationsList.innerHTML = ""; // Clear the selected situations when the role changes
+            resetPonderation();
         });
 
         situationsSelect.addEventListener("change", function() {
@@ -160,7 +220,7 @@
             if (selectedOption.value !== "") {
                 addSelectedSituation(selectedOption.value);
                 situationsSelect.remove(situationsSelect.selectedIndex); // Remove the selected option from the dropdown
-                
+
                 // Reset the dropdown to show "Select a situation" without adding it as a new option
                 situationsSelect.selectedIndex = 0;
             }
