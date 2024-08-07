@@ -242,6 +242,8 @@ def admin_register():
         name = data.get('name')
         surname = data.get('surname')
 
+        print('Received data:', data)
+
         if password != confirm_password:
             return jsonify({"msg": "Passwords do not match"}), 400
         
@@ -262,6 +264,7 @@ def admin_register():
 
         return jsonify({"msg": "Admin registration successful"}), 200
     return render_template('auth/admin_register.html')
+
 
 
 
