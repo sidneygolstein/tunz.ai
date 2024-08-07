@@ -125,7 +125,7 @@
             <p><strong>Start Time:</strong> {{ session.start_time.strftime('%d-%m-%Y at %H:%M') }}</p>
         </div>
         <div class="info-item">
-            <p><strong>Situation:</strong> 
+            <p><strong>Situation</strong> 
                     {% for situation in interview_parameter.get_situations() %}
                     {{ situation }}
                     {% endfor %}
