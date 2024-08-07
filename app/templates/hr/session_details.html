@@ -17,6 +17,26 @@
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         margin-top: 10px;
     }
+
+    .criteria-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+        list-style: none;
+        padding: 0;
+    }
+    .criteria-grid li {
+        background-color: #fff;
+        border-radius: 8px;
+        padding: 10px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        text-align: center;
+    }
+    .criteria-grid li strong {
+        display: block;
+        margin-bottom: 5px;
+    }
+
     .radar-container {
         display: flex;
         justify-content: space-between;
@@ -85,7 +105,7 @@
 </style>
 
 <div class="container">
-    <h2>Details of the Interview</h2>
+    <h2>Sale interview for the {{interview_parameter.subrole}} position in the {{interview_parameter.industry}} industry</h2>
     <div class="info-columns">
         <div class="info-item">
             <p><strong>Applicant Name:</strong> {{ applicant.name }}</p>
@@ -99,32 +119,24 @@
     </div>
     <div class="info-columns">
         <div class="info-item">
-            <p><strong>Role:</strong> {{ interview_parameter.role }}</p>
-        </div>
-        <div class="info-item">
-            <p><strong>Industry:</strong> {{ interview_parameter.industry }}</p>
-        </div>
-        <div class="info-item">
             <p><strong>Duration:</strong> {{ interview_parameter.duration }} minutes</p>
         </div>
-    </div>
-    <div>
-        <p><strong>Start Time:</strong> {{ session.start_time.strftime('%d-%m-%Y at %H:%M:%S') }}</p>
-    </div>
-    <div>
-        <p><strong>Situations:</strong>
-            <ul>
-                {% for situation in interview_parameter.get_situations() %}
-                <li>{{ situation }}</li>
-                {% endfor %}
-            </ul>
-        </p>
+        <div class="info-item">
+            <p><strong>Start Time:</strong> {{ session.start_time.strftime('%d-%m-%Y at %H:%M') }}</p>
+        </div>
+        <div class="info-item">
+            <p><strong>Situation:</strong> 
+                    {% for situation in interview_parameter.get_situations() %}
+                    {{ situation }}
+                    {% endfor %}
+            </p>
+        </div>
     </div>
     
     <div class="title-container">
         <div class="title-box">
             <h3>Criteria and Importance</h3>
-            <ul>
+            <ul class="criteria-grid">
                 {% for criteria, importance in criteria_importance %}
                 <li><strong>{{ criteria.replace('_', ' ').title() }}:</strong> {{ importance }}</li>
                 {% endfor %}

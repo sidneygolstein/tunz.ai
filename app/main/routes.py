@@ -226,7 +226,17 @@ def session_details(hr_id, session_id):
         0.9: 'Slightly important',
         0.8: 'Not important'
     }
-    criteria_importance = [(criteria_keys[i], ponderation_map.get(ponderation[0][i], 'Unknown')) for i in range(len(criteria_keys))]
+
+    # Map the ponderation values to star ratings
+    star_rating_map = {
+        1.2: '★★★★★',
+        1.1: '★★★★☆',
+        1.0: '★★★☆☆',
+        0.9: '★★☆☆☆',
+        0.8: '★☆☆☆☆'
+    }
+    criteria_importance = [(criteria_keys[i], star_rating_map.get(ponderation[0][i], '☆☆☆☆☆')) for i in range(len(criteria_keys))]
+
 
 
 
